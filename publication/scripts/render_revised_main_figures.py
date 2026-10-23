@@ -58,7 +58,8 @@ CAPTIONS = {
     "ranges and medians across 12 coefficient/weighting specifications and 27 source removals. "
     "h, Direct requests in 63 NUS and 34 ENTH room-windows. Categories are mutually exclusive: "
     "identical (Same), different without opposing requests (Mixed), and simultaneous warmer/cooler "
-    "requests (Opposed). Labels give window counts. Complete denominators accompany Supplementary Data.",
+    "requests (Opposed). Different requests comprise Mixed plus Opposed: NUS 43 + 6 = 49 windows "
+    "and ENTH 20 + 2 = 22. Labels give window counts. Complete denominators accompany Supplementary Data.",
     2: "Figure 2 | Shared-room vote distributions and averaging. a, Cooler, no-change and warmer vote "
     "shares across sixty-three NUS room-windows, ordered by net vote and disagreement. "
     "Blue/grey/terracotta encode the three vote categories. b, Counts in the six windows "

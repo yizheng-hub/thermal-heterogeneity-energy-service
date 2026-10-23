@@ -372,7 +372,8 @@ def render_figure_two(tables, annual_root, output):
                                       .selection_status.eq("selected").sum())) for c in CONTROL_ORDER))
     caption = ("Figure 2 | Thermal service under three direct control rules. All panels use native-zone "
                "permissions and predeclared zero-slack commands. Each context has nine composition–placement "
-               "cases per controller. In a,b,e,f, small points denote admitted cases, connected grey lines "
+               "cases per controller. Admitted trajectories passed equipment, ventilation, numerical and "
+               "energy-accounting checks. In a,b,e,f, small points denote admitted cases, connected grey lines "
                "link the same composition–placement case, and larger symbols and whiskers show medians "
                "and interquartile ranges. a, Native-person-hour-weighted mean reference mismatch. "
                "b, Equal mean of occupied-time mismatches for the same 27 reference-tail profiles. "

@@ -520,6 +520,7 @@
     "pages": "",
     "url": "https://www.energycodes.gov/prototype-building-models",
     "doi": null,
+    "accessed": "23 October 2026",
     "reference_id": "doe_prototypes"
   },
   {
@@ -1241,6 +1242,7 @@
     "pages": "",
     "url": "https://www.iea.org/energy-system/buildings",
     "doi": null,
+    "accessed": "23 October 2026",
     "reference_id": "iea_buildings"
   },
   {
@@ -1525,6 +1527,7 @@
     "pages": "",
     "url": "https://www.eia.gov/electricity/sales_revenue_price/xls/table_4.xlsx",
     "doi": null,
+    "accessed": "23 October 2026",
     "reference_id": "eia_electricity2024"
   },
   {
@@ -1538,6 +1541,7 @@
     "pages": "",
     "url": "https://www.eia.gov/dnav/ng/ng_pri_sum_dcu_SFL_a.htm",
     "doi": null,
+    "accessed": "23 October 2026",
     "reference_id": "eia_gas_florida2024"
   },
   {
@@ -1551,6 +1555,7 @@
     "pages": "",
     "url": "https://www.eia.gov/dnav/ng/ng_pri_sum_dcu_SWA_a.htm",
     "doi": null,
+    "accessed": "23 October 2026",
     "reference_id": "eia_gas_washington2024"
   },
   {
