@@ -46,20 +46,26 @@ EXCLUDED = {"Fig1a", "Fig2a", "Fig3a", "Fig3c", "Fig4a", "Fig5a", "Fig6a", "Fig6
 
 
 CAPTIONS = {
-    1: "Figure 1 | Observed thermal demand and shared-room requests. a,b, Reconstructed city "
-    "centres in warm/cold seasons. Marker area denotes analysis-unit count, colour denotes "
-    "temperature, and hollow markers denote unsupported summaries. Support is 31/40 warm and "
-    "26/40 cold cities. Maps contain no interpolation. c, Medians and P10–P90 ranges by city "
-    "and source (Src), for warm (W) and cold (C) seasons. d, Unit-equal hierarchical variance "
-    "shares. e, Record-equal shares below, within and above nine policy/design ranges at "
-    "Griffiths coefficient 0.50. Labels give within-range percentages, whiskers give nested-bootstrap "
-    "95% intervals, and country codes identify jurisdictions. f, Demand minus campaign target. "
-    "Thin/thick segments give P10–P90/P25–P75 and points give medians. g, Leave-one-source "
-    "ranges and medians across 12 coefficient/weighting specifications and 27 source removals. "
-    "h, Direct requests in 63 NUS and 34 ENTH room-windows. Categories are mutually exclusive: "
-    "identical (Same), different without opposing requests (Mixed), and simultaneous warmer/cooler "
-    "requests (Opposed). Different requests comprise Mixed plus Opposed: NUS 43 + 6 = 49 windows "
-    "and ENTH 20 + 2 = 22. Labels give window counts. Complete denominators accompany Supplementary Data.",
+    1: (
+        (
+        (
+        "Figure 1 | Observed thermal demand and shared-room requests. a,b, City demand centres, estimated "
+        "from measured temperatures and sensation votes. Marker area denotes analysis-unit count, colour "
+        "denotes temperature, and hollow markers denote unsupported summaries. Identified people form "
+        "units within buildings; unidentified records remain separate units. Warm/cold support is 31/40 "
+        "and 26/40 cities, without interpolation. c, Medians and P10–P90 by city and source (Src), for "
+        "warm (W) and cold (C) seasons. d, Hierarchical variance shares, weighting units equally. e, "
+        "Record-equal shares below, within and above nine policy/design ranges at Griffiths coefficient "
+        "0.50. Labels give within-range percentages, whiskers give nested-bootstrap 95% intervals, and "
+        "country codes identify jurisdictions. f, Demand minus campaign target. Thin/thick segments give "
+        "P10–P90/P25–P75 and points give medians. g, Leave-one-source ranges and medians across 12 "
+        "coefficient/weighting specifications and 27 source removals. h, Direct requests in 63 NUS and 34 "
+        "ENTH room-windows. Mutually exclusive categories are Same (identical), Mixed (different without "
+        "opposing requests), and Opposed (warmer/cooler together). Different requests total Mixed plus "
+        "Opposed: NUS 43 + 6 = 49 and ENTH 20 + 2 = 22. Labels give window counts."
+    )
+    )
+    ),
     2: "Figure 2 | Shared-room vote distributions and averaging. a, Cooler, no-change and warmer vote "
     "shares across sixty-three NUS room-windows, ordered by net vote and disagreement. "
     "Blue/grey/terracotta encode the three vote categories. b, Counts in the six windows "

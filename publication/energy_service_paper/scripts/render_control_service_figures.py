@@ -370,22 +370,26 @@ def render_figure_two(tables, annual_root, output):
     for context in CONTEXT_ORDER:
         counts.append("/".join(str(int(direct[direct.context.eq(context) & direct.control.eq(c)]
                                       .selection_status.eq("selected").sum())) for c in CONTROL_ORDER))
-    caption = ("Figure 2 | Thermal service under three direct control rules. All panels use native-zone "
-               "permissions and predeclared zero-slack commands. Each context has nine composition–placement "
-               "cases per controller. Admitted trajectories passed equipment, ventilation, numerical and "
-               "energy-accounting checks. In a,b,e,f, small points denote admitted cases, connected grey lines "
-               "link the same composition–placement case, and larger symbols and whiskers show medians "
-               "and interquartile ranges. a, Native-person-hour-weighted mean reference mismatch. "
-               "b, Equal mean of occupied-time mismatches for the same 27 reference-tail profiles. "
-               "c, Empirical distribution of occupied weighted hours inside model-derived intervals. d, Empirical "
-               "distribution of the tenth percentile of individual profile coverage. The steps in c,d use the same "
-               "16 complete three-control conditions (16 cases per controller), without fitting a density. "
-               "Other panels retain all admitted cases, including conditions missing another controller. "
-               "e, Occupied-hour-normalized interval excess. "
-               "f, Profiles with no occupied interval violation. Admitted counts in uniform/personal/interval "
-               f"order are {', '.join(f'{name} {n}' for name,n in zip(CONTEXT_SHORT,counts))}. "
-               "MIA, DEL, PTA and SEA identify Miami, New Delhi, Port Angeles and Seattle building–weather "
-               "contexts. Service references are reconstructed centres and model-derived intervals.")
+    caption = ((
+               "Figure 2 | Thermal service under three direct control rules. All panels allow separate "
+               "temperature commands in existing thermal zones and use the predeclared "
+               "minimum-predicted-mismatch variant. Each context has nine composition–placement cases per "
+               "controller. Admitted trajectories passed equipment, ventilation, numerical and energy-accounting "
+               "checks. In a,b,e,f, small points denote admitted cases, connected grey lines link the same "
+               "composition–placement case, and larger symbols and whiskers show medians and interquartile "
+               "ranges. a, Mean absolute temperature mismatch from assigned reference centres, weighted by "
+               "occupied person-hours. b, Mean occupied-time mismatch for the same 27 profiles worst served by "
+               "the common reference operation. c, Empirical distribution of coverage: the share of occupied "
+               "person-hours inside model-derived temperature intervals. d, Empirical distribution of the tenth "
+               "percentile of individual profile coverage. The steps in c,d use the same 16 complete "
+               "three-control conditions (16 cases per controller), without fitting a density. Other panels "
+               "retain all admitted cases, including conditions missing another controller. e, Average degrees "
+               "outside assigned intervals over occupied hours. f, Profiles with no occupied interval violation. "
+               "Admitted counts in uniform/personal/interval order are "
+               f"{', '.join(f'{name} {n}' for name,n in zip(CONTEXT_SHORT,counts))}"
+               ". MIA, DEL, PTA and SEA identify Miami, New Delhi, Port Angeles and Seattle building–weather "
+               "contexts. Service references are reconstructed centres and model-derived intervals."
+    ))
     result = export_result(fig, axes, output, "Figure_02", caption=caption,
                            sources={"ANNUAL_DIRECT.csv": annual_root / "ANNUAL_DIRECT.csv"})
     write_panel_summaries(output, 2, summaries)
@@ -459,19 +463,24 @@ def render_figure_three(tables, annual_root, output):
     axes[5].set_ylabel("Qualified cases")
     axes[5].set_ylim(-1, 37)
     axes[5].yaxis.set_major_locator(MaxNLocator(4, integer=True))
-    caption = ("Figure 3 | Energy and operational carbon consequences of three controls. All panels use "
-               "native-zone permissions. a,b, Paired direct-operation changes relative to uniform average "
-               "control. Small points are admitted composition–placement comparisons; symbols and whiskers "
-               "show medians and interquartile ranges. c, Building-hour increases (above zero) and decreases "
-               "(below zero) in electricity (solid) and heating gas (hatched), summed over the year and then "
-               "summarized by the composition–placement median. Overlaid symbols give individual paired net "
-               "site-energy changes. These quantities describe temporal building-load changes, not metered "
-               "transfers between people. Gas uses the higher-heating-value basis. PC and LT denote personal-centre and "
-               "LTPref controls. d,e, Paired minimum-site-energy selections at the same population and fixed-tail "
-               "reference limits, using budget fraction 1 and equal four-variant candidate support. f, Available "
-               "selections among all 36 declared context–composition–placement cases at each service budget. "
-               "Carbon uses fixed regional electricity and gas accounting factors. MIA, DEL, PTA and SEA "
-               "denote Miami, New Delhi, Port Angeles and Seattle.")
+    caption = ((
+               "Figure 3 | Energy and operational carbon consequences of three controls. All panels allow "
+               "separate temperature commands in existing thermal zones. a,b, Paired direct-operation changes "
+               "relative to uniform average control. Small points are admitted composition–placement "
+               "comparisons; symbols and whiskers show medians and interquartile ranges. c, Building-hour "
+               "increases (above zero) and decreases (below zero) in electricity (solid) and heating gas "
+               "(hatched), summed over the year and then summarized by the composition–placement median. "
+               "Overlaid symbols give individual paired net site-energy changes. These quantities describe "
+               "temporal building-load changes, not metered transfers between people. Gas uses the "
+               "higher-heating-value basis. PC and LT denote personal-centre and LTPref controls. d,e, Paired "
+               "minimum-site-energy selections at budget fraction 1 from the same four variants per control, "
+               "under common mismatch limits for the population and the fixed least-served group. A service "
+               "budget of 1 uses the limits from the common reference operation; smaller fractions tighten both "
+               "limits proportionally. f, Available selections among all 36 declared "
+               "context–composition–placement cases at each service budget. Carbon uses fixed regional "
+               "electricity and gas accounting factors. MIA, DEL, PTA and SEA denote Miami, New Delhi, Port "
+               "Angeles and Seattle."
+    ))
     result = export_result(fig, axes, output, "Figure_03", caption=caption, sources={
         "CONTROL_COMPARISONS.csv": annual_root / "CONTROL_COMPARISONS.csv",
         "ANNUAL_SERVICE_SELECTIONS.csv": annual_root / "ANNUAL_SERVICE_SELECTIONS.csv"})
@@ -555,20 +564,24 @@ def render_figure_four(tables, annual_root, output):
     axes[5].set_xlim(67, 101)
     axes[5].set_xlabel("Maximum static coverage (%)")
     axes[5].set_xticks([70, 80, 90, 100])
-    caption = ("Figure 4 | Placement and existing control permissions. a,b, Native-zone minus building-bound "
-               "direct-operation changes in virtual-interval coverage and purchased site energy. c, The same "
-               "permission contrast for minimum-energy selections under common service limits at budget "
-               "fraction 1. Points show admitted paired cases, with median symbols and interquartile whiskers. "
-               "d,e, All matched ordered (upper) and source-structured (lower) placement changes relative to random "
-               "mixing at native-zone permissions and budget 1, using the same random-placement absolute "
-               "limits and tail identities. The two rows in each context show ordered and source placements; "
-               "each symbol denotes a composition, and horizontal segments show the observed ranges. "
-               "UA/PC/LT denote uniform-average/personal-centre/LTPref control. f, Static interval coverage "
-               "with an independent "
-               "temperature per existing zone. Symbols show all three compositions, connected through their "
-               "placement medians. Open circles, squares and diamonds identify random, ordered and source "
-               "placement. Missing marks in d,e denote no matched selection. Static coverage is a demand-overlap "
-               "bound, not simulated annual coverage. MIA/DEL/PTA/SEA denote Miami/New Delhi/Port Angeles/Seattle.")
+    caption = ((
+               "Figure 4 | Placement and existing control permissions. a,b, Direct-operation changes when "
+               "existing zones can receive separate temperature commands instead of one shared building-wide "
+               "command: model-derived interval coverage and purchased site energy. c, The same permission "
+               "contrast for minimum-energy selections under common service limits, using the mismatch limits of "
+               "the common reference operation (budget fraction 1). Points show admitted paired cases, with "
+               "median symbols and interquartile whiskers. d,e, All matched ordered (upper) and "
+               "source-structured (lower) placement changes relative to random mixing at native-zone permissions "
+               "and budget 1, using the same random-placement absolute limits and tail identities. The two rows "
+               "in each context show ordered and source placements; each symbol denotes a composition, and "
+               "horizontal segments show the observed ranges. UA/PC/LT denote "
+               "uniform-average/personal-centre/LTPref control. f, Maximum share of assigned profiles whose "
+               "temperature intervals can contain a common temperature within each existing zone. Symbols show "
+               "all three compositions, connected through their placement medians. Open circles, squares and "
+               "diamonds identify random, ordered and source placement. Missing marks in d,e denote no matched "
+               "selection. Static coverage is a demand-overlap bound, not simulated annual coverage. "
+               "MIA/DEL/PTA/SEA denote Miami/New Delhi/Port Angeles/Seattle."
+    ))
     sources = {name + ".csv": annual_root / (name + ".csv") for name in
                ("SPATIAL_PAIRS", "LAYOUT_PAIRS", "STATIC_ZONE_INTERVAL_COMPATIBILITY")}
     sources["COMMON_LAYOUT_PAIRS.csv"] = common_layout_path

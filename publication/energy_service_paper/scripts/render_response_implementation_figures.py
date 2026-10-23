@@ -151,22 +151,25 @@ def render_five(results, output):
     dump_source(output, 5, "f", pd.DataFrame(service_rows))
     dump_source(output, 5, "participation_supplement", participating)
     caption = (
-        "Figure 5 | Own-baseline July response and recovery. Response is the largest qualified positive "
-        "reduction among two amplitudes, with a two-hour event and 48-hour recovery. All shown "
-        "baselines meet the window limits. a, Hourly perturbed-minus-own-baseline electricity for complete "
-        "108-office portfolios with native-zone commands. Shading marks the two-hour event. Solid and dashed "
-        "lines denote Port Angeles and Seattle, respectively. The Miami and Delhi portfolios have zero "
-        "change because no tested positive action qualifies. "
-        "b, Single-office net electricity saving over 50 hours; points and whiskers denote cases and median "
-        "interquartile ranges. c,d, Service-qualified response from standardized 108-office portfolios with "
-        "native-zone or building-bound commands. e, Synchronized recovery excess peak with native-zone "
-        "commands. f, Population and fixed-tail mismatch divided by their own event and recovery limits, "
-        "for all selected positive native-zone July responses (16 uniform-average, 12 personal-centre and "
-        "12 LTPref conditions). Hollow and solid symbols identify baseline "
-        "and perturbed operation. The dashed line is the qualification limit. "
-        "Panel b uses nine composition–placement cases per control and context. Zero denotes an eligible "
-        "baseline with no positive qualified tested action. Portfolios share declared composition, not observed city stock. "
-        "MIA/DEL/PTA/SEA denote Miami/New Delhi/Port Angeles/Seattle."
+        (
+               "Figure 5 | Own-baseline July response and recovery. Response is the largest qualified positive "
+               "power reduction among two amplitudes, with a two-hour event and 48-hour recovery. Qualification "
+               "requires both baseline and perturbed operation to meet population and fixed-tail "
+               "temperature-mismatch limits during the event and recovery. All shown baselines meet the window "
+               "limits. a, Hourly perturbed-minus-own-baseline electricity for complete 108-office portfolios "
+               "with native-zone commands. Shading marks the two-hour event. Solid and dashed lines denote Port "
+               "Angeles and Seattle, respectively. The Miami and Delhi portfolios have zero change because no "
+               "tested positive action qualifies. b, Single-office net electricity saving over 50 hours; points "
+               "and whiskers denote cases and median interquartile ranges. c,d, Service-qualified response from "
+               "standardized 108-office portfolios with native-zone or building-bound commands. e, Synchronized "
+               "recovery excess peak with native-zone commands. f, Population and fixed-tail mismatch divided by "
+               "their own event and recovery limits, for all selected positive native-zone July responses (16 "
+               "uniform-average, 12 personal-centre and 12 LTPref conditions). Hollow and solid symbols identify "
+               "baseline and perturbed operation. The dashed line is the qualification limit. Panel b uses nine "
+               "composition–placement cases per control and context. Zero denotes an eligible baseline with no "
+               "positive qualified tested action. Portfolios share declared composition, not observed city "
+               "stock. MIA/DEL/PTA/SEA denote Miami/New Delhi/Port Angeles/Seattle."
+    )
     )
     result = export_result(fig, axes, output, "Figure_05", caption=caption, sources={
         "EVENT_SELECTIONS.csv": event_path, "portfolio_summary.csv": summary_path,
@@ -297,16 +300,21 @@ def render_six(results, output):
     records.append(dict(panel="e", n=len(d), positive_allowances=int(d.minutes_per_group_year.gt(0).sum()),
                         maximum_manager_minutes_per_group_year=d.minutes_per_group_year.max()))
     caption = (
-        "Figure 6 | Service, energy bills and implementation resources. a, Native-zone direct US controls: "
-        "interval coverage versus annual energy-bill change. b, Common-reference-service US bill changes "
-        "across distinct permissions (126 matched comparisons). Points and whiskers show cases and median "
-        "interquartile ranges. c, Cumulative distribution of 118 declared resource-cost scenarios, with the "
-        "US$294.70 light existing-system package marked. d, Delhi direct native-zone bill components: "
-        "electricity charge and gas use, one matched pair per control, before assigning a gas tariff. e, Signed annual "
-        "manager-time allowance per additional command group before fixed costs (72 US comparisons). "
-        "f, Miami direct service changes and additional annual benefit needed to "
-        "cover energy and the light package. Currency values use declared historical prices. Costs are "
-        "implementation scenarios, not project quotes. MIA/PTA/SEA denote Miami/Port Angeles/Seattle."
+        (
+               "Figure 6 | Service, energy bills and implementation resources. Control changes are relative to "
+               "uniform-average control under matched conditions. a, Native-zone direct US controls: interval "
+               "coverage versus annual energy-bill change. b, US bill changes under common temperature-mismatch "
+               "requirements across distinct permissions (126 matched comparisons). Points and whiskers show "
+               "cases and median interquartile ranges. c, Cumulative distribution of 118 declared resource-cost "
+               "scenarios, with the US$294.70 existing-system package marked. The package includes annualized "
+               "setup and recurring management. d, Delhi direct native-zone bill components: electricity charge "
+               "and gas use, one matched pair per control, before assigning a gas tariff. e, Annual manager-time "
+               "allowance per additional command group before fixed costs (72 US comparisons). Positive and "
+               "negative values convert bill savings and increases into management time, respectively. f, Miami "
+               "direct service changes and additional annual benefit needed to cover energy and the light "
+               "package. Currency values use declared historical prices. Costs are implementation scenarios, not "
+               "project quotes. MIA/PTA/SEA denote Miami/Port Angeles/Seattle."
+    )
     )
     result = export_result(fig, axes, output, "Figure_06", caption=caption, sources=paths)
     write_panel_summaries(output, 6, records)
