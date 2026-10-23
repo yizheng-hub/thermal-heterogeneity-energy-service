@@ -1,0 +1,18 @@
+{
+  "status": "ARCHIVE_BUILT",
+  "archive": "paper_data_energy_service_20261023.tar.zst",
+  "sha256": "9065ddcf67258940d1abd386d7051a734928747476babddcba03b8502b89dcb1",
+  "bytes": 603340034,
+  "manifest_sha256": "31e42c2714e66e58640b0cf5efeae091820237aaf77866005503fc97894e52dc",
+  "files": 877,
+  "component_files": {
+    "legacy_analysis": 46,
+    "source_building": 425,
+    "energy_service": 406
+  },
+  "hourly_trajectories": 796,
+  "analysis_inputs_minimized": true,
+  "physical_input_assets_included": false,
+  "raw_human_identifiers_included": false,
+  "public_deposit_url": null
+}

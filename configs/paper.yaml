@@ -1,0 +1,372 @@
+schema_version: 2
+output: ../outputs
+data_root: ../clean_data
+assets:
+  human_profiles: human/human_profiles_minimized.csv.gz
+  shared_room_windows: human/direct_vote_windows_sanitized.csv.gz
+  regional_predictions: human/regional_holdout_predictions_minimized.csv.gz
+  local_update_sampling_plan: implementation/local_update_sampling_plan.csv.gz
+  ltpref_intervals: human/ltpref_intervals_minimized.csv.gz
+  city_season_support: curves/city_season_demand_support.csv
+  hierarchy_quantiles: curves/hierarchy_quantile_curves.csv.gz
+  policy_estimates: policy/policy_range_estimates.csv
+  policy_semantics: policy/policy_semantics.csv
+  policy_support: policy/policy_support.csv
+  population_assignments: population/population_assignments_minimized.csv.gz
+  annual_anchors: building/annual_service_anchors.csv
+  annual_scores: building/annual_service_scores.csv.gz
+  dynamic_anchors: building/dynamic_service_anchors.csv
+  dynamic_scores: building/dynamic_service_scores.csv.gz
+  representation_scores: implementation/representation_scores.csv.gz
+  regional_factor_contract: building/regional_factor_contract.csv
+  three_definition_matches: building/three_definition_matches.csv.gz
+  regional_carbon_cost: building/regional_carbon_cost.csv.gz
+  event_power_curves: curves/event_power_curves.csv.gz
+  event_temperature_service_curves: curves/event_temperature_service_curves.csv.gz
+  event_zone_temperature_curves: curves/event_zone_temperature_curves.csv.gz
+  panel_materialization_support: panel_support/panel_materialization_support.json
+science:
+  seed: 20261021
+  direct_vote_thresholds: [0.0, 0.25, 0.5, 0.75]
+  griffiths_coefficients: [0.33, 0.50, 0.67]
+  interval_width_multipliers: [0.75, 1.0, 1.25]
+  service_fractions: [0.50, 0.75, 0.90, 1.00]
+  heterogeneity_lambdas: [0.0, 0.25, 0.50, 0.75, 1.0, 1.25, 1.50]
+  population_seeds: [2026102001, 2026102002, 2026102003]
+  annual_decision_keys: [city, seed, service_fraction]
+  dynamic_decision_keys: [city, seed, month, service_fraction]
+  centre_spread_keys: [city, service_fraction]
+  event:
+    start_hour_local: 14
+    duration_hours: 2
+    recovery_calendar_hours: 48
+  tolerances:
+    score_c: 1.0e-9
+    annual_energy_kwh: 1.0e-6
+    response_kw: 1.0e-9
+figures:
+  typography:
+    family: Times New Roman
+    normal_size_pt: 11
+    panel_title_size_pt: 12
+    panel_title_weight: bold
+  panels:
+    - panel_id: Fig1a
+      result: 1
+      source_table: result1_scope.csv
+      citation_key: result1_panel_a
+    - panel_id: Fig1b
+      result: 1
+      source_table: result1_scope.csv
+      citation_key: result1_panel_b
+    - panel_id: Fig1c
+      result: 1
+      source_table: result1_variance.csv
+      citation_key: result1_panel_c
+    - panel_id: Fig1d
+      result: 1
+      source_table: result1_variance.csv
+      citation_key: result1_panel_d
+    - panel_id: Fig1e
+      result: 1
+      source_table: result1_scope.csv
+      citation_key: result1_panel_e
+    - panel_id: Fig1f
+      result: 1
+      source_table: result1_variance.csv
+      citation_key: result1_panel_f
+    - panel_id: Fig1g
+      result: 1
+      source_table: result1_variance.csv
+      citation_key: result1_panel_g
+    - panel_id: Fig1h
+      result: 1
+      source_table: result1_scope.csv
+      citation_key: result1_panel_h
+    - panel_id: Fig2a
+      result: 2
+      source_table: result2_windows.csv
+      citation_key: result2_panel_a
+    - panel_id: Fig2b
+      result: 2
+      source_table: result2_windows.csv
+      citation_key: result2_panel_b
+    - panel_id: Fig2c
+      result: 2
+      source_table: result2_thresholds.csv
+      citation_key: result2_panel_c
+    - panel_id: Fig2d
+      result: 2
+      source_table: result2_thresholds.csv
+      citation_key: result2_panel_d
+    - panel_id: Fig2e
+      result: 2
+      source_table: result2_windows.csv
+      citation_key: result2_panel_e
+    - panel_id: Fig2f
+      result: 2
+      source_table: result2_windows.csv
+      citation_key: result2_panel_f
+    - panel_id: Fig2g
+      result: 2
+      source_table: result2_thresholds.csv
+      citation_key: result2_panel_g
+    - panel_id: Fig2h
+      result: 2
+      source_table: result2_thresholds.csv
+      citation_key: result2_panel_h
+    - panel_id: Fig3a
+      result: 3
+      source_table: result3_centre_effects.csv
+      citation_key: result3_panel_a
+    - panel_id: Fig3b
+      result: 3
+      source_table: result3_centre_effects.csv
+      citation_key: result3_panel_b
+    - panel_id: Fig3c
+      result: 3
+      source_table: result3_centre_effects.csv
+      citation_key: result3_panel_c
+    - panel_id: Fig3d
+      result: 3
+      source_table: result3_centre_effects.csv
+      citation_key: result3_panel_d
+    - panel_id: Fig3e
+      result: 3
+      source_table: result3_centre_effects.csv
+      citation_key: result3_panel_e
+    - panel_id: Fig3f
+      result: 3
+      source_table: result3_centre_effects.csv
+      citation_key: result3_panel_f
+    - panel_id: Fig3g
+      result: 3
+      source_table: result3_centre_effects.csv
+      citation_key: result3_panel_g
+    - panel_id: Fig3h
+      result: 3
+      source_table: result3_centre_effects.csv
+      citation_key: result3_panel_h
+    - panel_id: Fig4a
+      result: 4
+      source_table: result4_spread_effects.csv
+      citation_key: result4_panel_a
+    - panel_id: Fig4b
+      result: 4
+      source_table: result4_spread_effects.csv
+      citation_key: result4_panel_b
+    - panel_id: Fig4c
+      result: 4
+      source_table: result4_interactions.csv
+      citation_key: result4_panel_c
+    - panel_id: Fig4d
+      result: 4
+      source_table: result4_spread_effects.csv
+      citation_key: result4_panel_d
+    - panel_id: Fig4e
+      result: 4
+      source_table: result4_interactions.csv
+      citation_key: result4_panel_e
+    - panel_id: Fig4f
+      result: 4
+      source_table: result4_spread_effects.csv
+      citation_key: result4_panel_f
+    - panel_id: Fig4g
+      result: 4
+      source_table: result4_interactions.csv
+      citation_key: result4_panel_g
+    - panel_id: Fig4h
+      result: 4
+      source_table: result4_spread_effects.csv
+      citation_key: result4_panel_h
+    - panel_id: Fig5a
+      result: 5
+      source_table: result5_dynamic_decisions.csv
+      citation_key: result5_panel_a
+    - panel_id: Fig5b
+      result: 5
+      source_table: result5_dynamic_decisions.csv
+      citation_key: result5_panel_b
+    - panel_id: Fig5c
+      result: 5
+      source_table: result5_spread_effects.csv
+      citation_key: result5_panel_c
+    - panel_id: Fig5d
+      result: 5
+      source_table: result5_dynamic_decisions.csv
+      citation_key: result5_panel_d
+    - panel_id: Fig5e
+      result: 5
+      source_table: result5_spread_effects.csv
+      citation_key: result5_panel_e
+    - panel_id: Fig5f
+      result: 5
+      source_table: result5_dynamic_decisions.csv
+      citation_key: result5_panel_f
+    - panel_id: Fig5g
+      result: 5
+      source_table: result5_spread_effects.csv
+      citation_key: result5_panel_g
+    - panel_id: Fig5h
+      result: 5
+      source_table: result5_dynamic_decisions.csv
+      citation_key: result5_panel_h
+    - panel_id: Fig6a
+      result: 6
+      source_table: result6_phase_map.csv
+      citation_key: result6_panel_a
+    - panel_id: Fig6b
+      result: 6
+      source_table: result6_phase_map.csv
+      citation_key: result6_panel_b
+    - panel_id: Fig6c
+      result: 6
+      source_table: result6_phase_map.csv
+      citation_key: result6_panel_c
+    - panel_id: Fig6d
+      result: 6
+      source_table: result6_quantile_gate.csv
+      citation_key: result6_panel_d
+    - panel_id: Fig6e
+      result: 6
+      source_table: result6_quantile_gate.csv
+      citation_key: result6_panel_e
+    - panel_id: Fig6f
+      result: 6
+      source_table: result6_local_update.csv
+      citation_key: result6_panel_f
+    - panel_id: Fig6g
+      result: 6
+      source_table: result6_local_update.csv
+      citation_key: result6_panel_g
+    - panel_id: Fig6h
+      result: 6
+      source_table: result6_phase_map.csv
+      citation_key: result6_panel_h
+supplementary_tables:
+  - table_id: TableS1
+    source_table: result1_scope.csv
+  - table_id: TableS2
+    source_table: result1_variance.csv
+  - table_id: TableS3
+    source_table: result2_windows.csv
+  - table_id: TableS4
+    source_table: result2_thresholds.csv
+  - table_id: TableS5
+    source_table: result3_centre_effects.csv
+  - table_id: TableS6
+    source_table: result4_spread_effects.csv
+  - table_id: TableS7
+    source_table: result4_interactions.csv
+  - table_id: TableS8
+    source_table: result5_dynamic_decisions.csv
+  - table_id: TableS9
+    source_table: result5_spread_effects.csv
+  - table_id: TableS10
+    source_table: result6_phase_map.csv
+  - table_id: TableS11
+    source_table: result6_quantile_gate.csv
+  - table_id: TableS12
+    source_table: result6_local_update.csv
+verification:
+  claim_checks:
+    - claim_id: archive_records_21418
+      path: tables/result1_scope.csv
+      reducer: value
+      column: records
+      expected: 21418
+      tolerance: 0
+    - claim_id: archive_units_12130
+      path: tables/result1_scope.csv
+      reducer: value
+      column: units
+      expected: 12130
+      tolerance: 0
+    - claim_id: archive_buildings_187
+      path: tables/result1_scope.csv
+      reducer: value
+      column: buildings
+      expected: 187
+      tolerance: 0
+    - claim_id: archive_cities_40
+      path: tables/result1_scope.csv
+      reducer: value
+      column: cities
+      expected: 40
+      tolerance: 0
+    - claim_id: archive_countries_15
+      path: tables/result1_scope.csv
+      reducer: value
+      column: countries
+      expected: 15
+      tolerance: 0
+    - claim_id: nus_windows_63
+      path: tables/result2_summary.csv
+      where: {dataset_code: NUS_HAAS}
+      reducer: value
+      column: eligible_windows
+      expected: 63
+      tolerance: 0
+    - claim_id: nus_disagreement_49
+      path: tables/result2_summary.csv
+      where: {dataset_code: NUS_HAAS}
+      reducer: value
+      column: disagreement_windows
+      expected: 49
+      tolerance: 0
+    - claim_id: nus_opposing_6
+      path: tables/result2_summary.csv
+      where: {dataset_code: NUS_HAAS}
+      reducer: value
+      column: opposing_direction_windows
+      expected: 6
+      tolerance: 0
+    - claim_id: february_central_no_positive_selection
+      path: tables/headline_results.csv
+      where:
+        result: Result5
+        metric: february_central_full_positive_selection_cells
+      reducer: value
+      column: value
+      expected: 0
+      tolerance: 0
+    - claim_id: phase_mean_safe_275
+      path: tables/result6_phase_map.csv
+      where: {classification: mean-safe}
+      reducer: rows
+      expected: 275
+      tolerance: 0
+    - claim_id: phase_distribution_required_331
+      path: tables/result6_phase_map.csv
+      where: {classification: distribution-required}
+      reducer: rows
+      expected: 331
+      tolerance: 0
+    - claim_id: phase_unresolved_402
+      path: tables/result6_phase_map.csv
+      where: {classification: finite-library-unresolved}
+      reducer: rows
+      expected: 402
+      tolerance: 0
+    - claim_id: protected_q5_q95_zero_candidate_false_accept
+      path: tables/result6_quantile_gate.csv
+      where:
+        split_scheme: leave_one_context_seed_out
+        representation: quantile5
+        strategy: pooled_q95
+      reducer: value
+      column: false_accept_candidates
+      expected: 0
+      tolerance: 0
+    - claim_id: protected_q5_q95_zero_selection_false_accept
+      path: tables/result6_quantile_gate.csv
+      where:
+        split_scheme: leave_one_context_seed_out
+        representation: quantile5
+        strategy: pooled_q95
+      reducer: value
+      column: selected_false_accept_decisions
+      expected: 0
+      tolerance: 0
+
+

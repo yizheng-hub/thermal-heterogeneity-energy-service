@@ -1,0 +1,16 @@
+{
+  "analysis": "Decision value of the existing protected anonymous-quantile rules",
+  "predeclared_before_this_computation": true,
+  "rules": [["quantile5", "pooled_q95"], ["quantile5", "pooled_q90"], ["quantile3", "pooled_q90"]],
+  "split_schemes": ["leave_one_context_seed_out", "leave_one_population_out"],
+  "service_fractions": [0.5, 0.75, 0.9, 1.0],
+  "selection": "minimum purchased-site annual HVAC energy; existing absolute/relative tie rule and lexical physical_action_id",
+  "reference": "minimum energy plan passing both complete-distribution service limits in the identical library",
+  "outcomes": ["absolute and relative energy regret", "operational CO2 difference", "missing selection despite a full-qualified plan", "candidate false acceptance and retention", "per-context, population and spread summaries"],
+  "unmatched_rule": "retain every design case; do not turn missing choices into zero regret",
+  "carbon_rule": "compare the operational CO2 attached to the energy-minimizing choices; do not call this a carbon optimum",
+  "dynamic_rule": "do not infer demand-response regret from annual quantile scores",
+  "stop_rule": "complete these three existing rules and both existing split schemes once, verify existing reference outcomes, stop without tuning thresholds",
+  "building_physics_changes": 0,
+  "new_EnergyPlus_runs": 0
+}

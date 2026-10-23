@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "reference_decisions_verified": 6048,
+  "no_new_physical_runs": true,
+  "no_physics_changes": true,
+  "input_sha256": {
+    "implementation/representation_scores.csv.gz": "5eec05d3ada114e915d3f10877df0413c1ac28225fc3177a28d8b544d840f76a",
+    "building/annual_action_library.csv.gz": "cfbcce3bf8bb978611e1ce6394b4dac8a2b4b654e236e21cc56b653842979956",
+    "population/population_assignments_minimized.csv.gz": "ba092d4222abb32557b02fbbb2d0c636456a25a120b9bb6fc02531d2b57cfc38",
+    "human/human_profiles_minimized.csv.gz": "e05575259e36878b9c49c10c86844fd98892fd0dba17e641049d7877cb19ceb4"
+  },
+  "person_disjoint_proof": [
+    {
+      "training": "india_archive_stratum",
+      "heldout": "us_archive_stratum",
+      "train_units": 599,
+      "test_units": 535,
+      "shared_units": 0,
+      "shared_source_buildings": 0
+    },
+    {
+      "training": "us_archive_stratum",
+      "heldout": "india_archive_stratum",
+      "train_units": 535,
+      "test_units": 599,
+      "shared_units": 0,
+      "shared_source_buildings": 0
+    }
+  ]
+}

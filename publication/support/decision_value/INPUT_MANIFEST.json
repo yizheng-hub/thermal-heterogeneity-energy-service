@@ -1,0 +1,17 @@
+{
+  "calculation_inputs": {
+    "implementation/representation_scores.csv.gz": "5eec05d3ada114e915d3f10877df0413c1ac28225fc3177a28d8b544d840f76a",
+    "building/annual_action_library.csv.gz": "cfbcce3bf8bb978611e1ce6394b4dac8a2b4b654e236e21cc56b653842979956",
+    "population/population_assignments_minimized.csv.gz": "ba092d4222abb32557b02fbbb2d0c636456a25a120b9bb6fc02531d2b57cfc38",
+    "human/human_profiles_minimized.csv.gz": "e05575259e36878b9c49c10c86844fd98892fd0dba17e641049d7877cb19ceb4"
+  },
+  "reference_only_after_calculation": {
+    "expected/quantile_decisions_reference.csv.gz": "d3905bbe4567c5e27cedf23a30c22e9ee082d049ad20bfc2877e740aa58b83bc"
+  },
+  "script_sha256": "597eacbf379ed3673c924b7bf5d28954847e0b3660dd9ec22a06dd02c11a5dd2",
+  "source_package_functions": [
+    "building.annual.qualify",
+    "building.annual.choose_minimum_energy",
+    "implementation.protected_quantiles.calibrate_margins"
+  ]
+}

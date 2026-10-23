@@ -1,0 +1,124 @@
+[
+  {
+    "reference_id": "pullinger2021ideal",
+    "authors": [
+      "Pullinger, Martin",
+      "Kilgour, Jonathan",
+      "Goddard, Nigel",
+      "Berliner, Niklas",
+      "Webb, Lynda",
+      "Dzikovska, Myroslava",
+      "Lovell, Heather",
+      "Mann, Janek",
+      "Sutton, Charles",
+      "Webb, Janette",
+      "Zhong, Mingjun"
+    ],
+    "title": "The IDEAL household energy dataset, electricity, gas, contextual sensor data and survey data for 255 UK homes",
+    "journal": "Scientific Data",
+    "year": 2021,
+    "volume": "8",
+    "pages": "146",
+    "doi": "10.1038/s41597-021-00921-y",
+    "url": "https://doi.org/10.1038/s41597-021-00921-y",
+    "evidence_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8163809/",
+    "evidence_summary": "IDEAL combines room conditions, household energy and surveys. The all-household electric stream is apparent power, with separate real-power measurements in enhanced homes.",
+    "supported_claims": [
+      "IDEAL combines room conditions, household energy and surveys. The all-household electric stream is apparent power, with separate real-power measurements in enhanced homes."
+    ],
+    "verification_status": "primary_content_and_metadata_checked",
+    "metadata_source": "https://api.crossref.org/works/10.1038/s41597-021-00921-y",
+    "verified_on": "2026-10-22"
+  },
+  {
+    "reference_id": "nambiar2025",
+    "authors": [
+      "Nambiar, Chitra",
+      "Schiavon, Stefano",
+      "Brager, Gail",
+      "Rosenberg, Samuel"
+    ],
+    "title": "Assessing thermal comfort and participation in residential demand flexibility programs",
+    "journal": "Energy and Buildings",
+    "year": 2025,
+    "volume": "328",
+    "pages": "115153",
+    "doi": "10.1016/j.enbuild.2024.115153",
+    "url": "https://doi.org/10.1016/j.enbuild.2024.115153",
+    "evidence_url": "https://escholarship.org/uc/item/22b1302f",
+    "evidence_summary": "A residential heat-pump field study relates thermal comfort, event duration, delayed temperature response and continued participation. The paper states data are available upon request.",
+    "supported_claims": [
+      "A residential heat-pump field study relates thermal comfort, event duration, delayed temperature response and continued participation. The paper states data are available upon request."
+    ],
+    "verification_status": "primary_content_and_metadata_checked",
+    "metadata_source": "https://api.crossref.org/works/10.1016/j.enbuild.2024.115153",
+    "verified_on": "2026-10-22"
+  },
+  {
+    "reference_id": "christensen2022",
+    "authors": [
+      "Christensen, Louise R.L.",
+      "Broholt, Thea Hauge",
+      "Barthelmes, Verena M.",
+      "Khovalyg, Dolaana",
+      "Petersen, Steffen"
+    ],
+    "title": "A mixed-methods case study on resident thermal comfort and attitude towards peak shifting of space heating",
+    "journal": "Energy and Buildings",
+    "year": 2022,
+    "volume": "276",
+    "pages": "112501",
+    "doi": "10.1016/j.enbuild.2022.112501",
+    "url": "https://doi.org/10.1016/j.enbuild.2022.112501",
+    "evidence_url": "https://doi.org/10.1016/j.enbuild.2022.112501",
+    "evidence_summary": "Three occupied Danish homes underwent four heating interventions. Resident acceptance depended on practices and perceived benefits; low heating demand limited absolute shifting potential.",
+    "supported_claims": [
+      "Three occupied Danish homes underwent four heating interventions. Resident acceptance depended on practices and perceived benefits; low heating demand limited absolute shifting potential."
+    ],
+    "verification_status": "primary_content_and_metadata_checked",
+    "metadata_source": "https://api.crossref.org/works/10.1016/j.enbuild.2022.112501",
+    "verified_on": "2026-10-22"
+  },
+  {
+    "reference_id": "patane2021data",
+    "authors": [
+      "Patane', Elisabetta Maria"
+    ],
+    "title": "Dataset for \"The effects of thermal mass and air-conditioning on summer temperature thermal comfort and occupant behaviour in homes\"",
+    "journal": "University of Bath",
+    "year": 2021,
+    "volume": "",
+    "pages": "",
+    "doi": "10.15125/bath-01077",
+    "url": "https://doi.org/10.15125/bath-01077",
+    "evidence_url": "https://researchdata.bath.ac.uk/1077/",
+    "evidence_summary": "Public CC BY 4.0 residential comfort and behaviour survey with temperature, time, room and household fields. CSV field confirmation yielded 1,328 rows and 27 household IDs; no stable person ID. The README describes ASHRAE Database II formatting.",
+    "supported_claims": [
+      "Public CC BY 4.0 residential comfort and behaviour survey with temperature, time, room and household fields. CSV field confirmation yielded 1,328 rows and 27 household IDs; no stable person ID. The README describes ASHRAE Database II formatting."
+    ],
+    "verification_status": "primary_content_and_metadata_checked",
+    "metadata_source": "https://api.datacite.org/dois/10.15125/bath-01077",
+    "verified_on": "2026-10-22"
+  },
+  {
+    "reference_id": "christensen2022data",
+    "authors": [
+      "Louise Christensen"
+    ],
+    "title": "Mixed-methods data from case study on demand response in three Danish residential buildings",
+    "journal": "Mendeley",
+    "year": 2022,
+    "volume": "",
+    "pages": "",
+    "doi": "10.17632/x482nmbdcj.1",
+    "url": "https://doi.org/10.17632/x482nmbdcj.1",
+    "evidence_url": "https://data.mendeley.com/datasets/x482nmbdcj/1",
+    "evidence_summary": "Public CC BY 4.0 dataset documents indoor conditions, heating energy, thermostat settings, defined interventions and resident questionnaires from three Danish homes. Raw file linkage was not completed in this audit.",
+    "supported_claims": [
+      "Public CC BY 4.0 dataset documents indoor conditions, heating energy, thermostat settings, defined interventions and resident questionnaires from three Danish homes. Raw file linkage was not completed in this audit."
+    ],
+    "verification_status": "primary_content_and_metadata_checked",
+    "metadata_source": "https://api.datacite.org/dois/10.17632/x482nmbdcj.1",
+    "verified_on": "2026-10-22"
+  }
+]

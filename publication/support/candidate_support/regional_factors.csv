@@ -1,0 +1,5 @@
+city,electricity_co2_kg_kwh,gas_co2_kg_kwh_hhv,electricity_price_currency_kwh,gas_price_currency_kwh_hhv,currency,grid_basis,price_basis
+Miami,0.35482807454094,0.1810482350537686,0.10991281,0.0400743729816683,USD,"eGRID2023 FRCC generation CO2, total output",2024 state commercial average revenue/energy; default HHV gas conversion
+NewDelhi,0.727,0.1810482350537686,,,INR,"CEA v20 FY2023-24 Indian grid average incl RES, captive and cross-border adjustment",DERC FY2021-22 >3kVA energy charge 8.50 INR/kVAh; PF and gas price remain scenario inputs
+Seattle_small2019,0.28655017586195,0.1810482350537686,0.099914832,0.0345204972240429,USD,"eGRID2023 NWPP generation CO2, total output",2024 state commercial average revenue/energy; default HHV gas conversion
+PortAngeles_small2019,0.28655017586195,0.1810482350537686,0.099914832,0.0345204972240429,USD,"eGRID2023 NWPP generation CO2, total output",2024 state commercial average revenue/energy; default HHV gas conversion

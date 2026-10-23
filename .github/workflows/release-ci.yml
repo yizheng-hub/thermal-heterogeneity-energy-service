@@ -1,0 +1,58 @@
+name: scientific-code-ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-and-numerics:
+    name: Source-only checks / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11.15"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.13.4"
+          enable-cache: false
+      - name: Install frozen numerical and test dependencies
+        run: uv sync --frozen --extra test
+      - name: Verify exact source-only Git boundary
+        run: |
+          uv run python scripts/check_release_layout.py --root .
+          uv run python scripts/check_git_release.py --root . --require-clean
+          uv run python scripts/release_scan.py --root . --mode licence-privacy
+          uv run python scripts/release_scan.py --root . --mode paths-identifiers
+          uv run python scripts/release_scan.py --root . --mode portability
+      - name: Verify scientific provenance and model contracts
+        run: |
+          uv run python scripts/validate_source_manifest.py data/source_manifest.csv --require-no-unknown
+          uv run python scripts/check_script_migration.py --inventory protocol/RETAINED_SCRIPT_INVENTORY.csv --map protocol/SCRIPT_MIGRATION_MAP.json --expect 43
+          uv run python scripts/validate_energyplus_manifest.py configs/energyplus_runs.csv --baseline-reuse configs/energyplus_dynamic_baseline_reuse.csv --contract configs/energyplus_level2_contract.json
+      - name: Check code and read-only replay plan
+        run: |
+          uv run ruff check .
+          uv run python -m compileall -q src scripts ctl plot publication tests
+          uv run python ctl/reproduce.py --plan
+      - name: Run numeric contracts and synthetic end-to-end smoke
+        run: uv run pytest -q --ignore=tests/contracts/test_figure_render_core.py --ignore=tests/contracts/test_main_figures_1_3.py --ignore=tests/contracts/test_figures_4_6.py
+      - name: Install checksum-verified Gitleaks
+        run: uv run python scripts/install_gitleaks.py --destination "${{ runner.temp }}/gitleaks"
+      - name: Scan index, staged changes and history on Linux
+        if: runner.os == 'Linux'
+        run: uv run python scripts/scan_secrets.py --gitleaks "${{ runner.temp }}/gitleaks/gitleaks"
+      - name: Scan index, staged changes and history on Windows
+        if: runner.os == 'Windows'
+        run: uv run python scripts/scan_secrets.py --gitleaks "${{ runner.temp }}/gitleaks/gitleaks.exe"

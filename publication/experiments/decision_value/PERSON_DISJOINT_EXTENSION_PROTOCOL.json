@@ -1,0 +1,15 @@
+{
+  "declared_before_new_split_results": true,
+  "motivation": "The existing composition-label holdout reuses some archive units. US and India archive strata are disjoint and permit a stricter calibration-transfer check without changing physical plans.",
+  "split_scheme": "cross_country_person_disjoint_transfer",
+  "directions": ["India-only calibration to US-only evaluation", "US-only calibration to India-only evaluation"],
+  "excluded_from_training_and_testing": "multinational_source_balanced, because it overlaps both country strata",
+  "rules": [["quantile5", "pooled_q95"], ["quantile5", "pooled_q90"], ["quantile3", "pooled_q90"]],
+  "same_other_contracts": "Same original 7 spreads, 4 budgets, 3 seeds, 4 contexts, candidate scores, action library, eligibility tolerance and selection rule",
+  "independence": "No release_unit_id used by the held-out stratum occurs in margin calibration. No source building is shared across these country strata. This does not establish independent real-building validation. The candidate library remains the original common finite library.",
+  "expected_test_cases_per_direction": 336,
+  "threshold_adjustment": false,
+  "new_EnergyPlus_runs": 0,
+  "building_physics_changes": 0,
+  "stop_rule": "Execute both directions for all three existing rules. Preserve errors and gaps. Do not refit the margin quantile to this test."
+}

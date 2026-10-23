@@ -1,0 +1,12 @@
+* text=auto eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+
+# Frozen checksum contracts retain their exact published bytes on every host.
+publication/support/** -text
+data/source_building_bundle_manifest.csv -text
+data/** -text

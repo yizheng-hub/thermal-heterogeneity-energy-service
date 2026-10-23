@@ -1,0 +1,121 @@
+{
+  "version": "2026-10-22",
+  "purpose": "Incremental implementation-cost sensitivity under unchanged building equipment, operating permissions and service requirements.",
+  "costs_are": "Analyst-defined scenarios, not observed implementation costs or literature-derived cost ranges.",
+  "currency": "USD",
+  "wage_region": "United States national illustration, not city-specific wages or Indian wages.",
+  "wage_year": 2025,
+  "wage_profiles": {
+    "median": {
+      "facility_usd_per_hour": 51.28,
+      "respondent_usd_per_hour": 24.51
+    },
+    "mean": {
+      "facility_usd_per_hour": 56.2,
+      "respondent_usd_per_hour": 33.54
+    }
+  },
+  "wages_include": "Wages only. Employer benefits, overhead, inflation and tax adjustments are not added.",
+  "lifetime_years": 5,
+  "discount_rate": 0.03,
+  "common_cost_rule": "Existing feedback and upstream demand reconstruction are common to the controls and cancel. Only explicitly assumed additional effort or charges enter the comparison.",
+  "population_rule": "Feedback counts are total additional completed responses per building per year. They are not inferred from 267 simulated profiles, occupied headcount or 19 synthetic LTPref scenes.",
+  "hardware_rule": "Baseline sensitivity has zero hardware additions. The optional interface scenario prices an added implementation interface with unchanged equipment and control zones. It does not price new zoning or attribute untested energy benefits to a retrofit.",
+  "nominal_price_rule": "Retained historical energy tariff proxies and May 2025 US wage anchors are separate sensitivity inputs. These are not observed, inflation-aligned building expenditures.",
+  "grid": {
+    "setup_hours": [
+      0,
+      8,
+      40
+    ],
+    "annual_maintenance_hours": [
+      0,
+      4,
+      12
+    ],
+    "feedback": [
+      [
+        0,
+        0
+      ],
+      [
+        1000,
+        15
+      ],
+      [
+        1000,
+        60
+      ]
+    ],
+    "annual_software_usd": [
+      0,
+      500
+    ],
+    "added_interface_capital_usd": [
+      0
+    ]
+  },
+  "named_packages": [
+    {
+      "name": "information_reuse",
+      "setup_hours": 0,
+      "annual_maintenance_hours": 0,
+      "extra_responses_year": 0,
+      "seconds_per_response": 0,
+      "annual_software_usd": 0,
+      "added_interface_capital_usd": 0
+    },
+    {
+      "name": "existing_bms_light",
+      "setup_hours": 8,
+      "annual_maintenance_hours": 4,
+      "extra_responses_year": 0,
+      "seconds_per_response": 0,
+      "annual_software_usd": 0,
+      "added_interface_capital_usd": 0
+    },
+    {
+      "name": "existing_bms_feedback",
+      "setup_hours": 8,
+      "annual_maintenance_hours": 4,
+      "extra_responses_year": 1000,
+      "seconds_per_response": 15,
+      "annual_software_usd": 0,
+      "added_interface_capital_usd": 0
+    },
+    {
+      "name": "supported_feedback",
+      "setup_hours": 40,
+      "annual_maintenance_hours": 12,
+      "extra_responses_year": 1000,
+      "seconds_per_response": 30,
+      "annual_software_usd": 500,
+      "added_interface_capital_usd": 0
+    },
+    {
+      "name": "optional_interface",
+      "setup_hours": 40,
+      "annual_maintenance_hours": 12,
+      "extra_responses_year": 1000,
+      "seconds_per_response": 30,
+      "annual_software_usd": 500,
+      "added_interface_capital_usd": 1000
+    }
+  ],
+  "sources": [
+    {
+      "title": "National employment and wage data by occupation, May 2025, Table 1",
+      "url": "https://www.bls.gov/news.release/ocwage.t01.htm",
+      "verified": "2026-10-22",
+      "supports": "Facilities managers mean $56.20/hour and median $51.28/hour. All occupations mean $33.54/hour and median $24.51/hour.",
+      "reference_id": "bls_facilities2025"
+    },
+    {
+      "title": "Building Controls Roundtable: Report for Emerging Technologies, June 2024",
+      "url": "https://www.energy.gov/sites/default/files/2024-06/bto-building-controls-rt_report-for-et_june2024.pdf",
+      "verified": "2026-10-22",
+      "supports": "Integration, commissioning, training and ongoing operation are real implementation tasks. It does not establish any of the hours or dollar amounts in the analyst grid.",
+      "reference_id": "doe_controls2024"
+    }
+  ]
+}

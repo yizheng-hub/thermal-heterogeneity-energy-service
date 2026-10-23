@@ -1,0 +1,14 @@
+{
+  "asset": "ne_110m_land.geojson",
+  "dataset": "Natural Earth 1:110m Land",
+  "theme_version": "4.0.0",
+  "repository_snapshot_version": "5.2.0-pre",
+  "repository_commit": "ca96624a56bd078437bca8184e78163e5039ad19",
+  "source_url": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/ca96624a56bd078437bca8184e78163e5039ad19/geojson/ne_110m_land.geojson",
+  "official_download_page": "https://www.naturalearthdata.com/downloads/110m-physical-vectors/",
+  "terms_url": "https://www.naturalearthdata.com/about/terms-of-use/",
+  "licence": "Public domain",
+  "sha256": "9e0729ee253ca7d7a5c4ae9395fb1902264c5377c52e224d13dd85010e2835d9",
+  "size_bytes": 138160,
+  "modifications": "None; byte-identical pinned GeoJSON snapshot."
+}

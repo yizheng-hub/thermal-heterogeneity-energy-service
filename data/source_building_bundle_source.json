@@ -1,0 +1,14 @@
+{
+  "dataset": "source_building_robustness",
+  "input_files": 425,
+  "hourly_trajectories": 416,
+  "archive": "source_building_robustness.tar.zst",
+  "sha256": "654b972c61b28412b30220a107de0926b897934b35a202c9fcb1acaaac4483a5",
+  "bytes": 262084820,
+  "manifest_sha256": "f1ae7897e81ab5035ec49b8fad5080bd9a34bdd63510893d08740d097c6e5915",
+  "new_physical_runs": 0,
+  "source_protocol_sha256": "c086abe4da70fd4f76bf976229341a4920117cf1d6c648fe3dcbd9f78b626e27",
+  "data_role": "Frozen hourly inputs and minimized archive demands; outcomes recomputed by public code.",
+  "data_url": null,
+  "public_deposit_performed": false
+}

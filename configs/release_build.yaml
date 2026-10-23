@@ -1,0 +1,141 @@
+release_id: level1_minimized_20261022_v1
+release_seed: thermal-heterogeneity-level1-20261022-5d7c9e31
+source_project_root: ../..
+schema: configs/data_schemas.yaml
+manifest: data/analysis_bundle_manifest.csv
+codebook: data/FIELD_CODEBOOK.csv
+provenance: data/TRANSFORM_PROVENANCE.csv
+
+sources:
+  canonical_office:
+    path: results/phase2_human_input/canonical_office_cohort.csv.gz
+    sha256: 380096b137ed09b84217eeb40cde27606556126046686beacd453a6b2ea77a27
+  ltpref:
+    path: results/g1c_full_archive_virtual_ltpref/full_21418_19q_griffiths_anchored_v4/main_control_eligible_records.csv.gz
+    sha256: a1b81f3bcf2e9038c114b2f42a9e224743d5aeb1eb8e25f31e47ebd13e8274be
+  nus_windows:
+    path: results/external_human_validation/direct_vote_jensen_20261021_v1/humans_as_sensor_windows_30min.csv
+    sha256: 00259b3b59587a718419aa256d4b66f840d7e11bfd4beb1a01c9964f4d4f702f
+  enth_windows:
+    path: results/external_human_validation/direct_vote_jensen_20261021_v1/enth_windows_30min.csv
+    sha256: c587d26d89e175e6d1b1ffd377c209a4c804b79c3a5f7aaf2f7f79cb8ac35c61
+  regional_predictions:
+    path: results/regional_response_model_20261021_v2/OUTER_GROUP_PREDICTIONS.csv.gz
+    sha256: 025b90ba4d0d3922b0e954b670eb48e4452d7fd2dda3a7faa64178b7dbcaadcc
+  service_curve:
+    path: results/phase2_human_input/service_curve_source_equal.csv
+    sha256: e017fc5097d592fef9d79e8576ae2e595e32c3c3b1cfc07aeb7901d7cd0b4dbf
+  policy_lock:
+    path: results/policy_guidance_rebuild_20261021_v1/POLICY_SOURCE_LOCK.csv
+    sha256: ad21fcf14d5303b12f02684108f638b2e47aebbafad2c31fab888c3b109c0c91
+  policy_estimates:
+    path: results/policy_guidance_rebuild_20261021_v1/BILATERAL_RANGE_ESTIMATES.csv
+    sha256: 8d2385a253affbc5442207bad7b5914c6f08c2c2518128e900df6a3c8fef1d39
+  policy_support:
+    path: results/policy_guidance_rebuild_20261021_v1/SUPPORT_AND_SCOPE_TABLE.csv
+    sha256: 44a0055a69e8953fd3ac4ec92c0d7cb2303396e3b4f83da4c3cfdcc8de542b26
+  assignments:
+    path: results/final_nature_pipeline_20261021/stage2/FROZEN_RANDOM_MIXING_ASSIGNMENTS.csv.gz
+    sha256: bdc1c51d2dfa16f632fa07ead9caa025437e678bc5c9e376b111bd9aa23feba4
+  fixed_tails:
+    path: results/final_nature_pipeline_20261021/stage2/FROZEN_FIXED_TAIL_IDS.csv
+    sha256: c6be210e536b85902c495aa0ac68502d8c1a10291e0c79261cea1ec97ab652f7
+  annual_anchors:
+    path: results/final_nature_pipeline_20261021/stage2/FROZEN_ANNUAL_ANCHORS.csv
+    sha256: f7ee105e618dfd08070b2190d0943ef7681036aac5f9d897a0c84472c7339b00
+  dynamic_anchors:
+    path: results/final_nature_pipeline_20261021/stage2/FROZEN_DYNAMIC_ANCHORS.csv
+    sha256: a604e443df30b6d0f0e11d09cdade7bea9867042351f558deb5e6a4f44722328
+  annual_scores:
+    path: results/final_nature_pipeline_20261021/stage2/GATE2_ANNUAL_SCORES.csv.gz
+    sha256: 8f8b93f234b42df0b093c671d6ba8f17d7d4089aa3c7887ec790f1e24a671cda
+  dynamic_scores:
+    path: results/final_nature_pipeline_20261021/stage2/GATE2_DYNAMIC_SCORES.csv.gz
+    sha256: 46cb960fe61208677267bd78a41064a3bdaf21e64b722398c11d03c801421cbd
+  annual_decisions:
+    path: results/final_nature_pipeline_20261021/stage2/GATE2_ANNUAL_DECISIONS.csv
+    sha256: 2b227bc6672a34148745d3218963aeb8434b5dd4884afbbaa289284527a37269
+  dynamic_decisions:
+    path: results/final_nature_pipeline_20261021/stage2/GATE2_DYNAMIC_DECISIONS.csv
+    sha256: 3bdd24102b37736d4a89a13a658676d4f9ca90d469b6d9e1844650561ec7bbba
+  failure_ledger:
+    path: results/paper_completion_20261021_v1/regional_population_offline_audit_20261021_v1/FAILURE_AND_UNMATCHED_LEDGER.csv
+    sha256: 67d56636df053318eb53eb60281434d6c6a6bee49e763588861b07a4df8cc729
+  nonpositive_actions:
+    path: results/paper_completion_20261021_v1/regional_population_offline_audit_20261021_v1/DYNAMIC_NONPOSITIVE_RESPONSE_ACTIONS.csv
+    sha256: f7d313acb7ff0807cf2fc02a1f2e4b51189c2ace7e66c741be672559f1b4404d
+  three_definition_matches:
+    path: results/three_control_main/balanced_retargeted_sensitivity_20261021_v1/PRIMARY_COMMON_SERVICE_MATCHES.csv
+    sha256: 8ea5f23569cea9734f2f389c7a43ee907be93015b52bd2d8424b7bc4106c6d19
+  demand_anchors:
+    path: results/three_control_main/balanced_retargeted_sensitivity_20261021_v1/DEMAND_DEFINITION_ANCHORS.csv
+    sha256: 68c26af0ccf4acdf64dfeb47e508bc0314f83eda4de78a481e0521b727faa817
+  carrier_reallocation:
+    path: results/three_control_main/balanced_retargeted_sensitivity_20261021_v1/DIRECTION_CHANGE_SOURCE_DECOMPOSITION.csv
+    sha256: e32597fe0857886f214262c9383773bcac691f01f23494cdb75605f2f6dcc488
+  regional_carbon_cost:
+    path: results/three_control_main/balanced_retargeted_sensitivity_20261021_v1/BALANCED_REGIONAL_CARBON_AND_COST.csv
+    sha256: 95b8589b0187ba7d5995d7746fd87c3fbf15677b27e3bc40b70073ac9b064a08
+  regional_factors:
+    path: results/three_control_main/regional_carbon_management_economics_20261020_v1/REGIONAL_FACTORS.csv
+    sha256: af179fd4573caabb0ecfb33e6554572c021a511934f4633683a805999510fe20
+  carbon_contract:
+    path: results/three_control_main/regional_carbon_management_economics_20261020_v1/FACTOR_AND_BOUNDARY_CONTRACT.json
+    sha256: 90f4fd6e2c015deae8ca4d9d35dc3c859cba78b955d28385cb46c56829561a34
+  representation_scores:
+    path: results/mean_sufficiency_phase_map_20261021_v1/REPRESENTATION_SCORES.csv.gz
+    sha256: 9935813b09ea6b4bf4bab0984530ad3bbd881822d9005c8655a3865e51ea1fd5
+  phase_protocol:
+    path: results/mean_sufficiency_phase_map_20261021_v1/PROTOCOL_LOCK_BEFORE_SCORING.json
+    sha256: 1d5cab0e74e73dc1c54631210aeaa8208d9bb046055ad543cec41feb06c33390
+  phase_reference:
+    path: results/mean_sufficiency_phase_map_20261021_v1/DECISION_PHASE_MAP.csv
+    sha256: c3a3c8b7fdbb6545ad571af219f6b6d49add67c3d61b7c814c22622d45a9e972
+  quantile_protocol:
+    path: results/quantile_safety_certification_20261021_v1/PROTOCOL_LOCK.json
+    sha256: bb83f340a48e9a8764e2809bf4aed2658229296eb27dc7bb37ce365e559e5781
+  quantile_margins:
+    path: results/quantile_safety_certification_20261021_v1/FOLD_MARGINS.csv
+    sha256: bd2bda737737949348a33e185944fc5961ab62b0f88802a0043d208a04ec1cf8
+  quantile_gate:
+    path: results/quantile_safety_certification_20261021_v1/CERTIFICATION_GATE.csv
+    sha256: cd372f818d2aa557a6fc7345248eadefe4cbea5820002c212f406eb587d860fd
+  quantile_decisions:
+    path: results/quantile_safety_certification_20261021_v1/DECISION_CERTIFICATION.csv.gz
+    sha256: 7783546ac208939be2c2e2422cf6c7cf98307d23d281735f53348a5daeba48c1
+  quantile_summary:
+    path: results/quantile_safety_certification_20261021_v1/SUMMARY.json
+    sha256: ebf53c0a73c20b20c8486d4da184586903a6782c03cda231abfdf53e5570c845
+  local_protocol:
+    path: results/local_update_learning_curve_20261021_v1/PRE_RUN_PROTOCOL.json
+    sha256: a87bef43ff3332f6e95acfad478444472a02e1f880839fcb1f79d814adaf6453
+  local_summary:
+    path: results/local_update_learning_curve_20261021_v1/LEARNING_CURVE_SUMMARY.csv
+    sha256: efef05739f830d4c7bf5ba083e05655354a45d081704c921972fdda6674b2d74
+  local_claim:
+    path: results/local_update_learning_curve_20261021_v1/CLAIM_DECISION.json
+    sha256: fb1a6fbe3813f518f052676fbaf250986a3457369ed1022271326329fdf4a1a2
+  city_support:
+    path: results/final_nature_pipeline_20261021/stage2/FIG1BC_CITY_SEASON_DEMAND_CENTER_SUPPORT.csv
+    sha256: b6985c1d806fa15eb0223b5976874f80a0a0a85f26a36a0f3a1e36e8d0d945f7
+  hierarchy_quantiles:
+    path: results/final_nature_pipeline_20261021/stage2/FIG1D_CITY_SOURCE_SEASON_P10_P90.csv
+    sha256: 4fd8fd463f1cfe29917f912dd6a9f214b6333554cb65a0b789364ee2cf26aad5
+  event_power_curves:
+    path: results/paper_completion_20261021_v1/dynamic_flex/EVENT_AND_RECOVERY_HOURLY_CURVES.csv.gz
+    sha256: efc3eb49688aa70c0bc95fdd53381b17652b40006f69063fabc108588e124075
+  event_temperature_service:
+    path: results/final_nature_pipeline_20261021/stage2/FIG5C_HOURLY_TEMPERATURE_SERVICE.csv.gz
+    sha256: 9a835095cdbcb5995daf84676065c8a35da20b267acb85ef3b0095a68e7ebf28
+  event_zone_temperature:
+    path: results/final_nature_pipeline_20261021/stage2/FIG5C_HOURLY_ZONE_TEMPERATURE.csv.gz
+    sha256: 39311e979a9b344ce62def7e563551fba3b36c1ea39222d02f2c65ecac3736c1
+  gate2_protocol:
+    path: results/final_nature_pipeline_20261021/stage2/PRE_RUN_PROTOCOL.json
+    sha256: 599edd1df3f6ffa23ccd3cd20fc744cb5aa65f45c048d56632e3f6541606d726
+  gate2_summary:
+    path: results/final_nature_pipeline_20261021/stage2/GATE2_SCIENTIFIC_SUMMARY.json
+    sha256: 83e2a44e6970526916f8888a1aec51ef93b5b179ec9a645d60609cdb1523ebe5
+  panel_materialization_support:
+    path: results/final_nature_pipeline_20261021/stage4/PANEL_MATERIALIZATION_SUPPORT.json
+    sha256: e84c5b286aeefd861d299c52c6acf2ec3adda78fd18ae7797b2113dd3fd09ed6

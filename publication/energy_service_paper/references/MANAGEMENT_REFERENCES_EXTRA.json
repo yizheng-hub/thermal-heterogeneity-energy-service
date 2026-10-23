@@ -1,0 +1,19 @@
+[
+  {
+    "authors": [
+      "US Department of Energy"
+    ],
+    "title": "Building Controls Roundtable Report for Emerging Technologies",
+    "journal": "Building Technologies Office",
+    "year": 2024,
+    "url": "https://www.energy.gov/sites/default/files/2024-06/bto-building-controls-rt_report-for-et_june2024.pdf",
+    "evidence_url": "https://www.energy.gov/sites/default/files/2024-06/bto-building-controls-rt_report-for-et_june2024.pdf",
+    "verification_status": "primary_content_checked",
+    "supported_claims": [
+      "Building-control implementation involves commissioning, management processes and operator training."
+    ],
+    "evidence_summary": "The official June 2024 report, pages 7–8 and 11, discusses commissioning, operation, training and deployment expertise. No generic savings figure is transferred to this study.",
+    "verified_on": "2026-10-22",
+    "reference_id": "doe_controls2024"
+  }
+]

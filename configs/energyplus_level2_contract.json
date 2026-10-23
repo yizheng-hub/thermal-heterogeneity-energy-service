@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "level": "Level 2",
+  "scope": "frozen EnergyPlus trajectory reproduction only",
+  "energyplus_version": "22.1.0-ed759b17ee",
+  "run_counts": {
+    "annual": 346,
+    "event": 66,
+    "total": 412,
+    "dynamic_baselines_reused_from_annual": 33
+  },
+  "input_package": {
+    "package_id": "level2-local-assets-v1",
+    "rights_manifest": "LEVEL2_RIGHTS.json",
+    "idf_directory": "idf",
+    "epw_directory": "epw",
+    "distribution": "not distributed; supplied locally after the user confirms upstream rights"
+  },
+  "engineering_gate": {
+    "gate_id": "LEVEL2_TRAJECTORY_GATE_V1",
+    "requirements": [
+      "EnergyPlus version is exactly 22.1.0-ed759b17ee",
+      "process exit code is zero",
+      "eplusout.end reports EnergyPlus Completed Successfully",
+      "eplusout.err reports zero severe and zero fatal errors"
+    ]
+  },
+  "historical_annual_generator": {
+    "frozen_package_recorded_sha256": "c1b0c7a94cfd906568aa9f9f3367120badd299ac2bc7daa73e58a4469ab96c63",
+    "later_working_tree_sha256": "433e5cc2702df509a6e93d74acbe18abd19d0a76de82506295cf3ee259387070",
+    "snapshot_available": false,
+    "boundary": "Level 2 reruns frozen IDF/EPW trajectories; it does not regenerate the historical action library."
+  }
+}

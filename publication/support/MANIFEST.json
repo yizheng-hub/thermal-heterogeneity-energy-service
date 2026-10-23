@@ -1,0 +1,114 @@
+[
+  {
+    "path": "support/decision_value/INPUT_MANIFEST.json",
+    "sha256": "c8bc9e89b91d68b2a98d23326997218a66bbd383d44a45b07be9d100d7f2e14e",
+    "rows": 1,
+    "input_kind": "reference_only_after_recomputation",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/decision_value/MAIN_FIG6G_Q5_REGRET.csv",
+    "sha256": "503f7c9ccfda5c5755b857d36d121954304845278265cedf9df626c1015f1664",
+    "rows": 1008,
+    "input_kind": "reference_only_after_recomputation",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/decision_value/QA.json",
+    "sha256": "55bc9d3728825b57a5fbf34c2f7e43aba99a11b0707e602798aa07b03edf77aa",
+    "rows": 1,
+    "input_kind": "reference_only_after_recomputation",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/decision_value/TABLE_S17_PROTECTED_QUANTILE_TRANSFER.csv",
+    "sha256": "f100a59d6ba065c840e1f2ca0c62f109d673ac6ce2d91f3a12f61210919fdc28",
+    "rows": 6,
+    "input_kind": "reference_only_after_recomputation",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/science_audit/demographic_city_season_age_summary.csv",
+    "sha256": "11ef3dca3d9e5221986c6fa54b6876ea86d27c3d486ae0a0a88e723ca5984366",
+    "rows": 88,
+    "input_kind": "frozen_aggregate_or_design_scenario_summary",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/science_audit/demographic_city_season_gender_summary.csv",
+    "sha256": "8bb76b9ff9ce4e12eeec4f19068e23af867508724beb675ac7a39f4fe02f2128",
+    "rows": 76,
+    "input_kind": "frozen_aggregate_or_design_scenario_summary",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/science_audit/demographic_coverage.csv",
+    "sha256": "a2ce20f2ce446096c2c633eb7b5d22fa66c25382dd2ae21f43060e9b8d3811fe",
+    "rows": 2,
+    "input_kind": "frozen_aggregate_or_design_scenario_summary",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/science_audit/false_accept_exceedance_cells.csv",
+    "sha256": "828931c24f17f6f9f5a2531d182d805e749d95caf24e28a9d4d78b2161e892e7",
+    "rows": 117,
+    "input_kind": "frozen_aggregate_or_design_scenario_summary",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/science_audit/variance_recheck.csv",
+    "sha256": "35dd21a36aaa70e038a790766b8477cf3394ab979b65b5133fcd21bd61e0b463",
+    "rows": 10,
+    "input_kind": "frozen_aggregate_or_design_scenario_summary",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/spatial_audit/metrics_summary.csv",
+    "sha256": "f2db678c56f6b9b7fdc2fd7da6b03139618bae2ec46431d0cd3e0d062cb30d5d",
+    "rows": 27,
+    "input_kind": "frozen_aggregate_or_design_scenario_summary",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/spatial_audit/oof_predictions.csv",
+    "sha256": "e801b4922ab9747da68fbb3179be542ee23aceddde0ed9c3621c606dca8573df",
+    "rows": 495,
+    "input_kind": "frozen_aggregate_or_design_scenario_summary",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/spatial_audit/paired_cluster_bootstrap_vs_mean.csv",
+    "sha256": "8f947bf1ee4d3bf8a13f75023caaa223745daa41d014e19c332a442b9002989d",
+    "rows": 18,
+    "input_kind": "frozen_aggregate_or_design_scenario_summary",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/candidate_support/candidate_scores.csv",
+    "sha256": "8885f3b965b27092cfb393fea7fb9a0d976816b8517586c59f9cde52942476bd",
+    "rows": 7740,
+    "input_kind": "frozen_candidate_scores_anchors_or_accounting_factors",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/candidate_support/INPUT_MANIFEST.json",
+    "sha256": "6511e98390b074fac9bb063db50494f02b21dd9e1bbcb1ebc3624136dfcb75d9",
+    "rows": 1,
+    "input_kind": "frozen_candidate_scores_anchors_or_accounting_factors",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/candidate_support/regional_factors.csv",
+    "sha256": "00d6f06c99dd76a51d03a9ad2e2e7d90646e41faece5623be81f3173c94cb299",
+    "rows": 4,
+    "input_kind": "frozen_candidate_scores_anchors_or_accounting_factors",
+    "raw_human_records": false
+  },
+  {
+    "path": "support/candidate_support/service_anchors.csv",
+    "sha256": "208d047f9939008995f3231c25aa3190e7ae5c54fb13dfbbb7e35b8bac70ee24",
+    "rows": 180,
+    "input_kind": "frozen_candidate_scores_anchors_or_accounting_factors",
+    "raw_human_records": false
+  }
+]

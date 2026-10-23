@@ -1,0 +1,13 @@
+{
+  "status": "ARCHIVE_BUILT",
+  "archive": "energy_service_comparison_20261023_v2.tar.zst",
+  "sha256": "eb1b47c3a2377613f5e156bad059df8557d6bd370ebc23cd5b99d9c0331475da",
+  "bytes": 327931485,
+  "manifest_sha256": "1ec1b20ffa4f884e0a8176b9fc54d40657165224e56ae0537d1763423b14f4d4",
+  "files": 406,
+  "hourly_trajectories": 380,
+  "analysis_inputs_minimized": true,
+  "physical_input_assets_included": false,
+  "raw_human_identifiers_included": false,
+  "public_deposit_url": null
+}

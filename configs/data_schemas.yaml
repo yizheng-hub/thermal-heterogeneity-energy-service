@@ -1,0 +1,212 @@
+schema_version: 2
+status: R2_MATERIALIZED_LEVEL1_CONTRACT
+amendment: R2_STABLE_LOCAL_UPDATE_SAMPLING_ORDER_20261022
+materialized_contract_index: configs/release_table_contracts.csv
+default_rules:
+  fail_on_extra_columns: true
+  require_stable_row_order: true
+  require_nonempty_table: true
+  identifiers_must_be_release_generated: true
+  reversible_identifier_hashes_allowed: false
+  exact_participant_time_allowed: false
+  exact_coordinates_allowed: false
+  real_room_names_allowed: false
+  raw_demographics_allowed: false
+  private_crosswalks_allowed: false
+  release_identifier_pattern: "^[a-z]{2}_[a-z2-7]{24}$"
+  forbidden_working_fields:
+    - subject_id
+    - user_id
+    - analysis_unit_id
+    - source_id
+    - building_id
+    - participant_timestamp
+    - latitude
+    - longitude
+    - room_name
+    - record_id
+    - synthetic_person_id
+    - virtual_profile_id
+    - contributor
+    - age
+    - gender
+    - lat
+    - lon
+
+semantic_checks:
+  - all locked source byte hashes equal configs/release_build.yaml
+  - every materialized byte hash equals data/analysis_bundle_manifest.csv
+  - every CSV header equals the hash in configs/release_table_contracts.csv
+  - every primary key is complete and unique
+  - release identifiers use keyed deterministic IDs and no crosswalk exists
+  - human demand-envelope lower-centre-upper ordering is valid
+  - executable interval lower-upper ordering and explicit centre-inside flags are valid
+  - direct-vote counts sum to vote_count and exact time/room keys are absent
+  - regional preference probabilities sum to one
+  - regional rows carry non-semantic group, unit and source-row ranks that exactly reproduce the locked local-feedback draw order
+  - frozen local-update sampling plan has 200 repetitions and unique nested first-40 unit draws for every eligible held-out group
+  - population interval bounds contain demand centre
+  - annual and dynamic action libraries retain carrier and recovery outcomes
+  - failed unmatched unresolved non-positive and adverse outcomes are retained
+  - map coordinates are coarsened to half-degree bin centres
+  - no payload contains a machine-specific absolute path
+
+tables:
+  human_profiles_minimized:
+    release_tier: ZENODO_DERIVED_MINIMIZED
+    required_columns:
+      release_profile_id: string
+      geographic_stratum: string
+      demand_centre_c: float64
+      demand_lower_c: float64
+      demand_upper_c: float64
+      model_version: string
+    semantic_rules:
+      - demand_lower_c <= demand_centre_c <= demand_upper_c
+      - release_profile_id is newly generated and non-reversible
+
+  ltpref_intervals_minimized:
+    release_tier: ZENODO_DERIVED_MINIMIZED
+    required_columns:
+      release_profile_id: string
+      interval_lower_c: float64
+      interval_centre_c: float64
+      interval_upper_c: float64
+      virtual_model_derived: bool
+      algorithm_version: string
+    semantic_rules:
+      - interval_lower_c <= interval_upper_c
+      - reference_centre_inside_executable explicitly records hardware clipping
+      - virtual_model_derived must be true
+
+  direct_vote_windows_sanitized:
+    release_tier: GITHUB_DERIVED_AGGREGATE_ONLY
+    required_columns:
+      anonymous_window_id: string
+      vote_count: int64
+      disagreement_present: bool
+      simultaneous_warmer_cooler: bool
+      jensen_gap: float64
+    semantic_rules:
+      - no exact date, time, coordinates, floor, space or room labels
+
+  regional_holdout_predictions_minimized:
+    release_tier: ZENODO_DERIVED_MINIMIZED
+    required_columns:
+      split: string
+      held_out_group_id: string
+      sampling_group_rank: int64
+      sampling_unit_rank: int64
+      sampling_group_row_rank: int64
+      release_record_id: string
+      release_unit_id: string
+    semantic_rules:
+      - sampling ranks are zero-based, stable and unique at their documented levels
+      - ranks have no identity meaning and publish no raw identifier or crosswalk
+
+  local_update_sampling_plan:
+    release_tier: ZENODO_DERIVED_MINIMIZED
+    required_columns:
+      split: string
+      sampling_group_rank: int64
+      repetition: int64
+      feedback_position: int64
+      sampling_unit_rank: int64
+      sampling_group_row_rank: int64
+    semantic_rules:
+      - each eligible held-out group has 200 repetitions with feedback_position 0 through 39
+      - each repetition selects 40 distinct sampling_unit_rank values
+      - every selected row rank resolves exactly once in regional_holdout_predictions_minimized
+      - nested feedback sets use the first 5, 10, 20 or 40 positions without regenerating an RNG key from release identifiers
+
+  population_assignments_minimized:
+    release_tier: ZENODO_DERIVED_MINIMIZED
+    required_columns:
+      scenario_id: string
+      composition_seed: int64
+      zone_id: string
+      assignment_order: int64
+      release_profile_id: string
+    semantic_rules:
+      - no link to an upstream participant or archive record
+      - demand_centre_inside_executable explicitly records hardware clipping
+
+  annual_action_library:
+    release_tier: GITHUB_DIRECT
+    required_columns:
+      context_id: string
+      physical_action_id: string
+      carrier: string
+      purchased_site_energy_kwh: float64
+      run_hash: string
+    semantic_rules:
+      - uses logical run identifiers only
+
+  dynamic_action_library:
+    release_tier: GITHUB_DIRECT
+    required_columns:
+      context_id: string
+      physical_action_id: string
+      event_id: string
+      event_power_kw: float64
+      recovery_window_h: float64
+      run_hash: string
+    semantic_rules:
+      - event and recovery outcomes are both retained
+
+  decision_failure_ledger:
+    release_tier: GITHUB_DIRECT
+    required_columns:
+      decision_id: string
+      representation: string
+      selected_action_id: string
+      qualification_status: string
+      failure_reason: string
+    semantic_rules:
+      - failed, unmatched, non-positive and adverse outcomes are preserved
+
+  regional_factor_contract:
+    release_tier: GITHUB_DIRECT
+    required_columns:
+      factor_id: string
+      geography: string
+      factor_type: string
+      value: float64
+      unit: string
+      source_year: string
+      source_locator: string
+      extraction_locator: string
+      upstream_hash: string
+    semantic_rules:
+      - historic tariff proxies are explicitly labelled
+
+  figure_panel_data:
+    release_tier: GITHUB_DIRECT
+    required_columns:
+      figure_id: string
+      panel_id: string
+      datum_id: string
+      value: float64
+      unit: string
+      producing_step: string
+    semantic_rules:
+      - every main panel has machine-readable source data
+
+  panel_materialization_support:
+    release_tier: GITHUB_DIRECT
+    required_fields:
+      - schema
+      - method_lock
+      - direct_vote_row_flow
+      - direct_vote_window_summary
+      - direct_vote_window_sensitivity
+      - direct_vote_primary_bootstrap
+      - opposed_window_temperature_spread
+      - target_delta_distributions
+      - hierarchy_variance_robustness
+      - input_hashes
+    semantic_rules:
+      - contains privacy-safe aggregates only; no participant, room or date identifiers
+      - 15, 30 and 60 minute sensitivity intervals use the declared crossed room-date Bayesian bootstrap
+      - primary NUS and ENTH intervals reproduce the frozen crossed-cluster bootstrap summary
+      - supports figure materialization only and adds no building simulation or scientific threshold

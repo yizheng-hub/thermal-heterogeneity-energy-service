@@ -1,0 +1,248 @@
+{
+  "analysis_manifest": "analysis_bundle_manifest.csv",
+  "analysis_manifest_sha256": "f323dcc152e8e02129c30324cc24a7645092809820e1ffc91d649c2b2fef043d",
+  "archive_format": "tar+zstd",
+  "bundle_filename": "analysis_bundle.tar.zst",
+  "bundle_sha256": "749a4076b4487feccfc8ee32d1b91f4dc839ac69f73b27f1d6f332f7306d63e6",
+  "bundle_size_bytes": 12565455,
+  "file_count": 46,
+  "files": [
+    {
+      "logical_path": "building/annual_action_library.csv.gz",
+      "sha256": "cfbcce3bf8bb978611e1ce6394b4dac8a2b4b654e236e21cc56b653842979956",
+      "size_bytes": 35173
+    },
+    {
+      "logical_path": "building/annual_service_anchors.csv",
+      "sha256": "2d851d4abbdea3e2767309a3b163dcc92f25ffed4a4aaa5ed61d8a7399615c12",
+      "size_bytes": 11526
+    },
+    {
+      "logical_path": "building/annual_service_scores.csv.gz",
+      "sha256": "223643ec985c60b238fadc7f57041c004ecb1c861c2c861f97681c235f0ffe7e",
+      "size_bytes": 1020946
+    },
+    {
+      "logical_path": "building/carrier_reallocation.csv.gz",
+      "sha256": "24a3f0354e529eddcdb461442c8c775e11e1a29931067d442137d479ccdf89ac",
+      "size_bytes": 57977
+    },
+    {
+      "logical_path": "building/decision_failure_ledger.csv",
+      "sha256": "4d83493e649471363a47a1f4763a16ba3bce532d3ca97ea14bfb110ece607d4a",
+      "size_bytes": 126330
+    },
+    {
+      "logical_path": "building/demand_definition_anchors.csv",
+      "sha256": "4d026386d65d9544c447d8ccb647beb79e80b7b2bd7308889b583dde843bcb23",
+      "size_bytes": 22442
+    },
+    {
+      "logical_path": "building/dynamic_action_library.csv.gz",
+      "sha256": "53843c04805d06a2aea4ecf16129576911a20cc259678c0facd052f4480a594e",
+      "size_bytes": 12191
+    },
+    {
+      "logical_path": "building/dynamic_nonpositive_actions.csv",
+      "sha256": "32e2fbb3ba9e1986a0006de670e9b6a72f7e59c38a31a42f78331e81dd4a6739",
+      "size_bytes": 3985
+    },
+    {
+      "logical_path": "building/dynamic_service_anchors.csv",
+      "sha256": "ce6e8725b41f625249cbbeed1969a58faeaf27abb95f5a9bd06b330c00708fdc",
+      "size_bytes": 22994
+    },
+    {
+      "logical_path": "building/dynamic_service_scores.csv.gz",
+      "sha256": "1b041848f32034b7626caaa32cdda62bce7863f042b305c1c629f73f58dd8b65",
+      "size_bytes": 466218
+    },
+    {
+      "logical_path": "building/regional_carbon_cost.csv.gz",
+      "sha256": "b8f582a7865985c2885ea2412e7643e7f23339aecb62c608ca164f0b0dcfde6f",
+      "size_bytes": 99624
+    },
+    {
+      "logical_path": "building/regional_factor_contract.csv",
+      "sha256": "45708cda7ec67ca2f15373ffefb88dc6d0f4cef3dae029bb59a24af970852273",
+      "size_bytes": 4271
+    },
+    {
+      "logical_path": "building/three_definition_matches.csv.gz",
+      "sha256": "266ca7ad3a4d2c203563266eaa25642a1b2210b6cd9fc492c3c293c04145a83f",
+      "size_bytes": 65874
+    },
+    {
+      "logical_path": "contracts/carbon_boundary_contract.json",
+      "sha256": "7a9a8da2b4e65ff358fa0425dc1be1b94b7729de2257152c43514b80eac1992b",
+      "size_bytes": 3286
+    },
+    {
+      "logical_path": "contracts/gate2_protocol.json",
+      "sha256": "96846a54d8d6605bbb87695d93966ba8068ce94da038a2671ce258f3d9f14d2f",
+      "size_bytes": 20340
+    },
+    {
+      "logical_path": "contracts/local_update_protocol.json",
+      "sha256": "d2b7079af5eea5f05a5c3ba1d8fb92d9d64f360243de839d74e1e2190ea0786c",
+      "size_bytes": 3653
+    },
+    {
+      "logical_path": "contracts/phase_map_protocol.json",
+      "sha256": "e873cf6f7ebd7c303580db7722140aa526664517ff2d91f8e382ed4f7e994623",
+      "size_bytes": 3947
+    },
+    {
+      "logical_path": "contracts/protected_quantile_protocol.json",
+      "sha256": "a014df2dd45c3a109f96d5cbeb65516778a39c46feb34f7094b336c90bf3f897",
+      "size_bytes": 748
+    },
+    {
+      "logical_path": "curves/city_season_demand_support.csv",
+      "sha256": "d6d9bc85905d6d5462171c794072b64277c1cc3b2b4214ecfbc82cea7305d0cd",
+      "size_bytes": 23114
+    },
+    {
+      "logical_path": "curves/event_power_curves.csv.gz",
+      "sha256": "6a4d61c420607263ec3535da25a28a5cfd8b4a3569e5d0530cfcf7b62bcee185",
+      "size_bytes": 128987
+    },
+    {
+      "logical_path": "curves/event_temperature_service_curves.csv.gz",
+      "sha256": "684caa73852511c4ee2b4b288c8df2bd782d2258b773d76cd9eaf1cb7bdf0461",
+      "size_bytes": 558891
+    },
+    {
+      "logical_path": "curves/event_zone_temperature_curves.csv.gz",
+      "sha256": "cbc076030a5f28308f3b36655e3a2f7c1c5251d46d25d8758060fcfb141301ba",
+      "size_bytes": 1542455
+    },
+    {
+      "logical_path": "curves/hierarchy_quantile_curves.csv.gz",
+      "sha256": "18dcb94a44b4f6e7b00643056168e6c347dd844488321c5f92df08d0de03468f",
+      "size_bytes": 9666
+    },
+    {
+      "logical_path": "expected/annual_decisions_reference.csv.gz",
+      "sha256": "3e202561277c3bceab8d7bf099a2339fa46b38a1e9835d6d9ae5c4e1f9a906ea",
+      "size_bytes": 81824
+    },
+    {
+      "logical_path": "expected/dynamic_decisions_reference.csv.gz",
+      "sha256": "dff286b522f2b114405948ac5093600f0258c3e6b2aef4968a040cfdad6b9ce0",
+      "size_bytes": 51443
+    },
+    {
+      "logical_path": "expected/gate2_scientific_summary.json",
+      "sha256": "e21bae3df108f8a43a65e40421ec8b1b780757f9f6a74b7906e25a1e726ea2cf",
+      "size_bytes": 2609925
+    },
+    {
+      "logical_path": "expected/local_update_claim.json",
+      "sha256": "3930e1994dc1d909e5aecf11b29dc1320d8ad9bceab11655a049ccdf071dcb9b",
+      "size_bytes": 610
+    },
+    {
+      "logical_path": "expected/local_update_learning_curve_reference.csv",
+      "sha256": "08c144a367e5592f99d66c0084a97a2567aa809541f4d6d8eb211fca423afd23",
+      "size_bytes": 5115
+    },
+    {
+      "logical_path": "expected/phase_map_reference.csv.gz",
+      "sha256": "d0f6d1ad570d1ef0477dc1009d08d01a4c8491004edf42a6ea92724a9aa2bfc9",
+      "size_bytes": 58779
+    },
+    {
+      "logical_path": "expected/protected_quantile_summary.json",
+      "sha256": "ba5243fabdec41c54e358298408c06d374ba723ba1e42b582c831439178bdfdd",
+      "size_bytes": 19808
+    },
+    {
+      "logical_path": "expected/quantile_certification_gate_reference.csv",
+      "sha256": "fb1aff25a3830a6f5b96c3432475bdbd16d4da2f0560ec1b28941a04fb72bab6",
+      "size_bytes": 9697
+    },
+    {
+      "logical_path": "expected/quantile_decisions_reference.csv.gz",
+      "sha256": "d3905bbe4567c5e27cedf23a30c22e9ee082d049ad20bfc2877e740aa58b83bc",
+      "size_bytes": 315335
+    },
+    {
+      "logical_path": "expected/quantile_fold_margins_reference.csv",
+      "sha256": "40935195a84ff15203a2af9ff0f2e1c6f477f5b0d86e535e6e3434a1794f4626",
+      "size_bytes": 29185
+    },
+    {
+      "logical_path": "human/direct_vote_windows_sanitized.csv.gz",
+      "sha256": "fd5b8658f7882018b286f37728eb7abfbe0ea22d157434517107c85d49ba5cdf",
+      "size_bytes": 32764
+    },
+    {
+      "logical_path": "human/human_profiles_minimized.csv.gz",
+      "sha256": "e05575259e36878b9c49c10c86844fd98892fd0dba17e641049d7877cb19ceb4",
+      "size_bytes": 1519191
+    },
+    {
+      "logical_path": "human/ltpref_intervals_minimized.csv.gz",
+      "sha256": "5180d31a41940310e5092756bd0effb75bf4aa38239edec39698707bb6cb4589",
+      "size_bytes": 869492
+    },
+    {
+      "logical_path": "human/regional_holdout_predictions_minimized.csv.gz",
+      "sha256": "cef25dc8fb2a5ee1536607bb87156acfeccb59a11415e6bd8484180b6e7b2bd4",
+      "size_bytes": 2430772
+    },
+    {
+      "logical_path": "human/service_curve.csv",
+      "sha256": "377e48fc8857673fff0a967a2fc2d7fdbbe039e01cb7853a598a6b5422170b3b",
+      "size_bytes": 1207
+    },
+    {
+      "logical_path": "implementation/local_update_sampling_plan.csv.gz",
+      "sha256": "4f1e8db8629f89c9e195909264c6d55afe203bd1c57d8bc69903bb320ba8d1d5",
+      "size_bytes": 1634249
+    },
+    {
+      "logical_path": "implementation/representation_scores.csv.gz",
+      "sha256": "5eec05d3ada114e915d3f10877df0413c1ac28225fc3177a28d8b544d840f76a",
+      "size_bytes": 967125
+    },
+    {
+      "logical_path": "panel_support/panel_materialization_support.json",
+      "sha256": "34085d3ad7a9a679fde5f55e6cc33160fc406cea1ad444e3ad94e7c3bcf0fd35",
+      "size_bytes": 48853
+    },
+    {
+      "logical_path": "policy/policy_range_estimates.csv",
+      "sha256": "3988cab1e60718ece4e473958718eefccb4d8cc400f58a82af7042d2043207f8",
+      "size_bytes": 10516
+    },
+    {
+      "logical_path": "policy/policy_semantics.csv",
+      "sha256": "e1ee7c98d39c650ea4ee1ebb59eebc0ddc3429abf7c127cf3cac74077320a1f8",
+      "size_bytes": 11810
+    },
+    {
+      "logical_path": "policy/policy_support.csv",
+      "sha256": "1a529a96315c1bed83047fc22290006d523bb19bbbfddcf29dfe72cc03d1a4b4",
+      "size_bytes": 5080
+    },
+    {
+      "logical_path": "population/fixed_tail_memberships_minimized.csv.gz",
+      "sha256": "b4586346454299ff6d645803f4957d4d0fae125c4fd0cadcd2a99cc292ba45eb",
+      "size_bytes": 17375
+    },
+    {
+      "logical_path": "population/population_assignments_minimized.csv.gz",
+      "sha256": "ba092d4222abb32557b02fbbb2d0c636456a25a120b9bb6fc02531d2b57cfc38",
+      "size_bytes": 578079
+    }
+  ],
+  "locator": "env:THERMAL_HETEROGENEITY_ANALYSIS_BUNDLE_URL",
+  "payload_size_bytes": 15552872,
+  "publication_locator": "ZENODO_DOI_PENDING",
+  "release_id": "level1_minimized_20261022_v1",
+  "schema": "thermal-heterogeneity-analysis-bundle-v1",
+  "source_date_epoch": 0,
+  "tier": "analysis"
+}
