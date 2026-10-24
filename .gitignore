@@ -343,3 +343,11 @@
 **/*credential*
 **/*token*
 !/scripts/scan_secrets.py
+!/publication/experiments/candidate_support/strict_service.py
+!/tests/contracts/test_strict_service_sensitivity.py
+!/scripts/engineering_qa_supplement.py
+!/tests/contracts/test_engineering_qa_supplement.py
+!/data/engineering_qa_bundle_manifest.csv
+!/data/engineering_qa_bundle_source.json
+!/data/numeric_scene_spec_v1.json
+!/data/numeric_scene_spec_source.json

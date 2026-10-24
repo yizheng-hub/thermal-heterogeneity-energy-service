@@ -31,7 +31,7 @@ CONTROL_ORDER = ("uniform_average", "personal_center", "ltpref_interval")
 CONTROL_LABELS = {
     "uniform_average": "Uniform average",
     "personal_center": "Personal centre",
-    "ltpref_interval": "LTPref interval",
+    "ltpref_interval": "Personal range",
 }
 CONTROL_COLORS = {
     "uniform_average": "#7F7F7F",
@@ -41,7 +41,7 @@ CONTROL_COLORS = {
 CONTEXT_ORDER = ("Miami", "NewDelhi", "PortAngeles_small2019", "Seattle_small2019")
 CONTEXT_COLORS = dict(zip(CONTEXT_ORDER, ("#C78470", "#AF94AD", "#6F9EBC", "#7FA995")))
 CONTEXT_LABELS = dict(zip(CONTEXT_ORDER, ("Miami", "New Delhi", "Port Angeles", "Seattle")))
-CONTEXT_SHORT = ("MIA", "DEL", "PTA", "SEA")
+CONTEXT_SHORT = ("Miami", "New\nDelhi", "Port\nAngeles", "Seattle")
 CONTROL_MARKERS = dict(zip(CONTROL_ORDER, ("o", "s", "^")))
 ALTERNATIVES = CONTROL_ORDER[1:]
 
@@ -237,7 +237,10 @@ def point_summary(ax, frame, metric, ylabel, *, scale=1.0, controls=CONTROL_ORDE
             span = max(np.ptp(finite_values), 8)
             ax.set_ylim(max(-2, float(finite_values.min()) - span * .12),
                         min(102, float(finite_values.max()) + span * .12))
-    ax.set_xticks(range(4), CONTEXT_SHORT)
+    if ax.get_position().width * ax.figure.get_figwidth() * 25.4 < 55:
+        ax.set_xticks(range(4), list(CONTEXT_LABELS.values()), rotation=75, ha="right")
+    else:
+        ax.set_xticks(range(4), CONTEXT_SHORT)
     ax.set_xlim(-0.55, 3.55)
     ax.set_ylabel(ylabel)
     ax.yaxis.set_major_locator(MaxNLocator(nbins=4))
@@ -267,7 +270,7 @@ def annotated_heatmap(ax, values, xlabels, ylabel, *, signed, decimals=1, counts
                 label += f"\n({int(counts[row][col])}/3)"
             ax.text(col, row, label, ha="center", va="center", color="black", fontsize=11)
     ax.set_xticks(range(len(xlabels)), xlabels)
-    ax.set_yticks(range(4), CONTEXT_SHORT)
+    ax.set_yticks(range(4), list(CONTEXT_LABELS.values()))
     ax.set_ylabel(ylabel)
     ax.tick_params(length=0)
     return {"values": values.tolist(), "colour_limits": list(limits)}
@@ -300,7 +303,7 @@ def empirical_steps(ax, frame, metric, xlabel, scale=1.0):
             ax.scatter(values, cumulative, color=CONTROL_COLORS[control],
                        marker=CONTROL_MARKERS[control], s=12, linewidths=0, zorder=3)
     ax.set_xlabel(xlabel)
-    ax.set_ylabel("Admitted cases at or below (%)")
+    ax.set_ylabel("Cases at or below (%)")
     ax.set_ylim(-3, 103)
     ax.yaxis.set_major_locator(MaxNLocator(4))
     ax.xaxis.set_major_locator(MaxNLocator(4))
@@ -322,17 +325,17 @@ def placement_forest(ax, frame, metric, xlabel, *, scale=1.0):
                         ax.plot([min(values), max(values)], [center + offset] * 2,
                                 color=CONTROL_COLORS[control], linewidth=1.1, zorder=2)
     ax.axvline(0, color="#A5A5A5", linewidth=.75, zorder=0)
-    ax.set_yticks([i * 2.5 + .5 for i in range(4)], CONTEXT_SHORT)
+    ax.set_yticks([i * 2.5 + .5 for i in range(4)], list(CONTEXT_LABELS.values()))
     ax.set_ylim(9.1, -.7)
     ax.set_xlabel(xlabel)
     ax.xaxis.set_major_locator(MaxNLocator(4))
-    ax.set_ylabel("Context (ordered / source)")
+    ax.set_ylabel("")
 
 
 def render_figure_two(tables, annual_root, output):
     direct = tables["ANNUAL_DIRECT"].query("permission == 'native_zone'").copy()
     if len(direct) != 108:
-        raise ValueError("The native-zone direct comparison must contain 108 logical rows")
+        raise ValueError("The zone-level direct comparison must contain 108 logical rows")
     direct["strict_profile_coverage_pct"] = (
         direct.profiles_with_no_occupied_hour_interval_violation / direct.assigned_profile_count * 100
     )
@@ -340,10 +343,10 @@ def render_figure_two(tables, annual_root, output):
     specs = [
         ("Mean reference mismatch", "mean_reference_mismatch_c", "Mean deviation (°C)", 1, False),
         ("Fixed-tail mismatch", "fixed_tail_reference_mismatch_c", "Tail deviation (°C)", 1, False),
-        ("Interval coverage", "modeled_interval_person_hour_coverage", "Covered weighted hours (%)", 100, True),
-        ("Least-served profiles", "profile_coverage_p10", "Profile P10 coverage (%)", 100, True),
-        ("Interval excess", "modeled_interval_mean_excess_c", "Mean excess (°C)", 1, False),
-        ("No interval violations", "strict_profile_coverage_pct", "Profiles without violations (%)", 1, True),
+        ("Temperature-range coverage", "modeled_interval_person_hour_coverage", "Covered person-hours (%)", 100, True),
+        ("Least-served profiles", "profile_coverage_p10", "10th-percentile coverage (%)", 100, True),
+        ("Outside-range mismatch", "modeled_interval_mean_excess_c", "Mean excess (°C)", 1, False),
+        ("Always within range", "strict_profile_coverage_pct", "Profiles without violations (%)", 1, True),
     ]
     fig, axes = six_panel_canvas([s[0] for s in specs], bounds=[
         (19, 125, 67, 35), (109, 125, 67, 35),
@@ -369,8 +372,8 @@ def render_figure_two(tables, annual_root, output):
                 ax, direct, metric, label, scale=scale, percentage=percentage)]
     axes[2].set_ylabel("Cases at or below (%)")
     axes[3].set_ylabel("Cases at or below (%)")
-    axes[2].set_xlabel("Covered weighted hours (%)", labelpad=3)
-    axes[3].set_xlabel("Profile P10 coverage (%)", labelpad=3)
+    axes[2].set_xlabel("Covered person-hours (%)", labelpad=3)
+    axes[3].set_xlabel("10th-percentile coverage (%)", labelpad=3)
     counts = []
     for context in CONTEXT_ORDER:
         counts.append("/".join(str(int(direct[direct.context.eq(context) & direct.control.eq(c)]
@@ -379,8 +382,8 @@ def render_figure_two(tables, annual_root, output):
                "Figure 2 | Thermal service under three direct control rules. All panels allow separate "
                "temperature commands in existing thermal zones and use the predeclared "
                "minimum-predicted-mismatch variant. Each context has nine composition–placement cases per "
-               "controller. Admitted trajectories passed equipment, ventilation, numerical and energy-accounting "
-               "checks. In a,b,e,f, small points denote admitted cases, connected grey lines link the same "
+               "controller. Engineering-checked trajectories passed equipment, ventilation, numerical and energy-accounting "
+               "checks. In a,b,e,f, small points denote engineering-checked cases, connected grey lines link the same "
                "composition–placement case, and larger symbols and whiskers show medians and interquartile "
                "ranges. a, Mean absolute temperature mismatch from assigned reference centres, weighted by "
                "occupied person-hours. b, Mean occupied-time mismatch for the same 27 profiles worst served by "
@@ -388,12 +391,11 @@ def render_figure_two(tables, annual_root, output):
                "person-hours inside model-derived temperature intervals. d, Empirical distribution of the tenth "
                "percentile of individual profile coverage. The steps in c,d use the same 16 complete "
                "three-control conditions (16 cases per controller), without fitting a density. Other panels "
-               "retain all admitted cases, including conditions missing another controller. e, Average degrees "
+               "retain all engineering-checked cases, including conditions missing another controller. e, Average degrees "
                "outside assigned intervals over occupied hours. f, Profiles with no occupied interval violation. "
-               "Admitted counts in uniform/personal/interval order are "
-               f"{', '.join(f'{name} {n}' for name,n in zip(CONTEXT_SHORT,counts))}"
-               ". MIA, DEL, PTA and SEA identify Miami, New Delhi, Port Angeles and Seattle building–weather "
-               "contexts. Service references are reconstructed centres and model-derived intervals."
+               "Engineering-checked counts in Uniform average/Personal centre/Personal range order are "
+               f"{', '.join(f'{name} {n}' for name,n in zip(CONTEXT_LABELS.values(),counts))}"
+               ". Service references are reconstructed centres and model-derived intervals."
     ))
     result = export_result(fig, axes, output, "Figure_02", caption=caption,
                            sources={"ANNUAL_DIRECT.csv": annual_root / "ANNUAL_DIRECT.csv"})
@@ -409,11 +411,11 @@ def render_figure_three(tables, annual_root, output):
     equal = native.query("comparison_mode == 'equal_service' and service_fraction == 1.0")
     pd.concat([direct, equal]).to_csv(output / "Figure_03_paired_source_data.csv", index=False)
     direct.to_csv(output / "Figure_03_panel_c_resource_reallocation_source.csv", index=False)
-    fig, axes = six_panel_canvas(["Direct energy change", "Direct carbon change", "Added and released conditioning",
+    fig, axes = six_panel_canvas(["Direct energy change", "Direct carbon change", "Added and avoided conditioning",
                                  "Common-service\nenergy", "Common-service\ncarbon", "Qualified service\nchoices"],
                                 height=190, bounds=[(19, 133, 67, 34), (109, 133, 67, 34),
-                                                    (19, 76, 157, 33), (19, 19, 43, 30),
-                                                    (77, 19, 43, 30), (135, 19, 41, 30)])
+                                                    (19, 76, 157, 33), (19, 25, 43, 24),
+                                                    (77, 25, 43, 24), (135, 25, 41, 24)])
     summaries = []
     for letter, ax, frame, metric, label, scale in (
         ("a", axes[0], direct, "delta_site_pct", "Site energy change (%)", 1),
@@ -447,10 +449,10 @@ def render_figure_three(tables, annual_root, output):
                                 color=CONTROL_COLORS[control], marker=CONTROL_MARKERS[control],
                                 edgecolors="#666666", linewidths=.45, zorder=4)
     axes[2].set_xticks(range(4), CONTEXT_SHORT)
-    axes[2].set_ylabel("Added / released (MWh/year)")
+    axes[2].set_ylabel("Added / avoided (MWh/year)")
     axes[2].axhline(0, color="#A5A5A5", linewidth=.75)
     axes[2].yaxis.set_major_locator(MaxNLocator(4))
-    axes[2].text(.98, .97, "Above: added / below: released\nSolid: electricity / hatched: gas HHV", transform=axes[2].transAxes,
+    axes[2].text(.98, .97, "Above: added / below: avoided\nSolid: electricity / hatched: gas HHV", transform=axes[2].transAxes,
                  ha="right", va="top", fontsize=11, color="black")
     selections = tables["ANNUAL_SERVICE_SELECTIONS"].query("permission == 'native_zone'")
     for control in CONTROL_ORDER:
@@ -471,20 +473,19 @@ def render_figure_three(tables, annual_root, output):
     caption = ((
                "Figure 3 | Energy and operational carbon consequences of three controls. All panels allow "
                "separate temperature commands in existing thermal zones. a,b, Paired direct-operation changes "
-               "relative to uniform average control. Small points are admitted composition–placement "
+               "relative to uniform average control. Small points are engineering-checked composition–placement "
                "comparisons; symbols and whiskers show medians and interquartile ranges. c, Building-hour "
                "increases (above zero) and decreases (below zero) in electricity (solid) and heating gas "
                "(hatched), summed over the year and then summarized by the composition–placement median. "
                "Overlaid symbols give individual paired net site-energy changes. These quantities describe "
                "temporal building-load changes, not metered transfers between people. Gas uses the "
-               "higher-heating-value basis. PC and LT denote personal-centre and LTPref controls. d,e, Paired "
+               "higher-heating-value basis. d,e, Paired "
                "minimum-site-energy selections at budget fraction 1 from the same four variants per control, "
                "under common mismatch limits for the population and the fixed least-served group. A service "
                "budget of 1 uses the limits from the common reference operation; smaller fractions tighten both "
                "limits proportionally. f, Available selections among all 36 declared "
                "context–composition–placement cases at each service budget. Carbon uses fixed regional "
-               "electricity and gas accounting factors. MIA, DEL, PTA and SEA denote Miami, New Delhi, Port "
-               "Angeles and Seattle."
+               "electricity and gas accounting factors."
     ))
     result = export_result(fig, axes, output, "Figure_03", caption=caption, sources={
         "CONTROL_COMPARISONS.csv": annual_root / "CONTROL_COMPARISONS.csv",
@@ -499,13 +500,13 @@ def render_figure_four(tables, annual_root, output):
     direct = spatial.query("comparison_mode == 'direct'")
     equal = spatial.query("comparison_mode == 'equal_service' and service_fraction == 1.0")
     fig, axes = six_panel_canvas(["Permissions and service", "Permissions and energy", "Common-service energy",
-                                 "Placement and service", "Placement and energy", "Static interval overlap"],
-                                height=192, bounds=[(19, 135, 67, 34), (19, 78, 67, 34),
-                                                    (19, 19, 67, 34), (109, 121, 67, 48),
-                                                    (109, 57, 67, 40), (109, 14, 67, 22)])
+                                 "Placement and service", "Placement and energy", "Shared-range overlap"],
+                                height=192, bounds=[(19, 135, 63, 34), (19, 78, 63, 34),
+                                                    (19, 19, 63, 34), (113, 121, 63, 48),
+                                                    (113, 57, 63, 40), (113, 14, 63, 22)])
     summaries = []
     for letter, ax, frame, metric, label in (
-        ("a", axes[0], direct, "delta_interval_coverage_percentage_points", "Coverage change (p.p.)"),
+        ("a", axes[0], direct, "delta_interval_coverage_percentage_points", "Coverage change\n(percentage points)"),
         ("b", axes[1], direct, "delta_site_pct", "Site energy change (%)"),
         ("c", axes[2], equal, "delta_site_pct", "Site energy change (%)"),
     ):
@@ -516,9 +517,9 @@ def render_figure_four(tables, annual_root, output):
                                   "and weight_view == 'native_occupancy'").copy()
     tables["LAYOUT_PAIRS"].to_csv(output / "Figure_04_direct_and_relative_anchor_layout_source.csv", index=False)
     layouts.to_csv(output / "Figure_04_common_absolute_anchor_layout_source.csv", index=False)
-    xlabels = [f"{control}\n{layout}" for layout in ("Ord", "Src") for control in ("UA", "PC", "LT")]
+    xlabels = [f"{control}\n{layout}" for layout in ("Ord", "Src") for control in ("UA", "PC", "PR")]
     for letter, ax, metric, ylabel in (
-        ("d", axes[3], "delta_modeled_interval_coverage", "Coverage change (p.p.)"),
+        ("d", axes[3], "delta_modeled_interval_coverage", "Coverage change\n(percentage points)"),
         ("e", axes[4], "delta_site_pct", "Energy change (%)"),
     ):
         matrix, cell_counts = [], []
@@ -564,7 +565,7 @@ def render_figure_four(tables, annual_root, output):
         axes[5].plot(medians, [context_index + (j - 1) * .22 for j in range(3)],
                      color=CONTEXT_COLORS[context], linewidth=1.2, zorder=2)
         matrix.append(row)
-    axes[5].set_yticks(range(4), CONTEXT_SHORT)
+    axes[5].set_yticks(range(4), list(CONTEXT_LABELS.values()))
     axes[5].set_ylim(3.5, -.6)
     axes[5].set_xlim(67, 101)
     axes[5].set_xlabel("Maximum static coverage (%)")
@@ -574,18 +575,17 @@ def render_figure_four(tables, annual_root, output):
                "existing zones can receive separate temperature commands instead of one shared building-wide "
                "command: model-derived interval coverage and purchased site energy. c, The same permission "
                "contrast for minimum-energy selections under common service limits, using the mismatch limits of "
-               "the common reference operation (budget fraction 1). Points show admitted paired cases, with "
+               "the common reference operation (budget fraction 1). Points show engineering-checked paired cases, with "
                "median symbols and interquartile whiskers. d,e, All matched ordered (upper) and "
-               "source-structured (lower) placement changes relative to random mixing at native-zone permissions "
+               "source-structured (lower) placement changes relative to random mixing at zone-level permissions "
                "and budget 1, using the same random-placement absolute limits and tail identities. The two rows "
                "in each context show ordered and source placements; each symbol denotes a composition, and "
-               "horizontal segments show the observed ranges. UA/PC/LT denote "
-               "uniform-average/personal-centre/LTPref control. f, Maximum share of assigned profiles whose "
+               "horizontal segments show the observed ranges. f, Maximum share of assigned profiles whose "
                "temperature intervals can contain a common temperature within each existing zone. Symbols show "
                "all three compositions, connected through their placement medians. Open circles, squares and "
                "diamonds identify random, ordered and source placement. Missing marks in d,e denote no matched "
                "selection. Static coverage is a demand-overlap bound, not simulated annual coverage. "
-               "MIA/DEL/PTA/SEA denote Miami/New Delhi/Port Angeles/Seattle."
+               "City labels identify the representative building–weather contexts."
     ))
     sources = {name + ".csv": annual_root / (name + ".csv") for name in
                ("SPATIAL_PAIRS", "LAYOUT_PAIRS", "STATIC_ZONE_INTERVAL_COMPATIBILITY")}

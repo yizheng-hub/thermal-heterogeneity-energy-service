@@ -117,6 +117,14 @@ def export_source_data(previous, paper, science, data, repo, out):
     flat = paper / "figures"
     tables = out / "Supplementary_Data"
     shutil.copytree(previous / "Supplementary_Data", tables, dirs_exist_ok=True)
+    strict = out / "strict_service"
+    subprocess.run([sys.executable, str(repo / "publication/experiments/candidate_support/strict_service.py"),
+                    "--input-root", str(repo / "publication/support/candidate_support"),
+                    "--output-root", str(strict)], check=True, stdout=subprocess.DEVNULL)
+    strict_target = tables / "Strict_service"
+    strict_target.mkdir(exist_ok=True)
+    for path in sorted(strict.glob("*.csv")):
+        shutil.copyfile(path, strict_target / path.name)
     source_data = tables / "Main_comparison"
     for group in ("annual", "events", "costs", "portfolio", "nested_permissions", "common_layout", "dense_uniform_bound"):
         target = source_data / group

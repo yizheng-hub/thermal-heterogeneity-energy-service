@@ -17,9 +17,9 @@ import pandas as pd
 
 WIDTH_MM, HEIGHT_MM = 180.0, 215.0
 BOUNDS_MM = [(19, 167, 67, 30), (109, 167, 67, 30),
-             (19, 118, 157, 30), (19, 64, 43, 30),
-             (76, 64, 43, 30), (133, 64, 43, 30),
-             (19, 19, 67, 24), (109, 19, 67, 24)]
+             (19, 118, 157, 30), (19, 69, 43, 27),
+             (76, 69, 43, 27), (133, 69, 43, 27),
+             (19, 15, 67, 24), (109, 15, 67, 24)]
 
 
 def artist_signature(axes):
@@ -93,7 +93,7 @@ def add_seasonal_panels(builder, figure, axes, args):
     g.set_xlim(-.55, 4.55)
     g.set_ylim(-.5, 9.9)
     g.set_yticks([0, 3, 6, 9])
-    g.set_xticks(range(5), ['Ann', 'Spr', 'Sum', 'Aut', 'Win'])
+    g.set_xticks(range(5), order, rotation=30, ha='right')
     g.set_ylabel('Cases / 9')
     g.grid(axis='y', color='#D8D8D8', linewidth=.45)
     g.set_axisbelow(True)
@@ -107,6 +107,7 @@ def add_seasonal_panels(builder, figure, axes, args):
     winter['heating_input_kwh'] = winter.heating_electric_kwh + winter.gas_hhv_kwh
     winter['winter_heating_share_pct'] = 100 * winter.heating_input_kwh / winter.purchased_site_kwh
     h_summary = builder.point_summary(h, winter, 'winter_heating_share_pct', 'Heating share (%)', percentage=True)
+    h.set_xticks(range(4), ['Miami', 'New\nDelhi', 'Port\nAngeles', 'Seattle'])
     h.set_ylim(0, 100)
     h.set_yticks([0, 50, 100])
     winter.to_csv(args.output / 'Figure_03_panel_h_winter_heating_source.csv', index=False)
@@ -165,7 +166,7 @@ def render_monthly_support(builder, args, mode):
         right.set_ylabel('Energy (MWh)')
         for ax in [left, right]:
             ax.set_xlim(.8, 12.2)
-            ax.set_xticks([1, 3, 5, 7, 9, 11], ['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'])
+            ax.set_xticks([1, 4, 7, 10], ['January', 'April', 'July', 'October'], rotation=25, ha='right')
             ax.grid(axis='y', color='#D8D8D8', linewidth=.45)
             ax.set_axisbelow(True)
             ax.yaxis.set_major_locator(builder.MaxNLocator(3))
@@ -180,12 +181,12 @@ def render_monthly_support(builder, args, mode):
     label = 'direct control operation' if mode == 'direct' else 'common-service annual selections'
     stem = 'Supplementary_monthly_direct' if mode == 'direct' else 'Supplementary_monthly_common_service'
     caption = ('Monthly service and purchased HVAC energy: ' + label + '. '
-        'The first demand composition, random-mixing placement and native-zone commands are shown in four building–weather contexts. '
+        'The first demand composition, random-mixing placement and zone-level commands are shown in four building–weather contexts. '
         'a,c,e,g, Population-weighted absolute temperature-reference mismatch during occupied hours. '
         'b,d,f,h, Monthly energy: uniform-average operation is stacked by heating electricity, cooling electricity, fan electricity and gas HHV; '
         'lines show HVAC electricity plus gas HHV for each control. Every qualified trajectory contains all twelve months and 8,760 hours. '
-        'Identical selections overlap; trajectories failing engineering checks are left blank. Gas uses higher heating value. '
-        'Each context retains its prototype’s raw energy totals. Native people weights are shared among assigned demand profiles.')
+        'Identical selections overlap; trajectories failing engineering checks are left blank. HVAC denotes heating, ventilation and air conditioning; HHV denotes higher heating value. '
+        'Each context retains its prototype’s raw energy totals. Prototype occupancy weights are shared among assigned demand profiles.')
     result = builder.export_result(figure, axes, args.output, stem,
                                    caption=caption, sources={'PERIOD_TOTALS.csv': args.seasonal_root / 'PERIOD_TOTALS.csv',
                                                              'current_main_builder': args.main_builder},
@@ -195,7 +196,7 @@ def render_monthly_support(builder, args, mode):
     return result
 
 
-CAPTION = 'Figure 3 | Energy, carbon and seasonal service. All panels allow independent commands in existing thermal zones. a,b, Direct site-energy and operational-carbon changes from uniform-average control. Small points show composition–placement cases; larger symbols and whiskers show medians and interquartile ranges. c, Positive and negative building-hour electricity (solid) and gas HHV (hatched) changes were summed over each matched direct-control year. Bars show each component\'s composition–placement median separately; symbols show each case\'s net site-energy change. d,e, Minimum-energy choices from four variants at common-service fraction 1, constraining population-mean and fixed-tail reference mismatch. f, Qualifying choices among 36 context–composition–placement cases as limits tighten. Panels g,h retain the annual minimum-energy selections at common-service fraction 1. g, Counts meeting annual or corresponding seasonal common-25 °C reference values for both mismatch measures: nine Seattle cases per control. Selected plans and annual tail membership remain fixed. Ann, Spr, Sum, Aut and Win denote annual, spring, summer, autumn and winter. h, Winter heating share: (heating electricity + gas HHV)/(HVAC electricity + gas HHV); nine cases per context/control. Winter is December–February. Carbon uses fixed regional factors. MIA, DEL, PTA and SEA denote Miami, New Delhi, Port Angeles and Seattle building–weather contexts.'
+CAPTION = 'Figure 3 | Energy, carbon and seasonal service. All panels allow independent commands in existing thermal zones. a,b, Direct site-energy and operational-carbon changes from uniform-average control. Small points show composition–placement cases; larger symbols and whiskers show medians and interquartile ranges. c, Positive and negative building-hour electricity (solid) and gas HHV (hatched) changes were summed over each matched direct-control year. Bars show each component\'s composition–placement median separately; symbols show each case\'s net site-energy change. d,e, Minimum-energy choices from four variants at common-service fraction 1, constraining population-mean and fixed-tail reference mismatch. f, Qualifying choices among 36 context–composition–placement cases as limits tighten. Panels g,h retain the annual minimum-energy selections at common-service fraction 1. g, Counts meeting annual or corresponding seasonal common-25 °C reference values for both mismatch measures: nine Seattle cases per control. Selected plans and annual tail membership remain fixed. h, Winter heating share: (heating electricity + gas HHV)/(HVAC electricity + gas HHV); nine cases per context/control. Winter is December–February. Carbon uses fixed regional factors. HVAC denotes heating, ventilation and air conditioning; HHV denotes higher heating value.'
 
 
 def main():

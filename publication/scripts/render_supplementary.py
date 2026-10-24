@@ -303,7 +303,7 @@ def plot_control_inputs(input_root, out):
             jitter = (np.arange(len(points)) % 7 - 3) * .018
             axes[2].scatter(position + jitter, points, s=3, color=color, alpha=.55,
                             linewidths=0, zorder=3)
-    axes[2].set_xticks(range(4), ["Miami", "Delhi", "Port A.", "Seattle"])
+    axes[2].set_xticks(range(4), ["Miami", "New\nDelhi", "Port\nAngeles", "Seattle"])
     axes[2].set_ylabel("Occupied target (°C)")
     axes[2].set_xlabel("Building–weather context")
     ranges = (source.groupby(["context", "composition_id", "layout", "permission", "control"])
@@ -333,23 +333,23 @@ def plot_control_inputs(input_root, out):
     axes[3].set_ylabel("Command permission")
     # One shared legend sits between the two rows, outside all data rectangles.
     fig.legend(handles=[Patch(facecolor=color, label=label) for color, label in
-                         zip(control_colors, ["Uniform", "Personal centre", "LTPref interval"])],
+                         zip(control_colors, ["Uniform average", "Personal centre", "Personal range"])],
                frameon=False, ncol=3, loc="center", bbox_to_anchor=(.53, .505),
                columnspacing=1.5, handlelength=1.2)
     caption = (
-        "Figure S13 | Actual demand inputs and control commands in the main comparison. "
+        "Figure S13 | Assigned demand inputs and control commands in the main comparison. "
         "a, The three fixed compositions, each containing 267 archive-derived virtual profiles. "
         "Profiles are ordered by reconstructed centre within each composition. Horizontal marks "
         "give model-derived intervals and points give centres. These are the Miami random-mixing "
         "assignment, whose three profile sets are also used in the other layouts and contexts. "
         "b, Centres and model-derived interval widths for the same 801 profile assignments. "
-        "c, Distributions of the actually generated occupied native-zone thermostat targets for "
-        "the zero-slack candidate of each control, including all three compositions and layouts. "
+        "c, Distributions of the actually generated occupied zone-level thermostat targets for "
+        "the minimum-predicted-mismatch candidate of each control, including all three compositions and layouts. "
         "Boxes give medians and interquartile ranges, whiskers extend to 1.5 interquartile ranges, "
         "and points retain every zone command. d, The maximum minus minimum zone target of each "
-        "zero-slack plan, separated by command permission and control. Points give all declared "
+        "minimum-predicted-mismatch plan, separated by command permission and control. Points give all declared "
         "plans, thick segments span P10–P90 and larger white-edged points mark medians. "
-        "Uniform, personal-centre and LTPref controls are grey, gold and green. Small-building "
+        "Uniform, personal-centre and personal-range controls are grey, gold and green. Small-building "
         "floor and building permissions coincide. Commands are model inputs, not measured room temperatures."
     )
     metadata = {path.relative_to(input_root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -488,8 +488,8 @@ def main():
         "between_country": "Country",
         "between_city_within_country": "City",
         "between_building_within_city": "Building",
-        "between_analysis_unit_within_building": "Within bldg",
-        "within_analysis_unit": "Repeat",
+        "between_analysis_unit_within_building": "Within\nbuilding",
+        "within_analysis_unit": "Within-unit\nvariation",
     }
     for ax, (weight, d) in zip(a, variance.groupby("weighting", sort=True)):
         # The title follows the actual group to avoid relying on sort order.
@@ -535,13 +535,13 @@ def main():
             y, q.share * 100, left=left, color=VARIANCE_COLORS[j], label=comp.replace("_", " ")
         )
         left += q.share.to_numpy() * 100
-    a[4].set_yticks(y, ["All records", "Known ID"])
+    a[4].set_yticks(y, ["All records", "Identified\nsubjects"])
     a[4].set_xlabel("Archive variance share (%)")
     a[4].set_ylim(-0.5, 2.45)
-    component_labels = ["Country", "City", "Building", "Within bldg", "Repeat"]
+    component_labels = ["Country", "City", "Building", "Within\nbuilding", "Within-unit\nvariation"]
     handles = [Patch(facecolor=VARIANCE_COLORS[j], edgecolor="none") for j in range(len(comps))]
     a[4].legend(
-        handles, component_labels, frameon=False, loc="upper left", ncol=2,
+        handles, [label.replace("\n", " ") for label in component_labels], frameon=False, loc="upper left", ncol=2,
         handlelength=1, columnspacing=0.7, labelspacing=0.2,
     )
     arrays = [
@@ -551,7 +551,7 @@ def main():
     for y, (v, w) in enumerate(zip(*arrays)):
         a[5].plot([v, w], [y, y], color="#aaaaaa", lw=1)
     for values, color, label in zip(
-        arrays, [PALETTE["blue"], PALETTE["vermillion"]], ["All records", "Known ID"]
+        arrays, [PALETTE["blue"], PALETTE["vermillion"]], ["All records", "Identified subjects"]
     ):
         a[5].scatter(values, range(5), s=35, color=color, label=label, zorder=3)
     a[5].set_yticks(range(5), component_labels)
@@ -564,7 +564,7 @@ def main():
             fig,
             out,
             2,
-            "Figure S2 | Hierarchical variance and identity sensitivity. a–d, Leave-one-source variance shares under the four weighting schemes identified in the panel titles. Points are medians across twenty-seven source removals and whiskers give the minimum and maximum. Blue, gold and green denote Griffiths coefficients 0.33, 0.50 and 0.67 °C−1. The five components are country, city within country, building within city, analysis unit within building and repeated measurement within analysis unit. Building labels denote database groups; 150 IDs are original and 37 inferred. e,f, Hierarchical variance shares for all canonical records and the subset with subject-within-building identifiers. Component colours in e match Figure 1d. Blue and terracotta in f identify all records and known IDs, respectively. The identified-subject subset uses only original-source building IDs.",
+            "Figure S2 | Hierarchical variance and identity sensitivity. a–d, Leave-one-source variance shares under the four weighting schemes identified in the panel titles. Points are medians across twenty-seven source removals and whiskers give the minimum and maximum. Blue, gold and green denote Griffiths coefficients 0.33, 0.50 and 0.67 °C−1. The five components are country, city within country, building within city, analysis unit within building and repeated measurement within analysis unit. Building labels denote database groups; 150 identifiers are original and 37 inferred. e,f, Hierarchical variance shares for all canonical records and the subset with subject-within-building identifiers. Component colours in e match Figure 1d. Blue and terracotta in f identify all records and identified subjects, respectively. The identified-subject subset uses only original-source building identifiers.",
             ["Fig1h.csv", "science_audit/variance_recheck.csv"],
         )
     )
@@ -626,7 +626,7 @@ def main():
             fig,
             out,
             3,
-            "Figure S3 | Observation and derived-input diagnostics. a, Observed temperature and thermal-sensation votes in the retained office cohort. Colour and n give records per bin. b, Reconstructed reference centres at three Griffiths coefficients. c, Records per analysis unit, with unit counts on a logarithmic axis. Analysis units include identified subject-within-building groups and single-record units without a usable subject identifier. d, Model-derived executable LTPref interval widths.",
+            "Figure S3 | Observation and derived-input diagnostics. a, Observed temperature and thermal-sensation votes in the retained office cohort. Colour and n give records per bin. b, Reconstructed reference centres at three Griffiths coefficients. c, Records per analysis unit, with unit counts on a logarithmic axis. Analysis units include identified subject-within-building groups and single-record units without a usable subject identifier. d, Model-derived executable Personal range widths.",
             ["human/human_profiles_minimized.csv.gz", "human/ltpref_intervals_minimized.csv.gz"],
         )
     )
@@ -694,7 +694,7 @@ def main():
             fig,
             out,
             4,
-            "Figure S4 | Shared-room vote replication. a,b, Mean absolute vote (full burden) versus absolute mean vote (burden after averaging) for eligible NUS and ENTH thirty-minute room-windows. Dashed lines mark equality. c, Window counts containing differing categories, opposing warmer/cooler requests, and exact cancellation. d, Full-minus-averaged burden distributions. NUS/ENTH contain 63/34 windows and 225/81 votes. Boxes show medians and interquartile ranges, whiskers extend to 1.5 interquartile ranges, and points show individual windows.",
+            "Figure S4 | Shared-room vote replication. a,b, Mean absolute vote (full burden) versus absolute mean vote (burden after averaging) for eligible NUS and ENTH thirty-minute room-windows. Dashed lines mark equality. c, Window counts containing differing categories, opposing warmer/cooler requests, and exact cancellation. d, Full-minus-averaged burden distributions. The National University of Singapore (NUS) and ENTH datasets contain 63/34 windows and 225/81 votes. Boxes show medians and interquartile ranges, whiskers extend to 1.5 interquartile ranges, and points show individual windows.",
             ["human/direct_vote_windows_sanitized.csv.gz", "Fig2h.csv"],
         )
     )
@@ -708,7 +708,7 @@ def main():
         ]
         population_labels = {
             "india_archive_stratum": "India",
-            "us_archive_stratum": "US",
+            "us_archive_stratum": "United States",
             "multinational_source_balanced": "Pooled",
         }
         for j, (pop, q) in enumerate(d.groupby("population")):
@@ -730,7 +730,7 @@ def main():
             fig,
             out,
             5,
-            "Figure S5 | Demand-centre energy effects by archive composition. a–d, Median annual site-energy changes relative to the Δ=0 reference among bilaterally resolved selections at archive-derived spread in Miami, New Delhi, Port Angeles and Seattle, respectively. The horizontal coordinate is the applied demand-centre shift. Blue, mauve and green denote the US, India and multinational archive compositions. Curves have no value where a comparator is unavailable. These compositions are assigned archive scenarios.",
+            "Figure S5 | Demand-centre energy effects by archive composition. a–d, Median annual site-energy changes relative to the Δ=0 reference among bilaterally resolved selections at archive-derived spread in Miami, New Delhi, Port Angeles and Seattle, respectively. The horizontal coordinate is the applied demand-centre shift. Blue, mauve and green denote the United States, India and multinational archive compositions. Curves have no value where a comparator is unavailable. These compositions are assigned archive scenarios.",
             ["Fig3d.csv"],
         )
     )
@@ -795,7 +795,7 @@ def main():
             / 1000
             for c in CONTEXTS
         ],
-        ["MIA", "NDL", "PTA", "SEA"],
+        ["Miami", "New\nDelhi", "Port\nAngeles", "Seattle"],
         "Full minus mean energy (MWh)",
         colors=list(CONTEXT_COLORS.values()),
     )
@@ -856,7 +856,7 @@ def main():
                 color=REPRESENTATION_COLORS[rep],
                 marker=["o", "s", "^"][j],
                 s=35,
-                label={"mean_only": "Mean", "quantile3": "q3", "quantile5": "q5"}[rep],
+                label={"mean_only": "Mean only", "quantile3": "Three bins", "quantile5": "Five bins"}[rep],
             )
         ax.set_yscale("log")
         ax.set_xlabel("Qualified actions retained (%)")
@@ -898,7 +898,7 @@ def main():
             fig,
             out,
             8,
-            "Figure S8 | Anonymous-summary rule comparisons. a,b, Mean-only, q3 and q5 summaries under all tested protection strategies for context–seed and population holdout, respectively. Grey/gold/green identify the summaries. q3/q5 use at most three/five near-equal-count bins per zone with bin means, bin counts and fixed-tail membership counts. One is added to false-accept counts for logarithmic display. c, Training-fold mean and tail margins for q5 with 95th-percentile protection. Boxes show medians and interquartile ranges, with whiskers at 1.5 interquartile ranges. d, Median selection-energy penalty versus qualified-action retention for the tested q5 protection strategies.",
+            "Figure S8 | Anonymous-summary rule comparisons. a,b, Mean-only, three-bin and five-bin summaries under all tested protection strategies for context–seed and population holdout, respectively. Grey/gold/green identify the summaries. Three-bin and five-bin summaries use at most three and five near-equal-count bins per zone with bin means, bin counts and fixed-tail membership counts. One is added to false-accept counts for logarithmic display. c, Training-fold mean and tail margins for five-bin summaries with 95th-percentile protection. Boxes show medians and interquartile ranges, with whiskers at 1.5 interquartile ranges. d, Median selection-energy penalty versus qualified-action retention for the tested five-bin protection strategies.",
             [
                 "expected/quantile_certification_gate_reference.csv",
                 "expected/quantile_fold_margins_reference.csv",
@@ -958,7 +958,7 @@ def main():
             ]
             for method, line_color, label in [
                 ("personal_center", CONTROL_COLORS["personal_center"], "Personal centre"),
-                ("ltpref_interval", CONTROL_COLORS["ltpref_interval"], "LTPref interval"),
+                ("ltpref_interval", CONTROL_COLORS["ltpref_interval"], "Personal range"),
             ]:
                 q = delhi[delhi.strategy == method].dropna(
                     subset=[
@@ -999,7 +999,7 @@ def main():
             fig,
             out,
             10,
-            "Figure S10 | Energy-bill headroom and carbon accounting. a,c,d, Annual operational-carbon change versus energy-bill headroom for matched non-uniform controls in Miami, Port Angeles and Seattle, using historical state-average commercial energy prices. b, New Delhi headroom at service-budget fraction 0.75 and assumed power factor 0.95 as the assumed commercial gas price varies from 0 to 15 INR/kWh HHV. Gold/green denote personal-centre/LTPref interval control. Lines are scenario means and bands span matched constructed scenarios. Positive/negative headroom denotes energy-bill saving/increase before implementation costs. The gas-price axis is an assumed stress range. USD and INR are shown separately.",
+            "Figure S10 | Energy-bill headroom and carbon accounting. a,c,d, Annual operational-carbon change versus energy-bill headroom for matched non-uniform controls in Miami, Port Angeles and Seattle, using historical state-average commercial energy prices. b, New Delhi headroom at service-budget fraction 0.75 and assumed power factor 0.95 as the assumed commercial gas price varies from 0 to 15 INR/kWh HHV. Gold/green denote personal-centre/personal-range control. Lines are scenario means and bands span matched constructed scenarios. Positive/negative headroom denotes energy-bill saving/increase before implementation costs. The gas-price axis is an assumed stress range. USD and INR denote United States dollars and Indian rupees. HHV denotes higher heating value.",
             ["building/regional_carbon_cost.csv.gz", "contracts/carbon_boundary_contract.json"],
         )
     )
@@ -1286,7 +1286,7 @@ def main():
     )
     primary = metrics[metrics.target.eq("g050_p50_c")].copy()
     methods = ["global_training_mean", "idw2_4nn", "gpr_spherical_xyz"]
-    method_labels = ["Training mean", "4NN IDW²", "Spherical GPR"]
+    method_labels = ["Training mean", "4-neighbour IDW²", "Spherical GPR"]
     scopes = ["all", "cold", "warm"]
     scope_labels = ["Pooled", "Cold", "Warm"]
     x = np.arange(len(scopes))
@@ -1383,7 +1383,7 @@ def main():
             fig,
             out,
             15,
-            "Figure S15 | Whole-city holdout audit of coordinate-based spatial prediction. a,b, Held-out root-mean-square error (RMSE) and mean absolute error (MAE) for the training mean, four-neighbour inverse-distance-squared interpolation and spherical Gaussian-process regression (GPR), at Griffiths coefficient 0.50 °C−1. c, GPR predictions and nominal 95% intervals for fifty-five held-out city–season summaries. Blue/terracotta mark covered/missed observations. Forty-five are covered (81.8%, Wilson interval 69.7–89.8%), with mean interval width 6.82 °C. d, Paired city-cluster bootstrap differences from the training-mean baseline in pooled MAE and RMSE under three Griffiths coefficients. Points and horizontal lines show estimates and intervals from fixed out-of-fold predictions. Negative values favour the spatial method.",
+            "Figure S15 | Whole-city holdout audit of coordinate-based spatial prediction. a,b, Held-out root-mean-square error (RMSE) and mean absolute error (MAE) for the training mean, four-neighbour inverse-distance-squared interpolation (IDW²) and spherical Gaussian-process regression (GPR), at Griffiths coefficient 0.50 °C−1. c, GPR predictions and nominal 95% intervals for fifty-five held-out city–season summaries. Blue/terracotta mark covered/missed observations. Forty-five are covered (81.8%, Wilson interval 69.7–89.8%), with mean interval width 6.82 °C. d, Paired city-cluster bootstrap differences from the training-mean baseline in pooled MAE and RMSE under three Griffiths coefficients. Points and horizontal lines show estimates and intervals from fixed out-of-fold predictions. Negative values favour the spatial method.",
             [
                 "spatial_method_audit/metrics_summary.csv",
                 "spatial_method_audit/oof_predictions.csv",

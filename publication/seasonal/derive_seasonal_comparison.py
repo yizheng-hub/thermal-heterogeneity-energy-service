@@ -18,7 +18,7 @@ import pandas as pd
 KEYS = ["context", "composition_id", "layout", "permission", "control"]
 PROFILE_KEYS = KEYS[:3]
 CONTROLS = ["uniform_average", "personal_center", "ltpref_interval"]
-LABELS = ["Uniform average", "Personal centre", "LTPref interval"]
+LABELS = ["Uniform average", "Personal centre", "Personal range"]
 COLORS = ["#7F7F7F", "#C8A36A", "#7FA995"]
 CONTEXTS = ["Miami", "NewDelhi", "PortAngeles_small2019", "Seattle_small2019"]
 CONTEXT_LABELS = ["Miami", "New Delhi", "Port Angeles", "Seattle"]
@@ -438,13 +438,13 @@ def render(table, args):
             right.set_ylabel('Monthly energy (MWh)')
             for ax in [left, right]:
                 ax.set_xlim(.8, 12.2)
-                ax.set_xticks([1, 3, 5, 7, 9, 11])
-                ax.set_xticklabels(['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'])
+                ax.set_xticks([1, 4, 7, 10])
+                ax.set_xticklabels(['January', 'April', 'July', 'October'], rotation=25, ha='right')
                 ax.tick_params(length=3, width=.7)
                 ax.grid(axis='y', color='#D8D8D8', linewidth=.45, zorder=0)
                 ax.set_axisbelow(True)
         title = 'Direct controls (variant 0)' if mode == 'direct' else 'Controls selected at the common annual service budget (fraction 1.0)'
-        figure.text(.5, .972, title, ha='center', fontsize=12, weight='bold')
+        figure.text(.5, .972, title, ha='center', fontsize=11)
         figure.legend([Line2D([], [], color=c, lw=1.8, marker=m, markerfacecolor='white', markersize=5)
                        for c, m in zip(COLORS, ['o', 's', '^'])], LABELS,
                       loc='upper center', bbox_to_anchor=(.5, .957), ncol=3, frameon=False,
@@ -464,7 +464,7 @@ def render(table, args):
             figure.savefig(stem.with_suffix('.' + ext), dpi=300, facecolor='white')
         plt.close(figure)
         caption = (f'Monthly service and energy from retained complete 8760-hour annual trajectories: {title.lower()}. '
-                   'Panels show all twelve months for the prespecified first composition, random mixing, and native-zone control permission. '
+                   'Panels show all twelve months for the prespecified first composition, random mixing, and zone-level control permission. '
                    'Left panels use absolute temperature-reference mismatch weighted by actual native people within the locked occupied window. '
                    'Right panels show uniform-average electricity components (heating, cooling, fans) and gas HHV as a stack; '
                    'the three control lines show total purchased HVAC electricity plus gas HHV. '
@@ -475,7 +475,7 @@ def render(table, args):
                    'all energy components, and carbon computed with the frozen regional factors are supplied in the accompanying tables. '
                    'Selections use annual service budgets; they do not establish that every monthly or seasonal budget is met. '
                    'No simulation was rerun; no control, physics, profile, annual-tail membership, or annual selection was changed. '
-                   'Service endpoints are model-reference measures, not observed satisfaction.\n')
+                   'Service endpoints are model-reference measures, not observed satisfaction. HVAC denotes heating, ventilation and air conditioning; HHV denotes higher heating value.\n')
         stem.with_name(stem.name + '_caption.txt').write_text(caption, encoding='utf-8')
 
 
@@ -523,13 +523,13 @@ def render_service_details(table, args):
             right.set_ylabel('Native person-hours\ncovered (%)')
             for ax in [left, right]:
                 ax.set_xlim(.8, 12.2)
-                ax.set_xticks([1, 3, 5, 7, 9, 11])
-                ax.set_xticklabels(['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'])
+                ax.set_xticks([1, 4, 7, 10])
+                ax.set_xticklabels(['January', 'April', 'July', 'October'], rotation=25, ha='right')
                 ax.tick_params(length=3, width=.7)
                 ax.grid(axis='y', color='#D8D8D8', linewidth=.45)
                 ax.set_axisbelow(True)
         title = 'Direct controls (variant 0)' if mode == 'direct' else 'Controls selected at the common annual service budget (fraction 1.0)'
-        figure.text(.5, .972, title, ha='center', fontsize=12, weight='bold')
+        figure.text(.5, .972, title, ha='center', fontsize=11)
         figure.legend([Line2D([], [], color=c, lw=1.8, marker=m, markerfacecolor='white', markersize=5)
                        for c, m in zip(COLORS, ['o', 's', '^'])], LABELS,
                       loc='upper center', bbox_to_anchor=(.5, .957), ncol=3, frameon=False,
@@ -546,7 +546,7 @@ def render_service_details(table, args):
             figure.savefig(stem.with_suffix('.' + ext), dpi=300, facecolor='white')
         plt.close(figure)
         caption = (f'Monthly model-reference service from retained complete annual simulations: {title.lower()}. '
-                   'The prespecified first composition, random-mixing placement, and native-zone permission are shown for all twelve months. '
+                   'The prespecified first composition, random-mixing placement, and zone-level permission are shown for all twelve months. '
                    'Solid lines in left panels are native-population-weighted absolute temperature-reference mismatch; '
                    'dashed lines are the equal mean of the same retained annual 27-tail profiles after each profile’s own native-occupied-time average. '
                    'The annual tail is never selected again within a month or season. Right panels show native-person-hour-weighted coverage '

@@ -198,7 +198,7 @@ def test_figure_3_separates_controls_from_qualification_representations():
         lower = text.lower()
         assert "uniform-average" in lower
         assert "personal-centre" in lower
-        assert "ltpref-interval" in lower
+        assert "personal-range" in lower
         assert "control families" in lower
         assert "mean and full-distribution" in lower
         assert "qualification representations" in lower

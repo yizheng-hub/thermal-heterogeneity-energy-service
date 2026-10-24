@@ -1037,3 +1037,29 @@ def save_figure_bundle(figure: Figure, output_directory: Path | str, stem: str) 
         }
     qa.write_text(json.dumps(audit, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return ExportBundle(pdf, svg, png_600, png_word, qa, audit)
+
+
+def clarify_control_caption(text, *, uses_three_controls=False):
+    """Keep each control figure understandable without the main text."""
+    text = text.replace("P10–P90/P25–P75", "10th–90th and 25th–75th percentile ranges")
+    text = text.replace("P10–P90", "10th–90th percentiles").replace("P25–P75", "25th–75th percentiles")
+    text = text.replace("percentiles ranges", "percentile ranges").replace("percentiles intervals", "percentile intervals")
+    text = text.replace("LTPref interval", "Personal range").replace("LTPref control", "Personal-range control")
+    text = text.replace("LTPref conditions", "personal-range conditions")
+    text = text.replace("native-zone", "zone-level").replace("building-bound", "building-wide")
+    text = text.replace("admitted", "engineering-checked").replace("Admitted", "Engineering-checked")
+    if uses_three_controls or "Personal range" in text or "personal-range" in text:
+        text = text.rstrip() + (" Personal range uses model-generated individual temperature ranges. "
+                               "All controls choose shared targets within the permitted spaces.")
+    if uses_three_controls and re.search(r"fixed[- ](?:annual[- ])?tail", text) and "worst served" not in text:
+        text += " The fixed tail tracks the profiles worst served by common 25 °C operation."
+    definitions = {
+        "HVAC": "HVAC denotes heating, ventilation and air conditioning.",
+        "HHV": "HHV denotes higher heating value.",
+        "INR": "INR denotes Indian rupees.",
+    }
+    for short, definition in definitions.items():
+        meaning = definition.split(" denotes ", 1)[1].rstrip(".")
+        if re.search(r"\b" + short + r"\b", text) and meaning.casefold() not in text.casefold():
+            text += " " + definition
+    return text

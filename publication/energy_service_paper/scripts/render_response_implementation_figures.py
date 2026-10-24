@@ -70,8 +70,8 @@ def render_five(results, output):
     if not full.all_baselines_service_qualified.eq(True).all():
         raise ValueError("Complete July portfolio baseline qualification is required")
     fig, axes = six_panel_canvas([
-        "Response and recovery power", "Event-plus-recovery energy", "Zone-bound portfolio",
-        "Building-bound portfolio", "Synchronized rebound", "Service during selected responses",
+        "Response and recovery power", "Event-plus-recovery energy", "Zone-level portfolio",
+        "Building-wide portfolio", "Synchronized rebound", "Service during selected responses",
     ], height=207, bounds=[(19, 155, 157, 28), (19, 105, 67, 27), (109, 105, 67, 27),
                            (19, 56, 67, 27), (109, 56, 67, 27), (19, 14, 157, 22)])
     records = []
@@ -89,7 +89,7 @@ def render_five(results, output):
     axes[0].set_ylabel("Power change (kW)")
     zero_axes(axes[0])
     axes[0].set_xticks([0, 2, 12, 24, 36, 48])
-    axes[0].text(.99, .08, "PTA solid / SEA dashed", ha="right", va="bottom",
+    axes[0].text(.99, .08, "Port Angeles: solid / Seattle: dashed", ha="right", va="bottom",
                  transform=axes[0].transAxes, color="black", fontsize=11)
     records.extend(dict(panel="a", context=context, control=control, metric="available_response_kw",
                         finite_cases=len(g), median_display=float(g.available_response_kw.median()))
@@ -157,18 +157,18 @@ def render_five(results, output):
                "requires both baseline and perturbed operation to meet population and fixed-tail "
                "temperature-mismatch limits during the event and recovery. All shown baselines meet the window "
                "limits. a, Hourly perturbed-minus-own-baseline electricity for complete 108-office portfolios "
-               "with native-zone commands. Shading marks the two-hour event. Solid and dashed lines denote Port "
+               "with zone-level commands. Shading marks the two-hour event. Solid and dashed lines denote Port "
                "Angeles and Seattle, respectively. The Miami and Delhi portfolios have zero change because no "
                "tested positive action qualifies. b, Single-office net electricity saving over 50 hours; points "
                "and whiskers denote cases and median interquartile ranges. c,d, Service-qualified response from "
-               "standardized 108-office portfolios with native-zone or building-bound commands. e, Synchronized "
-               "recovery excess peak with native-zone commands. f, Population and fixed-tail mismatch divided by "
-               "their own event and recovery limits, for all selected positive native-zone July responses (16 "
-               "uniform-average, 12 personal-centre and 12 LTPref conditions). Hollow and solid symbols identify "
+               "standardized 108-office portfolios with zone-level or building-wide commands. e, Synchronized "
+               "recovery excess peak with zone-level commands. f, Population and fixed-tail mismatch divided by "
+               "their own event and recovery limits, for all selected positive zone-level July responses (16 "
+               "uniform-average, 12 personal-centre and 12 personal-range conditions). Hollow and solid symbols identify "
                "baseline and perturbed operation. The dashed line is the qualification limit. Panel b uses nine "
                "composition–placement cases per control and context. Zero denotes an eligible baseline with no "
                "positive qualified tested action. Portfolios share declared composition, not observed city "
-               "stock. MIA/DEL/PTA/SEA denote Miami/New Delhi/Port Angeles/Seattle."
+               "stock."
     )
     )
     result = export_result(fig, axes, output, "Figure_05", caption=caption, sources={
@@ -199,14 +199,14 @@ def render_six(results, output):
         raise ValueError("The common-service US nonalias comparison must have 126 matched rows")
     fig, axes = six_panel_canvas([
         "Direct service and bill", "Common-service bill", "Implementation scenarios",
-        "Delhi charges", "Extra-group boundary", "Value of improved service",
+        "New Delhi charges", "Management-time allowance", "Required service value",
     ], control_key=False, height=187,
                                 bounds=[(19, 130, 67, 34), (109, 130, 67, 34),
                                         (19, 73, 87, 34), (130, 73, 46, 34),
                                         (19, 19, 67, 31), (109, 19, 67, 31)])
     fig.legend(handles=[Line2D([], [], marker=CONTROL_MARKERS[c], linestyle="none",
                                color=CONTROL_COLORS[c], markersize=5,
-                               label={"personal_center": "Personal centre", "ltpref_interval": "LTPref interval"}[c])
+                               label={"personal_center": "Personal centre", "ltpref_interval": "Personal range"}[c])
                         for c in ALTERNATIVES], loc="upper center", bbox_to_anchor=(.5, .995), ncol=2)
     records = []
     for control in ALTERNATIVES:
@@ -214,7 +214,7 @@ def render_six(results, output):
         axes[0].scatter(d.delta_interval_coverage_percentage_points, d.delta_energy_charge_usd_year,
                         color=CONTROL_COLORS[control], marker=CONTROL_MARKERS[control],
                         s=21, alpha=.85, linewidths=.35, edgecolors="white")
-    axes[0].set_xlabel("Coverage change (p.p.)")
+    axes[0].set_xlabel("Coverage change\n(percentage points)")
     axes[0].set_ylabel("Bill change (US$/year)")
     zero_axes(axes[0], x=True)
     # Each US context retains three compositions and placements at each distinct
@@ -232,7 +232,7 @@ def render_six(results, output):
                              markersize=4, capsize=2, linewidth=1.2)
             records.append(dict(panel="b", context=context, control=control, n=len(values),
                                 q25=q25, median=median, q75=q75))
-    axes[1].set_xticks([0, 1, 2], ["MIA", "PTA", "SEA"])
+    axes[1].set_xticks([0, 1, 2], ["Miami", "Port Angeles", "Seattle"])
     axes[1].set_ylabel("Bill change (US$/year)")
     axes[1].axhline(0, color="#B0B0B0", linewidth=.65)
     axes[1].yaxis.set_major_locator(MaxNLocator(4))
@@ -274,8 +274,8 @@ def render_six(results, output):
                             s=17, alpha=.8, linewidths=.3, edgecolors="white")
     axes[4].set_xticks([2, 4, 14])
     axes[4].set_xlim(.8, 15)
-    axes[4].set_xlabel("Extra independent groups")
-    axes[4].set_ylabel("Funded time (min/group/year)")
+    axes[4].set_xlabel("Additional control groups")
+    axes[4].set_ylabel("Time allowance (min/group/year)")
     axes[4].axhline(0, color="#B0B0B0", linewidth=.65)
     axes[4].yaxis.set_major_locator(MaxNLocator(4))
     miami = costs.query("scenario_id == 'existing_bms_light__median' and comparison_mode == 'direct' "
@@ -286,7 +286,7 @@ def render_six(results, output):
                         selected.minimum_additional_annual_external_value_for_resource_breakeven_usd,
                         color=CONTROL_COLORS[control], marker=CONTROL_MARKERS[control],
                         s=21, alpha=.85, linewidths=.35, edgecolors="white")
-    axes[5].set_xlabel("Coverage change (p.p.)")
+    axes[5].set_xlabel("Coverage change\n(percentage points)")
     axes[5].set_ylabel("Break-even value (US$/year)")
     zero_axes(axes[5], x=True)
     for letter, data in zip("abcdef", (direct, common, packages, delhi, d, miami)):
@@ -302,18 +302,18 @@ def render_six(results, output):
     caption = (
         (
                "Figure 6 | Service, energy bills and implementation resources. Control changes are relative to "
-               "uniform-average control under matched conditions. a, Native-zone direct US controls: interval "
+               "uniform-average control under matched conditions. a, Zone-level direct US controls: interval "
                "coverage versus annual energy-bill change. b, US bill changes under common temperature-mismatch "
                "requirements across distinct permissions (126 matched comparisons). Points and whiskers show "
                "cases and median interquartile ranges. c, Cumulative distribution of 118 declared resource-cost "
                "scenarios, with the US$294.70 existing-system package marked. The package includes annualized "
-               "setup and recurring management. d, Delhi direct native-zone bill components: electricity charge "
+               "setup and recurring management. d, Delhi direct zone-level bill components: electricity charge "
                "and gas use, one matched pair per control, before assigning a gas tariff. e, Annual manager-time "
                "allowance per additional command group before fixed costs (72 US comparisons). Positive and "
                "negative values convert bill savings and increases into management time, respectively. f, Miami "
                "direct service changes and additional annual benefit needed to cover energy and the light "
                "package. Currency values use declared historical prices. Costs are implementation scenarios, not "
-               "project quotes. MIA/PTA/SEA denote Miami/Port Angeles/Seattle."
+               "project quotes."
     )
     )
     result = export_result(fig, axes, output, "Figure_06", caption=caption, sources=paths)

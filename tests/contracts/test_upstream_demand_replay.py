@@ -21,6 +21,26 @@ def test_external_scene_asset_is_locked_before_loading(tmp_path):
         REPLAY.numeric_scenes(asset)
 
 
+def test_released_numeric_scenes_need_no_question_text_or_dialogue():
+    path = SOURCE.parents[1] / "data/numeric_scene_spec_v1.json"
+    scenes = REPLAY.numeric_scenes(path, numeric_only=True)
+    assert len(scenes) == 19
+    assert {scene["scene_id"] for scene in scenes} == set(REPLAY.SCENE_LOGIC)
+    for scene in scenes:
+        assert set(scene) == {"scene_id", "pmv_range", "physical_parameters",
+                              "evidence_strength", "evidence_influence_profile"}
+        assert set(scene["physical_parameters"]) == {"air_temp", "mrt", "air_velocity", "relative_humidity"}
+        assert set(scene["evidence_influence_profile"]) <= {"secondary_weight", "decay_tau"}
+
+
+def test_released_numeric_scene_tampering_is_rejected(tmp_path):
+    path = SOURCE.parents[1] / "data/numeric_scene_spec_v1.json"
+    altered = tmp_path / "numeric_scene_spec.json"
+    altered.write_bytes(path.read_bytes() + b" ")
+    with pytest.raises(ValueError, match="numeric_scenes SHA-256 differs"):
+        REPLAY.numeric_scenes(altered, numeric_only=True)
+
+
 def test_cohort_groups_subjects_retains_air_fallback_and_exports_no_original_ids():
     measured = pd.DataFrame({
         "record_id": [101, 102, 103, 104, 105], "building_id": [91] * 5,

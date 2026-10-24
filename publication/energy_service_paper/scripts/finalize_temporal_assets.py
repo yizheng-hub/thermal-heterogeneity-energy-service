@@ -6,6 +6,7 @@ import json
 import re
 import shutil
 import tempfile
+from thermal_heterogeneity.figures import clarify_control_caption
 
 OLD_TO_NEW = {1: 16, 2: 2, 3: 1, 4: 3, 5: 4, 6: 5, 7: 6, 8: 7,
               9: 17, 10: 10, 11: 8, 12: 9, 13: 20, 14: 21, 15: 22,
@@ -67,6 +68,9 @@ def finalize(paper, seasonal, typical):
             copy_bundle(retained / f"Figure_S{old:02d}", folder / f"Figure_S{new:02d}")
             caption = (retained / f"Figure_S{old:02d}_caption.txt").read_text(encoding="utf-8")
             body = figure_references(caption.split("|", 1)[1].strip())
+            if new == 21:
+                body += (" Panel f reports carrier changes in MWh/year; panel g reports "
+                         "interactions in the count of service-qualified actions.")
             (folder / f"Figure_S{new:02d}_caption.txt").write_text(f"Supplementary Figure S{new} | {body}\n", encoding="utf-8")
             item["display_number"] = new
     additions = [(18, "seasonal_direct", seasonal / "Supplementary_monthly_direct"),
@@ -75,7 +79,8 @@ def finalize(paper, seasonal, typical):
     for number, key, stem in additions:
         copy_bundle(stem, folder / f"Figure_S{number:02d}")
         raw = Path(str(stem) + "_caption.txt")
-        body = raw.read_text(encoding="utf-8").split("|", 1)[-1].strip()
+        body = clarify_control_caption(raw.read_text(encoding="utf-8").split("|", 1)[-1].strip(),
+                                       uses_three_controls=True)
         (folder / f"Figure_S{number:02d}_caption.txt").write_text(f"Supplementary Figure S{number} | {body}\n", encoding="utf-8")
         order.append({"display_number": number, "source_figure_number": key,
                       "caption_source_sha256": digest(raw)})
@@ -102,7 +107,8 @@ def finalize(paper, seasonal, typical):
     extended = seasonal / "Figure_03_extended"
     copy_bundle(extended, paper / "figures/figure_03/figure_03")
     copy_bundle(extended, paper / "figures/Figure_03")
-    caption = Path(str(extended) + "_caption.txt").read_text(encoding="utf-8")
+    caption = clarify_control_caption(Path(str(extended) + "_caption.txt").read_text(encoding="utf-8"),
+                                      uses_three_controls=True)
     for name in ("caption.txt", "alt_text.txt"):
         (paper / "captions_alt/figure_03" / name).write_text(caption, encoding="utf-8")
     (paper / "figures/Figure_03_caption.txt").write_text(caption, encoding="utf-8")

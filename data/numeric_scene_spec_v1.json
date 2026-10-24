@@ -1,0 +1,344 @@
+[
+  {
+    "scene_id": "cinema_strong_cooling_summer",
+    "pmv_range": [
+      -1.4,
+      -1.0
+    ],
+    "physical_parameters": {
+      "air_temp": 24.0,
+      "mrt": 24.0,
+      "air_velocity": 0.35,
+      "relative_humidity": 60
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.15,
+      "decay_tau": 0.5
+    }
+  },
+  {
+    "scene_id": "metro_strong_cooling_summer",
+    "pmv_range": [
+      -1.3,
+      -0.9
+    ],
+    "physical_parameters": {
+      "air_temp": 23.0,
+      "mrt": 22.5,
+      "air_velocity": 0.35,
+      "relative_humidity": 55
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.2,
+      "decay_tau": 0.6
+    }
+  },
+  {
+    "scene_id": "metro_weak_cooling_summer",
+    "pmv_range": [
+      -0.6,
+      -0.2
+    ],
+    "physical_parameters": {
+      "air_temp": 25.0,
+      "mrt": 24.5,
+      "air_velocity": 0.25,
+      "relative_humidity": 60
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.2,
+      "decay_tau": 0.6
+    }
+  },
+  {
+    "scene_id": "shopping_mall_cooling_summer",
+    "pmv_range": [
+      -0.8,
+      -0.4
+    ],
+    "physical_parameters": {
+      "air_temp": 24.5,
+      "mrt": 24.0,
+      "air_velocity": 0.25,
+      "relative_humidity": 55
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.2,
+      "decay_tau": 0.5
+    }
+  },
+  {
+    "scene_id": "office_ac_strong_cooling_summer",
+    "pmv_range": [
+      -1.0,
+      -0.7
+    ],
+    "physical_parameters": {
+      "air_temp": 22.5,
+      "mrt": 22.5,
+      "air_velocity": 0.15,
+      "relative_humidity": 50
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.35,
+      "decay_tau": 0.4
+    }
+  },
+  {
+    "scene_id": "office_transition_cool",
+    "pmv_range": [
+      -0.8,
+      -0.4
+    ],
+    "physical_parameters": {
+      "air_temp": 23.5,
+      "mrt": 23.0,
+      "air_velocity": 0.15,
+      "relative_humidity": 55
+    },
+    "evidence_strength": 0.4,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.25,
+      "decay_tau": 0.7
+    }
+  },
+  {
+    "scene_id": "office_initial_cold_adaptation",
+    "pmv_range": [
+      -0.4,
+      0.0
+    ],
+    "physical_parameters": {
+      "air_temp": 23.5,
+      "mrt": 23.0,
+      "air_velocity": 0.15,
+      "relative_humidity": 55
+    },
+    "evidence_strength": 0.4,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.2,
+      "decay_tau": 0.8
+    }
+  },
+  {
+    "scene_id": "office_avoid_cold_draft",
+    "pmv_range": [
+      -0.6,
+      0.0
+    ],
+    "physical_parameters": {
+      "air_temp": 24.0,
+      "mrt": 24.0,
+      "air_velocity": 0.3,
+      "relative_humidity": 50
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.35,
+      "decay_tau": 0.5
+    }
+  },
+  {
+    "scene_id": "office_warm_tolerable_summer",
+    "pmv_range": [
+      0.2,
+      0.6
+    ],
+    "physical_parameters": {
+      "air_temp": 26.0,
+      "mrt": 26.0,
+      "air_velocity": 0.1,
+      "relative_humidity": 55
+    },
+    "evidence_strength": 0.4,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.35,
+      "decay_tau": 0.6
+    }
+  },
+  {
+    "scene_id": "neutral_indoor_unnoticed_ac",
+    "pmv_range": [
+      -0.2,
+      0.2
+    ],
+    "physical_parameters": {
+      "air_temp": 24.5,
+      "mrt": 24.5,
+      "air_velocity": 0.1,
+      "relative_humidity": 50
+    },
+    "evidence_strength": 0.4,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.2,
+      "decay_tau": 1.0
+    }
+  },
+  {
+    "scene_id": "office_slightly_warm_preference",
+    "pmv_range": [
+      0.3,
+      0.6
+    ],
+    "physical_parameters": {
+      "air_temp": 26,
+      "mrt": 25.5,
+      "air_velocity": 0.1,
+      "relative_humidity": 45
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.1,
+      "decay_tau": 0.6
+    }
+  },
+  {
+    "scene_id": "office_avoid_draft",
+    "pmv_range": [
+      -0.4,
+      0.0
+    ],
+    "physical_parameters": {
+      "air_temp": 24.0,
+      "mrt": 25.0,
+      "air_velocity": 0.3,
+      "relative_humidity": 50
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.35,
+      "decay_tau": 0.5
+    }
+  },
+  {
+    "scene_id": "sunlit_room_preference",
+    "pmv_range": [
+      0.5,
+      1.5
+    ],
+    "physical_parameters": {
+      "air_temp": 27.0,
+      "mrt": 27.5,
+      "air_velocity": 0.05,
+      "relative_humidity": 40
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.1,
+      "decay_tau": 0.7
+    }
+  },
+  {
+    "scene_id": "meeting_room_low_cooling",
+    "pmv_range": [
+      0.6,
+      1.0
+    ],
+    "physical_parameters": {
+      "air_temp": 26.5,
+      "mrt": 26.5,
+      "air_velocity": 0.1,
+      "relative_humidity": 45
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.2,
+      "decay_tau": 0.6
+    }
+  },
+  {
+    "scene_id": "summer_bbq_outdoor_choice",
+    "pmv_range": [
+      1.0,
+      1.5
+    ],
+    "physical_parameters": {
+      "air_temp": 28.0,
+      "mrt": 28.5,
+      "air_velocity": 0.2,
+      "relative_humidity": 60
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.3,
+      "decay_tau": 0.8
+    }
+  },
+  {
+    "scene_id": "summer_bbq_indoor_ac_choice",
+    "pmv_range": [
+      0.0,
+      0.7
+    ],
+    "physical_parameters": {
+      "air_temp": 26.0,
+      "mrt": 26.0,
+      "air_velocity": 0.15,
+      "relative_humidity": 55
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.25,
+      "decay_tau": 0.7
+    }
+  },
+  {
+    "scene_id": "summer_adjust_ac_frequently",
+    "pmv_range": [
+      1.0,
+      1.4
+    ],
+    "physical_parameters": {
+      "air_temp": 27.5,
+      "mrt": 27.5,
+      "air_velocity": 0.15,
+      "relative_humidity": 55
+    },
+    "evidence_strength": 1.0,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.25,
+      "decay_tau": 0.6
+    }
+  },
+  {
+    "scene_id": "summer_no_ac_energy_saving",
+    "pmv_range": [
+      1.5,
+      2.0
+    ],
+    "physical_parameters": {
+      "air_temp": 29.0,
+      "mrt": 29.0,
+      "air_velocity": 0.1,
+      "relative_humidity": 60
+    },
+    "evidence_strength": 0.4,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.6,
+      "decay_tau": 0.7
+    }
+  },
+  {
+    "scene_id": "short_stay_no_ac",
+    "pmv_range": [
+      1.4,
+      2.0
+    ],
+    "physical_parameters": {
+      "air_temp": 29.5,
+      "mrt": 29.5,
+      "air_velocity": 0.1,
+      "relative_humidity": 55
+    },
+    "evidence_strength": 0.4,
+    "evidence_influence_profile": {
+      "secondary_weight": 0.4,
+      "decay_tau": 0.8
+    }
+  }
+]

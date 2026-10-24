@@ -20,21 +20,22 @@ import pandas as pd
 from replay import digest, load, save
 
 COLORS = {"uniform_average": "#7F7F7F", "personal_center": "#C8A36A", "ltpref_interval": "#7FA995"}
-LABELS = {"uniform_average": "Uniform average", "personal_center": "Personal centre", "ltpref_interval": "LTPref interval"}
+LABELS = {"uniform_average": "Uniform average", "personal_center": "Personal centre", "ltpref_interval": "Personal range"}
 MARKERS = {"uniform_average": "o", "personal_center": "s", "ltpref_interval": "D"}
 CONTEXTS = [("Miami", "Miami"), ("NewDelhi", "New Delhi"), ("PortAngeles_small2019", "Port Angeles"), ("Seattle_small2019", "Seattle")]
 CLASSES = ["original_maximum", "median", "high90_nonmaximum"]
-CLASS_LABELS = ["Peak", "Median", "High 90th"]
+CLASS_LABELS = ["Peak load", "Median load", "90th\npercentile"]
 
 CAPTION = (
     "Supplementary Fig. 13 | July demand response across three source load classes. "
     "Panels show the Miami (a), New Delhi (b), Port Angeles (c) and Seattle (d) representative building contexts "
-    "for composition 2026102001, random mixing and native-zone control. The peak date maximizes common-25 "
+    "for composition 2026102001, random mixing and zone-level control. The peak date maximizes common-25 "
     "baseline weekday electrical HVAC use from 14:00 to 16:00; added dates are nearest the median and 90th "
     "percentile, excluding the peak. Dates use the source simulation calendar. Faint dashed curves show the "
     "physical response to a +1 °C shift. Solid curves show the largest positive service-qualified response "
     "among +0.5/+1 °C actions, with zero for a qualified baseline lacking a qualified action. Mean and fixed "
-    "annual-tail limits apply separately to the event and next 48 hours. Each context has its own vertical scale."
+    "annual-tail limits apply separately to the event and next 48 hours. Each context has its own vertical scale. "
+    "HVAC denotes heating, ventilation and air conditioning."
 )
 
 
@@ -70,7 +71,8 @@ def main():
     source = figure_source(args.replay_root.resolve())
     normal_path = font_manager.findfont(FontProperties(family="Times New Roman", style="normal", weight="normal"), fallback_to_default=False)
     bold_path = font_manager.findfont(FontProperties(family="Times New Roman", style="normal", weight="bold"), fallback_to_default=False)
-    normal, bold = FontProperties(fname=normal_path, size=11), FontProperties(fname=bold_path, size=12)
+    normal = FontProperties(fname=normal_path, family="Times New Roman", weight="normal", size=11)
+    bold = FontProperties(fname=bold_path, family="Times New Roman", weight="bold", size=12)
     if normal.get_name() != "Times New Roman" or bold.get_name() != "Times New Roman":
         raise ValueError("Exact Times New Roman normal and bold fonts are required")
     plt.rcParams.update({"font.family": "Times New Roman", "font.size": 11, "text.color": "black",
@@ -98,9 +100,9 @@ def main():
             ax.plot(x, subset.service_qualified_available_response_kw, linewidth=1.15, color=COLORS[control],
                     marker=MARKERS[control], markersize=4.5, markeredgewidth=.5, markeredgecolor="white", zorder=3)
         days = rows.drop_duplicates("date_class").set_index("date_class").loc[CLASSES].event_day.astype(int)
-        ax.set_xticks(np.arange(3), [f"{label}\n{day} Jul" for label, day in zip(CLASS_LABELS, days)])
+        ax.set_xticks(np.arange(3), [f"{label}\n{day} July" for label, day in zip(CLASS_LABELS, days)])
         ax.set_xlim(-.37, 2.37)
-        ax.set_ylabel("2-h electrical reduction (kW)", fontproperties=normal, labelpad=5)
+        ax.set_ylabel("Two-hour reduction (kW)", fontproperties=normal, labelpad=5)
         ax.axhline(0, color="#B0B0B0", linewidth=.6, zorder=0)
         ax.spines[["top", "right"]].set_visible(False)
         ax.spines[["left", "bottom"]].set_linewidth(.75)
@@ -117,7 +119,7 @@ def main():
                        Line2D([], [], color="#777777", marker="o", label="Service-qualified availability")]
     meaning_legend = fig.legend(handles=meaning_handles, loc="upper center", bbox_to_anchor=(.545, .935), ncol=2,
                                frameon=False, prop=normal, handlelength=1.9, columnspacing=1.4, handletextpad=.5)
-    footer = fig.text(.545, .071, "Source-day class and date", ha="center", va="center", fontproperties=normal)
+    footer = fig.text(.545, .071, "Baseline load class and date", ha="center", va="center", fontproperties=normal)
     fig.canvas.draw()
     renderer = fig.canvas.get_renderer()
     text_artists = [text for text in fig.findobj(Text) if text.get_visible() and text.get_text()]

@@ -50,20 +50,20 @@ CAPTIONS = {
         (
         (
         "Figure 1 | Observed thermal demand and shared-room requests. a,b, City demand centres, estimated "
-        "from measured temperatures and sensation votes. Marker area denotes analysis-unit count, colour "
-        "denotes temperature, and hollow markers denote unsupported summaries. Units group subject IDs "
-        "within building IDs; unidentified records remain separate. Warm/cold support is 31/40 "
-        "and 26/40 cities, without interpolation. c, Medians and P10–P90 by city and source (Src), for "
-        "warm (W) and cold (C) seasons. d, Unit-weighted variance in 187 database building groups: "
+        "from measured temperatures and sensation votes. Marker area shows analysis-unit count, colour "
+        "shows temperature, and hollow markers indicate unsupported summaries. Units group subjects "
+        "within buildings; unidentified records remain separate. Warm/cold support is 31/40 "
+        "and 26/40 cities, without interpolation. c, Medians and P10–P90 by city and source for "
+        "warm and cold seasons. d, Unit-weighted variance in 187 database building groups: "
         "150 original and 37 inferred IDs. e, "
         "Record-equal shares below, within and above nine policy/design ranges at Griffiths coefficient "
-        "0.50. Labels give within-range percentages, whiskers give nested-bootstrap 95% intervals, and "
-        "country codes identify jurisdictions. f, Demand minus campaign target. Thin/thick segments give "
+        "0.50. Labels give within-range percentages and whiskers give nested-bootstrap 95% intervals. "
+        "f, Demand minus campaign target. Thin/thick segments give "
         "P10–P90/P25–P75 and points give medians. g, Leave-one-source ranges and medians across 12 "
-        "coefficient/weighting specifications and 27 source removals. h, Direct requests in 63 NUS and 34 "
-        "ENTH room-windows. Mutually exclusive categories are Same (identical), Mixed (different without "
+        "coefficient/weighting specifications and 27 source removals. h, Direct requests in 63 Singapore-study and 34 "
+        "longitudinal-study room-windows. Mutually exclusive categories are Same (identical), Mixed (different without "
         "opposing requests), and Opposed (warmer/cooler together). Different requests total Mixed plus "
-        "Opposed: NUS 43 + 6 = 49 and ENTH 20 + 2 = 22. Labels give window counts."
+        "Opposed: Singapore study 43 + 6 = 49 and longitudinal study 20 + 2 = 22. "
     )
     )
     ),
@@ -79,7 +79,7 @@ CAPTIONS = {
     "burden) across window lengths, with crossed room/date cluster-bootstrap 95% intervals. g, "
     "ENTH (34 windows, 81 votes) and NUS (63 windows, 225 votes). Windows are the inferential "
     "unit. Definitions are given in Supplementary Section S7.",
-    3: "Figure 3 | Annual energy and carbon under demand-centre perturbations. Panels a–d use exchanged archive pools and a common plan library. Panels e,f use separately retargeted controls. a, Assigned P10–P90 intervals and centres in four building/weather contexts. Thin/thick marks show seeds/medians. Terracotta/mauve/blue/green denote Miami/New Delhi/Port Angeles/Seattle. b,c, Median and interquartile matched changes in purchased HVAC site energy and operational CO₂ relative to Δ=0, λ=1. Count rows follow Δ=−2, −1, +1, +2 °C. d, Median signed carrier changes at Δ=+2 °C, with diamonds showing totals (59 matched, 85 unmatched). e, Three-coefficient directions among 130 comparisons matched at the default demand definition: 54 increases, 3 decreases, 36 ties, 7 unstable, 30 unmatched. Circle area and labels encode counts. Small grey dots denote zero. PC/LT denote personal-centre/LTPref controls. f, Griffiths energy/carbon and interval-width outcome shares, using e’s key. Mia/Del/PA/Sea identify contexts, Multi the multinational archive pool, and E energy. Carbon uses fixed regional factors.",
+    3: 'Figure 3 | Demand composition, energy and carbon. a–d use exchanged archive pools and one plan library; e,f use regenerated controls. a, Centres and P10–P90 ranges, with United States, multinational and India pools ordered within each city. Thin/thick marks show seeds/medians. b,c, Median and interquartile matched site-energy and carbon changes from Δ=0, λ=1. Count rows follow Δ=−2, −1, +1, +2 °C. d, Carrier changes at Δ=+2 °C; diamonds show totals (59 matched, 85 unmatched). e, Three-coefficient outcomes among 130 comparisons: 54 increases, 3 decreases, 36 ties, 7 unstable, 30 unmatched. Personal centre and Personal range occupy separate four-city row groups. Symbol area and labels give counts; grey dots denote zero. f, Coefficient and interval-width outcome shares, using e’s key. Regional carbon factors are fixed.',
     4: "Figure 4 | Annual service qualification across demand-spread scenarios. a, Fixed-centre "
     "density ridges for the Miami multinational composition, scaled separately to equal height. "
     "Thick segments show P10–P90. b, Full-demand and mean-based selections among 144 design cells "
@@ -108,7 +108,7 @@ CAPTIONS = {
     "negative/zero/positive changes. g, July/February positive-selection counts on a common scale. "
     "There are 144 design cells per setting. February has 0/144 at the central reference and "
     "210/2,880 over its complete grid.",
-    6: "Figure 6 | Demand summaries, service qualification and annual decision cost. a,b, Classes across demand-centre spread and service budgets. Safe denotes mean/full agreement on every candidate's eligibility and the selected plan. Distribution denotes disagreement despite an available full-qualified plan. Unresolved denotes no full-qualified plan. c, False-safe/false-required errors at the 1.059 °C threshold. d, Median and interquartile absolute tail-score errors and eligibility disagreement against full review. e, Mean-only/q3/q5 results (grey/gold/green) under context-seed/population holdout (circles/squares). q3/q5 retain three/five near-equal-count bin means per zone, with population and fixed-tail counts. In context-seed holdout, outlined q5+q95 retains 14,709/18,766 full-qualified candidate evaluations and covers 542/606 solvable cases, without false acceptance observed in tested folds. f, Ordinal ranked probability score (RPS) and tail-share mean absolute error (MAE) under city/source holdouts, with 95% bootstrap intervals. g, Extra annual HVAC energy versus each case's full-information minimum-energy qualified plan. Grey diamonds/lines show medians/P10–P90. Labels give matched/available counts. The 64 protected-unmatched and 402 full-unavailable cases are excluded.",
+    6: 'Figure 6 | Demand summaries, qualification and annual decision cost. a,b, Decision classes across demand spread and service limits. Mean sufficient: mean/full agreement on all candidates and the selected plan. Distribution needed: disagreement despite a full-qualified plan. No qualified plan: no full-qualified option. c, False-safe/false-required errors at 1.059 °C. d, Median and interquartile absolute tail-score errors and eligibility disagreement. e, Mean-only, three-group and five-group summaries under context-seed/population holdouts (circles/squares). Each zone uses groups with similar profile counts. The outlined protected five-group summary uses a one-sided 95% training margin. Context-seed tests retain 14,709/18,766 full-qualified evaluations and cover 542/606 solvable cases, with zero observed false acceptance. f, Ordinal ranked probability score (RPS) and tail-share mean absolute error (MAE), with city/source holdouts and 95% bootstrap intervals. g, Extra annual HVAC energy against full-information minimum-energy qualified plans. Diamonds/lines show medians/P10–P90. Counts are matched/available; exclusions: 64 protected-unmatched and 402 full-unavailable.',
 }
 
 
@@ -291,7 +291,7 @@ def restructure(figure, figure_number: int):
         )
         artist.set_gid("stage7-result-panel-title")
         sensitivity_labels = {
-            "g · energy\nn=130": "Griffiths E\nn=130",
+            "g · energy\nn=130": "Griffiths\nenergy\nn=130",
             "g · CO₂\nn=130": "Griffiths CO₂\nn=130",
             "width · energy\nn=288": "Interval width\nn=288",
         }
@@ -611,6 +611,10 @@ def presentation_refinement(figure, axes, number):
         axes[0].set_ylim(-1, 115)
         axes[0].get_legend().set_bbox_to_anchor((0.5, 0.84))
     elif number == 3:
+        for artist in list(axes[0].texts):
+            if " · " in artist.get_text():
+                artist.remove()
+        axes[0].set_yticks([1, 4, 7, 10], ["Miami", "New Delhi", "Port Angeles", "Seattle"])
         axes[2].set_ylabel("CO₂ change (t/year)")
         axes[4].set_ylabel("Paired definitions")
         legend = axes[3].get_legend()
@@ -753,7 +757,7 @@ def submission_layout(figure, axes, number):
 
     if number == 1:
         for axis in axes[2:4]:
-            place(axis, (axis.get_position().x0, 0.570, 0.34, 0.150))
+            place(axis, (axis.get_position().x0, 0.570, axis.get_position().width, 0.150))
     elif number == 2:
         handles, labels = axes[4].get_legend_handles_labels()
         axes[4].get_legend().remove()
@@ -769,8 +773,8 @@ def submission_layout(figure, axes, number):
         )
     elif number == 3:
         for axis, bottom, heading, rows in [
-            (axes[1], 0.730, 0.952, [0.930, 0.908]),
-            (axes[2], 0.400, 0.622, [0.600, 0.578]),
+            (axes[1], 0.730, 0.952, [0.930, 0.908, 0.886, 0.864]),
+            (axes[2], 0.400, 0.622, [0.600, 0.578, 0.556, 0.534]),
         ]:
             lower, _ = axis.get_ylim()
             # Explicit ticks had also changed the lower bound after the old
@@ -779,19 +783,21 @@ def submission_layout(figure, axes, number):
             axis.set_ylim(lower, data_upper + 0.05 * (data_upper - data_lower))
             if axis.dataLim.ymin < axis.get_ylim()[0] or axis.dataLim.ymax > axis.get_ylim()[1]:
                 raise RuntimeError("Restored Fig. 3 display range clips data")
-            place(axis, (axis.get_position().x0, bottom, 0.34, 0.155))
+            place(axis, (axis.get_position().x0, bottom, 0.34, 0.120))
             panel_title(axis, bottom + 0.245)
             table = [artist for artist in axis.texts if "-n-table" in str(artist.get_gid())]
+            row_number = 0
             for artist in table:
                 text = artist.get_text()
                 artist.set_transform(figure.transFigure)
                 if text.startswith("matched n"):
+                    artist.set_text("Matched counts by shift")
                     artist.set_position((axis.get_position().x0 + 0.17, heading))
                 else:
-                    label = text.split()[0]
-                    column = 0 if label in {"Mia", "PA"} else 1
-                    row = 0 if label in {"Mia", "Del"} else 1
-                    artist.set_position((axis.get_position().x0 + column * 0.17, rows[row]))
+                    artist.set_position((axis.get_position().x0, rows[row_number]))
+                    row_number += 1
+        place(axes[4], (0.13, 0.090, 0.34, 0.205))
+        panel_title(axes[4], 0.320)
     elif number == 4:
         for index, x in [(1, 0.13), (2, 0.62), (3, 0.13), (4, 0.62)]:
             axis = axes[index]
@@ -801,7 +807,7 @@ def submission_layout(figure, axes, number):
             panel_title(parent, 0.335)
         carbon, carrier = axes[5].child_axes
         place(carbon, (0.13, 0.095, 0.17, 0.195))
-        place(carrier, (0.36, 0.095, 0.13, 0.195))
+        place(carrier, (0.36, 0.115, 0.13, 0.175))
         for artist in list(axes[5].texts):
             artist.remove()
         axes[5].text(0.215, 0.307, "Carbon", transform=figure.transFigure, ha="center", va="center")
@@ -826,17 +832,27 @@ def submission_layout(figure, axes, number):
                 place(axis, (0.64, 0.035, 0.32, 0.007))
     elif number == 5:
         parent = axes[5]
+        place(parent, (0.64, 0.205, 0.34, 0.135))
+        row_positions = {0.78: 0.85, 0.58: 0.61, 0.35: 0.36, 0.15: 0.12}
         for line in parent.lines:
             values = list(line.get_xdata())
             if values == [0.66, 0.66]:
                 line.set_xdata([0.45, 0.45])
             elif values == [0.48, 0.82]:
                 line.set_xdata([0.05, 0.85])
+                old_y = float(line.get_ydata()[0])
+                new_y = row_positions.get(round(old_y, 2), old_y)
+                line.set_ydata([new_y, new_y])
         for collection in parent.collections:
             points = collection.get_offsets().copy()
             points[:, 0] = 0.45 + 0.40 * (points[:, 0] - 0.66) / 0.14
+            old_y = min(row_positions, key=lambda value: abs(float(points[:, 1].mean()) - value))
+            points[:, 1] += row_positions[old_y] - old_y
             collection.set_offsets(points)
         for artist in parent.texts:
+            old_y = float(artist.get_position()[1])
+            artist.set_y(row_positions.get(round(old_y, 2), old_y))
+            artist.set_linespacing(0.9)
             if artist.get_text().startswith("±"):
                 artist.set_x(0.98)
             else:
@@ -1113,33 +1129,34 @@ def refine_control_outcomes(figure, ax):
     labels = ["Decrease", "Increase", "Tie", "Unstable", "Unmatched"]
     cities = ["Miami", "NewDelhi", "PortAngeles_small2019", "Seattle_small2019"]
     ax.clear()
-    for x, (control, city) in enumerate(
+    for row, (control, city) in enumerate(
         (method, city) for method in ["personal_center", "ltpref_interval"] for city in cities
     ):
+        y = row if row < 4 else row + 1
         q = data[
             (data.alternative_control == control) & (data.context == city)
         ].energy_direction.value_counts()
-        for y, kind in enumerate(kinds):
+        for x, kind in enumerate(kinds):
             count = int(q.get(kind, 0))
             if count:
                 ax.scatter(
-                    x, y, s=18 + count * 23, color=OUTCOME_COLORS[kind], alpha=0.85, zorder=2
+                    x, y, s=8 + count * 8, color=OUTCOME_COLORS[kind], alpha=0.85, zorder=2
                 )
                 ax.text(x, y, str(count), ha="center", va="center")
             else:
                 ax.scatter(x, y, s=4, color="#DDDDDD")
-    ax.set_xlim(-0.6, 7.6)
-    ax.set_ylim(4.6, -0.6)
-    ax.set_yticks(range(5), labels)
-    ax.set_xticks(
-        range(8),
-        ["PC\nMia", "PC\nDel", "PC\nPA", "PC\nSea", "LT\nMia", "LT\nDel", "LT\nPA", "LT\nSea"],
-    )
+    ax.set_xlim(-0.6, 4.6)
+    ax.set_ylim(8.6, -1.3)
+    ax.set_yticks([0, 1, 2, 3, 5, 6, 7, 8], ["Miami", "New Delhi", "Port Angeles", "Seattle"] * 2)
+    ax.set_xticks(range(5), labels, rotation=60, ha="right")
+    ax.text(2, -0.9, "Personal centre", ha="center", va="center")
+    ax.text(2, 4.1, "Personal range", ha="center", va="center")
+    ax.set_ylabel("")
     for spine in ax.spines.values():
         spine.set_visible(False)
     ax.tick_params(length=0)
     ax.set_title(
-        "(e) Three-control outcomes", loc="left", fontsize=12, weight="bold", pad=9
+        "(e) Energy-change directions", loc="left", fontsize=12, weight="bold", pad=9
     ).set_gid("stage7-result-panel-title")
 
 
@@ -1341,13 +1358,13 @@ def refine_figure_one(figure, axes):
     panel = figure._stage7_panel_root
     # Common column endpoints. Maps span one column each without wide margins.
     bounds = [
-        (0.13, 0.795, 0.34, 0.16),
-        (0.64, 0.795, 0.34, 0.16),
-        (0.13, 0.555, 0.34, 0.145),
-        (0.64, 0.555, 0.34, 0.145),
-        (0.13, 0.255, 0.34, 0.215),
-        (0.64, 0.255, 0.34, 0.215),
-        (0.13, 0.060, 0.34, 0.110),
+        (0.16, 0.795, 0.31, 0.16),
+        (0.67, 0.795, 0.31, 0.16),
+        (0.16, 0.555, 0.31, 0.145),
+        (0.67, 0.555, 0.31, 0.145),
+        (0.16, 0.255, 0.31, 0.215),
+        (0.67, 0.255, 0.31, 0.215),
+        (0.16, 0.060, 0.31, 0.110),
     ]
     for ax, pos in zip(axes, bounds):
         ax.set_position(pos)
@@ -1428,7 +1445,7 @@ def refine_figure_one(figure, axes):
         y = j + np.linspace(-0.30, 0.30, len(q))
         ax.hlines(y, q.p10_c, q.p90_c, color="#ACCAD8", lw=0.65, alpha=0.75)
         ax.scatter(q.p50_c, y, s=7, color="#6F9EBC", zorder=3)
-    ax.set_yticks(range(4), ["City/W", "City/C", "Src/W", "Src/C"])
+    ax.set_yticks(range(4), ["City, warm", "City, cold", "Source, warm", "Source, cold"])
     ax.invert_yaxis()
     ax.set_xlim(14, 33)
     ax.set_xticks([16, 24, 32])
@@ -1441,7 +1458,7 @@ def refine_figure_one(figure, axes):
     ax.clear()
     d = pd.read_csv(panel / "Fig1e.csv").set_index("component")
     keys = ["country", "city", "release_building_group_id", "release_unit_id", "within_unit"]
-    labels = ["Country", "City", "Building", "Within bldg", "Repeat"]
+    labels = ["Country", "City", "Building", "Within building", "Repeated records"]
     v = d.loc[keys, "share"].to_numpy() * 100
     cols = VARIANCE_COLORS
     for y, val, col in zip(range(5), v, cols):
@@ -1461,7 +1478,7 @@ def refine_figure_one(figure, axes):
     ax.clear()
     d = pd.read_csv(panel / "Fig1f.csv")
     policies = list(dict.fromkeys(d.policy))
-    compact = ["AUS", "BRA", "CAN", "IND", "IDN", "MYS", "SGP", "SWE", "USA"]
+    compact = ["Australia", "Brazil", "Canada", "India", "Indonesia", "Malaysia", "Singapore", "Sweden", "United States"]
     colors = {"below": "#6F9EBC", "within": "#D2D2D2", "above": "#C78470"}
     for y, policy in enumerate(policies):
         q = d[d.policy == policy].set_index("position")
@@ -1535,14 +1552,14 @@ def refine_figure_one(figure, axes):
     for text in list(ax.texts):
         text.remove()
     ax.set_xlim(0, 75)
-    ax.set_yticks(range(5), ["Within bldg", "Country", "City", "Building", "Repeat"])
+    ax.set_yticks(range(5), ["Within building", "Country", "City", "Building", "Repeated records"])
     ax.set_ylim(4.45, -0.45)
     ax.set_xlabel("Variance share (%)", labelpad=6)
     ax.set_title("(g) Sensitivity", loc="left", fontsize=12, weight="bold", pad=9).set_gid(
         "stage7-result-panel-title"
     )
     shared = pd.read_csv(panel / "Fig2h.csv").drop_duplicates("dataset").set_index("dataset")
-    ax = figure.add_axes((0.64, 0.060, 0.34, 0.110))
+    ax = figure.add_axes((0.67, 0.060, 0.31, 0.110))
     axes.append(ax)
     source_rows = []
     request_colors = ["#ACCAD8", "#C8A36A", "#C78470"]
@@ -1564,7 +1581,7 @@ def refine_figure_one(figure, axes):
                                 "category": category, "window_count": value,
                                 "share_percent": width})
             left += width
-    ax.set_yticks([0, 1], ["NUS", "ENTH"])
+    ax.set_yticks([0, 1], ["Singapore study", "Longitudinal study"])
     ax.set_ylim(2.1, -1.2)
     ax.set_xlim(0, 100)
     ax.set_xticks([0, 50, 100])
@@ -1636,11 +1653,101 @@ def stage7_text_audit(figure) -> dict:
     return {"status": "PASS", "visible_text_artists": checked, "panel_titles": title_count}
 
 
+def readable_display_labels(figure, number: int) -> None:
+    """Expand visible shorthand while preserving experiment and data identifiers."""
+    from matplotlib.text import Text
+    from matplotlib.ticker import FixedFormatter, FixedLocator
+
+    labels = {
+        "MIA": "Miami", "Mia": "Miami",
+        "DEL": "New Delhi", "NDL": "New Delhi", "Del": "New Delhi", "Delhi": "New Delhi",
+        "PTA": "Port Angeles", "PA": "Port Angeles", "Port A.": "Port Angeles",
+        "SEA": "Seattle", "Sea": "Seattle",
+        "PC": "Personal centre", "PR": "Personal range", "LT": "Personal range",
+        "LTPref interval": "Personal range", "Uniform": "Uniform average",
+        "q3": "3 groups", "q5": "5 groups",
+        "Heat": "Heating", "Cool": "Cooling", "Fan": "Fans",
+        "Within bldg": "Within building", "Repeat": "Repeated\nrecords",
+        "Repeated records": "Repeated\nrecords",
+        "Assigned demand-centre SD (°C)": "Demand-centre standard deviation (°C)",
+        "Service-budget fraction": "Mismatch limit factor",
+        "Service budget": "Mismatch limit factor",
+        "Resp. (kW)": "Response (kW)",
+        "Reb. (kW)": "Rebound peak\n(kW)",
+        "Extra kWh": "Recovery\nelectricity (kWh)",
+        "Net kWh": "Net saving\n(kWh)",
+        "T (°C)": "Temperature (°C)", "Gap (°C)": "Mismatch (°C)",
+        "NUS": "Singapore study", "ENTH": "Longitudinal study",
+        "Jensen gap": "Averaging gap", "Disagree": "Disagreement",
+        "Griffiths CO₂\nn=130": "Griffiths\ncarbon\nn=130",
+    }
+
+    def expanded(text):
+        text = str(text)
+        replacement = labels.get(text, "\n".join(labels.get(line, line) for line in text.split("\n")))
+        replacement = replacement.replace("New\nNew Delhi", "New\nDelhi")
+        if number == 2:
+            replacement = replacement.replace("NUS room windows", "Singapore room windows")
+            replacement = replacement.replace("ENTH room windows", "Longitudinal room windows")
+            replacement = replacement.replace("NUS ", "Singapore ").replace("ENTH ", "Longitudinal ")
+            if replacement == "Averaging gap":
+                replacement = "Averaging\ngap"
+        elif number == 3:
+            replacement = replacement.replace("New Delhi\nn=", "New\nDelhi\nn=")
+            replacement = replacement.replace("Port Angeles\nn=", "Port\nAngeles\nn=")
+        elif number == 6:
+            for old, new in [("Safe ", "Mean sufficient "),
+                             ("Distribution ", "Distribution needed "),
+                             ("Unresolved ", "No qualified plan ")]:
+                if replacement.startswith(old):
+                    replacement = new + replacement[len(old):]
+        return replacement
+
+    for artist in figure.findobj(Text):
+        artist.set_text(expanded(artist.get_text()))
+    for axis in figure.findobj(__import__("matplotlib").axes.Axes):
+        for coordinate in (axis.xaxis, axis.yaxis):
+            locations = coordinate.get_majorticklocs()
+            formatter = coordinate.get_major_formatter()
+            original = [formatter(location, index) for index, location in enumerate(locations)]
+            renamed = [expanded(text) for text in original]
+            if renamed != original:
+                coordinate.set_major_locator(FixedLocator(locations))
+                coordinate.set_major_formatter(FixedFormatter(renamed))
+
+    axes = [axis for axis in figure.axes if axis.get_title(loc="left")]
+    if number == 2:
+        replication = axes[6]
+        legend = replication.get_legend()
+        if legend is not None:
+            handles = legend.legend_handles
+            names = [artist.get_text() for artist in legend.get_texts()]
+            legend.remove()
+            replication.legend(handles, names, ncol=2, frameon=False, loc="lower center",
+                               bbox_to_anchor=(0.55, 0.003), bbox_transform=figure.transFigure,
+                               handlelength=0.8, columnspacing=0.7)
+        for artist in axes[5].texts:
+            if artist.get_text() == "Averaging\ngap":
+                artist.set_text("Averaging gap")
+    elif number == 5:
+        for index, child in enumerate(axes[1].child_axes):
+            label = child.get_ylabel().replace(" (", "\n(")
+            child.set_ylabel(label, rotation=90, ha="center", va="center")
+            child.yaxis.set_label_coords(-0.065, 0.65 if index == 0 else 0.35)
+    elif number == 6:
+        for child in axes[3].child_axes:
+            for artist in child.get_xticklabels():
+                if artist.get_text() in {"3 groups", "5 groups"}:
+                    artist.set_rotation(55)
+                    artist.set_ha("right")
+
+
 def export_figure(figure, number: int, directory: Path) -> dict:
     from matplotlib.text import Text
     from thermal_heterogeneity.figures import apply_data_axis_style
 
     map_axes = figure.axes[:2] if number == 1 else []
+    readable_display_labels(figure, number)
     apply_data_axis_style(figure, map_axes=map_axes)
     for artist in figure.findobj(Text):
         artist.set_color("black")

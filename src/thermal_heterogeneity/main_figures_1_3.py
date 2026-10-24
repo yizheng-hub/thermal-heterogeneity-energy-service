@@ -38,15 +38,15 @@ CONTEXT_LABELS = {
     "Seattle_small2019": "Seattle",
 }
 CONTEXT_LEGEND_LABELS = {
-    "Miami": "Mia",
-    "NewDelhi": "Delhi",
-    "PortAngeles_small2019": "Port A.",
-    "Seattle_small2019": "Sea",
+    "Miami": "Miami",
+    "NewDelhi": "New Delhi",
+    "PortAngeles_small2019": "Port Angeles",
+    "Seattle_small2019": "Seattle",
 }
 CONTEXT_COLORS = SHARED_CONTEXT_COLORS
 POPULATION_LABELS = {
-    "us_archive_stratum": "US",
-    "multinational_source_balanced": "Multi",
+    "us_archive_stratum": "United States",
+    "multinational_source_balanced": "Multinational",
     "india_archive_stratum": "India",
 }
 OUTCOME_ORDER = [
@@ -434,7 +434,7 @@ def build_figure_2(panel_root: Path | str) -> Figure:
     h = _read_csv(root, "Fig2h", {"dataset", "eligible_windows", "votes", "disagreement_count", "opposing_count", "cancellation_count", "metric", "estimate", "ci_low", "ci_high"})
 
     figure, axes = create_panel_figure()
-    figure.subplots_adjust(wspace=0.28, hspace=0.40)
+    figure.subplots_adjust(left=0.13, wspace=0.38, hspace=0.40)
     ax = axes.ravel()
 
     # a: fixed construction flow.
@@ -496,7 +496,7 @@ def build_figure_2(panel_root: Path | str) -> Figure:
     _finish_axis(ax[1], "b", "Votes within shared rooms", "x")
 
     # c: six opposite-request windows.
-    labels = [f"W{i+1}" for i in range(len(c))]
+    labels = [f"Window {i+1}" for i in range(len(c))]
     yy = np.arange(len(c))
     ax[2].barh(yy, -c["n_cooler"], color=PALETTE["blue"], height=0.58)
     ax[2].barh(yy, c["n_warmer"], color=PALETTE["vermillion"], height=0.58)
@@ -665,7 +665,7 @@ def build_figure_3(panel_root: Path | str) -> Figure:
     h = _read_csv(root, "Fig3h", {"metric", "sensitivity_type", "sensitivity_value", "classification", "count", "denominator"})
 
     figure, axes = create_panel_figure()
-    figure.subplots_adjust(wspace=0.32, hspace=0.42)
+    figure.subplots_adjust(left=0.14, bottom=0.15, wspace=0.52, hspace=0.50)
     ax = axes.ravel()
 
     # a: common building boundary and three control families.
@@ -674,12 +674,12 @@ def build_figure_3(panel_root: Path | str) -> Figure:
     ax[0].set_xticks([])
     ax[0].set_yticks([])
     ax[0].axis("off")
-    labels = [("Uniform", "one shared\ndemand"), ("Personal", "individual\ncentres"), ("LTPref", "individual\nintervals")]
+    labels = [("Uniform average", "one shared\ndemand"), ("Personal centre", "individual\ncentres"), ("Personal range", "individual\nranges")]
     colors = [PALETTE["uniform"], PALETTE["orange"], PALETTE["green"]]
     for index, ((label, sublabel), color) in enumerate(zip(labels, colors)):
         box = FancyBboxPatch((index + 0.08, 0.84), 0.84, 0.72, boxstyle="round,pad=0.03", facecolor=color, alpha=0.20, edgecolor=color, linewidth=1.1)
         ax[0].add_patch(box)
-        ax[0].text(index + 0.5, 1.33, label, ha="center", va="center")
+        ax[0].text(index + 0.5, 1.33, label.replace(" ", "\n", 1), ha="center", va="center")
         ax[0].text(index + 0.5, 1.02, sublabel, ha="center", va="center")
         ax[0].annotate("", xy=(index + 0.5, 0.61), xytext=(index + 0.5, 0.83), arrowprops={"arrowstyle": "->", "lw": 0.8, "color": color})
     footer = "Same building and operating permissions"
@@ -706,15 +706,12 @@ def build_figure_3(panel_root: Path | str) -> Figure:
             ax[1].hlines(yy, group["p10_c"].median(), group["p90_c"].median(), color=CONTEXT_COLORS[context], linewidth=2.4)
             ax[1].scatter(group["centre_c"].median(), yy, s=25, color=CONTEXT_COLORS[context], edgecolors="white", linewidths=0.4, zorder=4)
             ypositions.append(yy)
-            short_context = {"Miami": "Mia", "NewDelhi": "Del", "PortAngeles_small2019": "PA", "Seattle_small2019": "Sea"}[context]
-            ylabels.append(f"{short_context} · {POPULATION_LABELS[population]}")
+            ylabels.append(f"{CONTEXT_LABELS[context]} · {POPULATION_LABELS[population]}")
             cursor += 1
-    ax[1].set_yticks([])
+    ax[1].set_yticks([1, 4, 7, 10], ["Miami", "New Delhi", "Port Angeles", "Seattle"])
     ax[1].invert_yaxis()
     ax[1].set_xlim(18, 31)
     ax[1].set_xticks([20, 24, 28])
-    for yy, label in zip(ypositions, ylabels):
-        ax[1].text(18.15, yy, label, ha="left", va="center")
     ax[1].set_xlabel("Assigned demand temperature (°C)")
     _finish_axis(ax[1], "b", "Assigned population demand", "x")
 
@@ -762,18 +759,18 @@ def build_figure_3(panel_root: Path | str) -> Figure:
         _finish_axis(panel_axis, letter, title, "y")
         lower, original_upper = panel_axis.get_ylim()
         original_range = original_upper - lower
-        panel_axis.set_ylim(lower, original_upper + original_range * 0.75)
+        panel_axis.set_ylim(lower, original_upper + original_range * 1.70)
         header = panel_axis.text(
             0.5,
-            0.92,
-            "matched n by Δ (−2, −1, +1, +2)",
+            0.93,
+            "matched n by Δ",
             ha="center",
             va="center",
             transform=panel_axis.transAxes,
         )
         header.set_gid(f"fig3{letter}-n-table")
-        table_positions = [(0.02, 0.80), (0.52, 0.80), (0.02, 0.68), (0.52, 0.68)]
-        table_labels = ["Mia", "Del", "PA", "Sea"]
+        table_positions = [(0.02, 0.81), (0.02, 0.69), (0.02, 0.57), (0.02, 0.45)]
+        table_labels = ["Miami", "New Delhi", "Port Angeles", "Seattle"]
         for context, label, (x_position, y_position) in zip(
             CONTEXT_ORDER,
             table_labels,
@@ -800,9 +797,9 @@ def build_figure_3(panel_root: Path | str) -> Figure:
     # f: median signed changes come directly from amended fields; unmatched rows excluded and counted.
     matched = f.loc[f["matched"].astype(str).str.lower().eq("true")].copy()
     carrier_fields = [
-        ("heating_electricity_change_mwh_signed", "Heat", PALETTE["orange"]),
-        ("cooling_electricity_change_mwh_signed", "Cool", PALETTE["blue"]),
-        ("fan_electricity_change_mwh_signed", "Fan", PALETTE["green"]),
+        ("heating_electricity_change_mwh_signed", "Heating", PALETTE["orange"]),
+        ("cooling_electricity_change_mwh_signed", "Cooling", PALETTE["blue"]),
+        ("fan_electricity_change_mwh_signed", "Fans", PALETTE["green"]),
         ("gas_hhv_change_mwh_signed", "Gas", PALETTE["purple"]),
     ]
     x = np.arange(len(CONTEXT_ORDER))
@@ -824,16 +821,17 @@ def build_figure_3(panel_root: Path | str) -> Figure:
     ax[5].axhline(0, color="#333333", linewidth=0.7)
     context_tick_labels = [
         f"{label}\nn={n}"
-        for label, n in zip(["Miami", "Delhi", "Port A.", "Seattle"], context_ns)
+        for label, n in zip(["Miami", "New\nDelhi", "Port\nAngeles", "Seattle"], context_ns)
     ]
     ax[5].set_xticks(x, context_tick_labels)
     ax[5].set_yticks([-20, -10, 0, 10])
     ax[5].set_ylabel("Median signed change (MWh yr⁻¹)")
     _finish_axis(ax[5], "f", "Carrier redistribution at Δ=+2°C", "y")
-    data_safe_legend(ax[5], ncol=4)
+    data_safe_legend(ax[5], ncol=2)
+    ax[5].set_ylim(-22, 40)
     match_note = ax[5].text(
         0.98,
-        0.78,
+        0.54,
         "59 matched · 85 unmatched",
         ha="right",
         va="center",
@@ -852,15 +850,16 @@ def build_figure_3(panel_root: Path | str) -> Figure:
     bottoms = np.zeros(len(bars))
     for outcome in OUTCOME_ORDER[:5]:
         values = np.array([counts.get((alternative, context, outcome), 0) for alternative, context in bars])
-        short_outcome = {"same_direction_decrease": "Dec", "same_direction_increase": "Inc", "all_tied": "Tie", "direction_not_stable": "Unstable", "match_lost": "Unmatched"}[outcome]
+        short_outcome = {"same_direction_decrease": "Decrease", "same_direction_increase": "Increase", "all_tied": "Tie", "direction_not_stable": "Unstable", "match_lost": "Unmatched"}[outcome]
         ax[6].bar(x, values, bottom=bottoms, color=OUTCOME_COLORS[outcome], width=0.76, label=short_outcome, hatch="//" if outcome == "match_lost" else None)
         for index, (value, bottom) in enumerate(zip(values, bottoms)):
             if value > 0:
                 ax[6].text(index, bottom + value / 2, str(int(value)), ha="center", va="center")
         bottoms += values
-    context_abbr = {"Miami": "Mia", "NewDelhi": "Del", "PortAngeles_small2019": "PA", "Seattle_small2019": "Sea"}
-    labels = [f"{'PC' if alt == 'personal_center' else 'LT'}\n{context_abbr[ctx]}" for alt, ctx in bars]
-    ax[6].set_xticks(x, labels)
+    labels = [f"{'Personal centre' if alt == 'personal_center' else 'Personal range'}\n{CONTEXT_LABELS[ctx]}" for alt, ctx in bars]
+    ax[6].set_xticks(x, labels, rotation=90, ha="center")
+    for label in ax[6].get_xticklabels():
+        label.set_linespacing(0.8)
     ax[6].set_ylabel("Paired definitions (count)")
     ax[6].set_ylim(0, max(bottoms) + 20)
     ax[6].legend(
@@ -896,7 +895,7 @@ def build_figure_3(panel_root: Path | str) -> Figure:
         ax[7].text(-1.5, y_value, f"{label}\nn={denominator}", ha="right", va="center")
     ax[7].set_xticks([0, 50, 100])
     ax[7].set_xlabel("Outcome share (%)")
-    _finish_axis(ax[7], "h", "Human-demand sensitivity (key as g)", "x")
+    _finish_axis(ax[7], "h", "Human-demand sensitivity", "x")
 
     return figure
 
@@ -957,7 +956,7 @@ CAPTIONS = {
     ),
     3: (
         "**Figure 3 | Demand location redistributes annual energy and carbon under three "
-        "controls.** **a,** Uniform-average, personal-centre and LTPref-interval control "
+        "controls.** **a,** Uniform-average, personal-centre and personal-range control "
         "families generate physical actions in the same building under identical operating "
         "permissions. These controls are distinct from the mean and full-distribution "
         "qualification representations used to score the same actions. **b,** Assigned P10–P90 "
@@ -977,7 +976,7 @@ CAPTIONS = {
         "default uniform-versus-alternative paired definitions, separated by control and "
         "context: 54 increases, 3 decreases, 36 ties, 7 direction-unstable comparisons and 30 "
         "unmatched comparisons. **h,** Outcome shares across Griffiths energy, Griffiths carbon "
-        "and LTPref-width sensitivity families with explicit denominators and the same outcome "
+        "and personal-range-width sensitivity families with explicit denominators and the same outcome "
         "colour/hatch key as panel g. Population assignments are controlled archive scenarios "
         "rather than claims of local population representativeness; carbon factors are fixed "
         "regional scenarios."
@@ -1009,7 +1008,7 @@ ALT_TEXT = {
     ),
     3: (
         "Eight-panel portrait figure. Panel a compares three control families—uniform-average, "
-        "personal-centre and LTPref-interval controls—under the same building and operating "
+        "personal-centre and personal-range controls—under the same building and operating "
         "permissions. Mean and full-distribution are separate qualification representations "
         "used to score generated actions, not additional controls. Population scenarios differ "
         "in both demand centre and width. A centre-by-spread grid defines independent "

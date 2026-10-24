@@ -18,7 +18,11 @@ data/analysis_bundle_release.json
 data/energy_service_bundle_manifest.csv
 data/energy_service_bundle_source.json
 data/energy_service_model_contract.json
+data/engineering_qa_bundle_manifest.csv
+data/engineering_qa_bundle_source.json
 data/FIELD_CODEBOOK.csv
+data/numeric_scene_spec_source.json
+data/numeric_scene_spec_v1.json
 data/paper_bundle_manifest.csv
 data/paper_bundle_source.json
 data/README.md
@@ -65,6 +69,7 @@ publication/energy_service_paper/scripts/render_response_implementation_figures.
 publication/energy_service_paper/scripts/render_response_traces.py
 publication/experiments/candidate_support/README.md
 publication/experiments/candidate_support/reproduce_support.py
+publication/experiments/candidate_support/strict_service.py
 publication/experiments/decision_value/audit_assignment_provenance.py
 publication/experiments/decision_value/INPUTS_AND_REPRODUCTION.md
 publication/experiments/decision_value/PERSON_DISJOINT_EXTENSION_PROTOCOL.json
@@ -120,6 +125,7 @@ scripts/check_release_layout.py
 scripts/check_script_migration.py
 scripts/compare_canonical_runs.py
 scripts/compare_energy_service_runs.py
+scripts/engineering_qa_supplement.py
 scripts/export_controller_inputs.py
 scripts/export_model_inputs.py
 scripts/fetch_data.py
@@ -184,6 +190,7 @@ tests/conftest.py
 tests/contracts/test_analysis_bundle.py
 tests/contracts/test_code_only_package.py
 tests/contracts/test_energyplus_boundary.py
+tests/contracts/test_engineering_qa_supplement.py
 tests/contracts/test_figure_render_core.py
 tests/contracts/test_figures_4_6.py
 tests/contracts/test_main_figures_1_3.py
@@ -191,6 +198,7 @@ tests/contracts/test_ordering.py
 tests/contracts/test_panel_registry.py
 tests/contracts/test_paths.py
 tests/contracts/test_rng.py
+tests/contracts/test_strict_service_sensitivity.py
 tests/contracts/test_temporal_evidence.py
 tests/contracts/test_upstream_demand_replay.py
 tests/energy_service/conftest.py

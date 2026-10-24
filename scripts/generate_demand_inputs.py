@@ -1,7 +1,8 @@
 """Replay the locked upstream numerical demand construction from external inputs.
 
 This optional entry does not alter the fixed publication-analysis inputs. It
-requires the original checksum-matched ASHRAE files and external scene pool.
+requires the original checksum-matched ASHRAE files and either the released
+numeric-only scene specification or the author-retained original scene pool.
 Question text, dialogue records and original record/subject identifiers are
 never exported. Fresh replay labels do not recreate prior release identifiers.
 
@@ -27,6 +28,7 @@ LOCKED_INPUT_SHA256 = {
     "measurements": "23711ee1cfd988501d1ee77fc2207884e3edcb126cf96c0cd30a5380f39bd5e0",
     "metadata": "af6770a2b469f079cd172bd6632d1ae726a3a663515126816ff6d2d8f51bfc10",
     "scene_pool": "8d40dbd3a996ef0eac5b1f6cd4c9976e5154cb222f54f84e5e77f3edf2803076",
+    "numeric_scenes": "7397a15d4b9492b6fb0cb94e8e4f248f5c4da69b7ba40d7836f3b106396a5744",
 }
 PMV_VALUES = np.arange(-3.0, 3.0 + 0.1, 0.1)
 UNIFORM = np.ones_like(PMV_VALUES) / len(PMV_VALUES)
@@ -368,8 +370,8 @@ def anonymous_inputs(cohort: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
-def numeric_scenes(path: Path) -> list[dict]:
-    verify_input(path, "scene_pool")
+def numeric_scenes(path: Path, *, numeric_only: bool = False) -> list[dict]:
+    verify_input(path, "numeric_scenes" if numeric_only else "scene_pool")
     original = json.loads(path.read_text(encoding="utf-8"))
     if len(original) != MAX_ROUNDS or {s["scene_id"] for s in original} != set(SCENE_LOGIC):
         raise ValueError("Expected the locked 19-scene set")
@@ -419,15 +421,19 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--measurements", type=Path, required=True)
     parser.add_argument("--metadata", type=Path, required=True)
-    parser.add_argument("--scene-pool", type=Path, required=True)
+    scenes = parser.add_mutually_exclusive_group(required=True)
+    scenes.add_argument("--scene-pool", type=Path, help="Author-retained original configuration")
+    scenes.add_argument("--numeric-scenes", type=Path, help="Released numeric-only 19-scene specification")
     parser.add_argument("--output-root", type=Path, required=True)
     args = parser.parse_args()
     if args.output_root.exists():
         raise FileExistsError("Choose a new upstream replay output directory")
+    scene_path = args.numeric_scenes or args.scene_pool
+    scene_kind = "numeric_scenes" if args.numeric_scenes else "scene_pool"
     hashes = {"measurements": verify_input(args.measurements, "measurements"),
               "metadata": verify_input(args.metadata, "metadata"),
-              "scene_pool": verify_input(args.scene_pool, "scene_pool")}
-    scenes = numeric_scenes(args.scene_pool)
+              scene_kind: verify_input(scene_path, scene_kind)}
+    scenes = numeric_scenes(scene_path, numeric_only=bool(args.numeric_scenes))
     cohort, scope = build_cohort(pd.read_csv(args.measurements, low_memory=False),
                                   pd.read_csv(args.metadata, low_memory=False))
     if scope["records"] != 21418 or scope["analysis_units"] != 12130:
@@ -454,6 +460,7 @@ def main() -> None:
               "original_identifiers_exported": False, "question_text_or_dialogues_exported": False,
               "replay_labels": "Fresh deterministic numerical labels; not prior release_profile_id labels",
               "external_scene_pool_redistributed": False, "fixed_publication_inputs_changed": False,
+              "scene_input_mode": "released_numeric_only" if args.numeric_scenes else "original_external_pool",
               "energyplus_simulations": 0,
               "outputs": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                           for p in sorted(args.output_root.glob("*.csv"))}}

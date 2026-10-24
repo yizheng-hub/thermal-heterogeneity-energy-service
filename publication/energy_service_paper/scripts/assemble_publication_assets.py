@@ -5,9 +5,11 @@ import hashlib
 import json
 import re
 import shutil
+from thermal_heterogeneity.figures import clarify_control_caption
 
 SI_OLD_ORDER = (3, 1, 2, 14, 15, 11, 4, 16, 13, 21, 5, 17, 6, 20, 12, 7, 19, 8, 18, 9, 10)
 SECTION_MAP = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 15: 8, 16: 9, 17: 10, 18: 11, 8: 12, 9: 13, 10: 14, 11: 15, 12: 16, 13: 17, 14: 18}
+
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -39,7 +41,8 @@ def assemble(previous: Path, stage: Path):
                 shutil.copyfile(stage / "figures" / f"Figure_{number:02d}{suffix}", directory / f"figure_{number:02d}{suffix}")
             text = (stage / "figures" / f"Figure_{number:02d}_caption.txt").read_text(encoding="utf-8")
         for name in ("caption.txt", "alt_text.txt"):
-            (captiondir / name).write_text(references(text, figure_map), encoding="utf-8")
+            (captiondir / name).write_text(clarify_control_caption(references(text, figure_map),
+                                           uses_three_controls=number in range(2, 7)), encoding="utf-8")
     former_main = {16: 2, 17: 3, 18: 6, 19: 5, 20: 4}
     manifest = []
     for new, old in enumerate(SI_OLD_ORDER, 1):
@@ -62,7 +65,7 @@ def assemble(previous: Path, stage: Path):
             shutil.copyfile(src, dst)
             outputs.append({"path": dst.relative_to(stage).as_posix(), "sha256": digest(dst)})
         body = raw_caption.read_text(encoding="utf-8").split("|", 1)[1].strip()
-        caption = f"Supplementary Figure S{new} | " + references(body, figure_map)
+        caption = f"Supplementary Figure S{new} | " + clarify_control_caption(references(body, figure_map))
         (stage / "supplementary_figures" / f"Figure_S{new:02d}_caption.txt").write_text(caption, encoding="utf-8")
         manifest.append({"display_number": new, "source_figure_number": old, "caption_source_sha256": digest(raw_caption), "outputs": outputs})
     (stage / "SUPPLEMENTARY_FIGURE_ORDER.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")

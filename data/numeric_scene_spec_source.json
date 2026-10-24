@@ -1,0 +1,23 @@
+{
+  "schema_version": "numeric-only-scenes-v1",
+  "files": 1,
+  "scenes": 19,
+  "spec_filename": "numeric_scene_spec_v1.json",
+  "sha256": "7397a15d4b9492b6fb0cb94e8e4f248f5c4da69b7ba40d7836f3b106396a5744",
+  "source_scene_pool_sha256": "8d40dbd3a996ef0eac5b1f6cd4c9976e5154cb222f54f84e5e77f3edf2803076",
+  "numeric_fields": [
+    "pmv_range",
+    "physical_parameters.air_temp",
+    "physical_parameters.mrt",
+    "physical_parameters.air_velocity",
+    "physical_parameters.relative_humidity",
+    "evidence_strength",
+    "evidence_influence_profile.secondary_weight",
+    "evidence_influence_profile.decay_tau"
+  ],
+  "retained_labels": "Only scene IDs already enumerated by SCENE_LOGIC in the software",
+  "question_text_included": false,
+  "dialogues_included": false,
+  "participant_identifiers_included": false,
+  "provenance": "Numerical projection of the author-retained checksum-locked scene configuration; not a new elicitation dataset."
+}

@@ -2,6 +2,8 @@
 
 Numerical methods, control generation, scientific comparisons, figure renderers, source-data exports and tests for **Human thermal heterogeneity reshapes building energy, carbon and flexibility**. Manuscript and supplementary prose, Word templates, completed documents, data archives, building/weather assets and private identifier crosswalks are excluded.
 
+The figures name the controls **Uniform average**, **Personal centre** and **Personal range**. Personal range uses model-generated individual temperature ranges. The stable machine identifiers remain `uniform_average`, `personal_center` and `ltpref_interval`, respectively, so existing data and result identities are preserved.
+
 ## Complete scientific replay
 
 Use Python **3.11.15** with the frozen environment:
@@ -66,13 +68,13 @@ uv run python publication/energy_service/generate_model_inputs.py --input-root .
 
 Running those models additionally requires the specified EnergyPlus 22.1 build and assets supplied under their original terms. The older supporting action library has a historical snapshot boundary in `protocol/HISTORICAL_CODE_PROVENANCE.md`. No unavailable scene-generation history is claimed to have been recovered.
 
-The optional upstream tool reconstructs human-demand numbers from three external checksum-matched inputs:
+The optional upstream tool reconstructs human-demand numbers from two external checksum-matched database files and the included numeric-only scene specification:
 
 ```console
-uv run python scripts/generate_demand_inputs.py --measurements ../external_inputs/measurements.csv --metadata ../external_inputs/metadata.csv --scene-pool ../external_inputs/scene_pool.json --output-root outputs/upstream_numeric
+uv run python scripts/generate_demand_inputs.py --measurements ../external_inputs/measurements.csv --metadata ../external_inputs/metadata.csv --numeric-scenes data/numeric_scene_spec_v1.json --output-root outputs/upstream_numeric
 ```
 
-The required measurement, metadata and scene-pool SHA-256 hashes are enforced by the script. These assets are not distributed here. This tool does not download or reconstruct the scene pool, export question text, recreate private crosswalks or reproduce original release identifiers. It is separate from the complete replay. A different source-file hash is rejected rather than silently substituted.
+The measurement, metadata and numeric-scene SHA-256 hashes are enforced. The included 19-scene specification contains only numerical model parameters and existing scene identifiers; question text, responses, conversations and identities are excluded. This interface reproduced all 21,418 demand records and all executable-interval flags, with a largest numerical difference of 1.42e-14 from the retained outputs. The database inputs must be obtained from their original public provider. The tool is separate from the complete replay and does not recreate private crosswalks or original release identifiers.
 
 An optional building-identity audit uses the checksum-matched measurements and metadata without requiring the scene pool:
 
@@ -81,6 +83,12 @@ uv run python scripts/audit_building_identity.py --measurements ../external_inpu
 ```
 
 The metadata distinguishes 150 original-source building identifiers from 37 inferred groups in the office cohort. Building identity establishes neither room membership nor simultaneous presence. The audit recomputes 36 variance decompositions and reports identity origins using only release labels. It changes no frozen simulation input. The ten supporting source-group pools include three original and seven inferred identifiers.
+
+## Strict service and engineering screening
+
+The scientific replay also exports three `Strict_service` CSVs: all 1,620 condition records, 45 summaries and 180 context summaries for the five demand definitions under three candidate supports. These reuse retained scores and assess native-zone commands; they do not add physical simulations or assess floor-bound uncertainty. The main replay produces 153 tables; the four optional identity-audit tables bring the current Source Data set to 157 tables plus its index.
+
+A separate small engineering-QA supplement preserves the 407 main annual decisions (298 qualified, 109 excluded) and 153 excluded supporting sensitivity attempts as separate scopes, with anonymized QA and original hashes. Verify or unpack a supplied supplement with `python scripts/engineering_qa_supplement.py verify --root <QA-folder>` or `python scripts/engineering_qa_supplement.py unpack --archive <QA-ZIP> --dest <new-folder>`. The main 877-file data bundle is unchanged.
 
 ## Tests and CI
 
