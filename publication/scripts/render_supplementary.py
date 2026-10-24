@@ -538,7 +538,7 @@ def main():
             fig,
             out,
             2,
-            "Figure S2 | Hierarchical variance sensitivity. a–d, Leave-one-source variance shares under the four weighting schemes identified in the panel titles. Points are medians across twenty-seven source removals and whiskers give the minimum and maximum. Blue, gold and green denote Griffiths coefficients 0.33, 0.50 and 0.67 °C−1. The five components are country, city within country, building within city, analysis unit within building and repeated measurement within analysis unit.",
+            "Figure S2 | Hierarchical variance sensitivity. a–d, Leave-one-source variance shares under the four weighting schemes identified in the panel titles. Points are medians across twenty-seven source removals and whiskers give the minimum and maximum. Blue, gold and green denote Griffiths coefficients 0.33, 0.50 and 0.67 °C−1. The five components are country, city within country, building within city, analysis unit within building and repeated measurement within analysis unit. Building labels denote database groups; 150 IDs are original and 37 inferred.",
             ["Fig1h.csv"],
         )
     )
@@ -1101,7 +1101,7 @@ def main():
             fig,
             out,
             12,
-            "Figure S12 | Identity sensitivity and changed annual decisions. a,b, Hierarchical variance shares for all canonical records and the subset with subject-within-building identifiers. Component colours match Figure 1d, and cohort colours are identified in b. c, Maximum excess over the mean or tail service budget in the 117 false-accepted annual selections at archive spread. d, Cumulative distribution of the annual energy increase for the full-qualified substitute in sixty-three cases with an available substitute. Fifty-four cases without such a substitute are excluded from d.",
+            "Figure S12 | Identity sensitivity and changed annual decisions. a,b, Hierarchical variance shares for all canonical records and the subset with subject-within-building identifiers. Component colours match Figure 1d, and cohort colours are identified in b. c, Maximum excess over the mean or tail service budget in the 117 false-accepted annual selections at archive spread. d, Cumulative distribution of the annual energy increase for the full-qualified substitute in sixty-three cases with an available substitute. Fifty-four cases without such a substitute are excluded from d. The identified-subject subset uses only original-source building IDs.",
             [
                 "science_audit/variance_recheck.csv",
                 "science_audit/false_accept_exceedance_cells.csv",

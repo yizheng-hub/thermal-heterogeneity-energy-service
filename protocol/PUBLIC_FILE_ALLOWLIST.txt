@@ -103,6 +103,7 @@ publication/support/spatial_audit/paired_cluster_bootstrap_vs_mean.csv
 pyproject.toml
 README.md
 results/README.md
+scripts/audit_building_identity.py
 scripts/build_analysis_bundle.py
 scripts/build_energy_service_bundle.py
 scripts/build_paper_data.py

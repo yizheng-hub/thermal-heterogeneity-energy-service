@@ -199,6 +199,7 @@
 !/scripts/export_model_inputs.py
 !/scripts/fetch_data.py
 !/scripts/generate_demand_inputs.py
+!/scripts/audit_building_identity.py
 !/scripts/install_gitleaks.py
 !/scripts/materialize_release_data.py
 !/scripts/prepare_energy_service_data.py

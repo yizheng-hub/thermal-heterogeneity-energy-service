@@ -68,6 +68,14 @@ uv run python scripts/generate_demand_inputs.py --measurements ../external_input
 
 The required measurement, metadata and scene-pool SHA-256 hashes are enforced by the script. These assets are not distributed here. This tool does not download or reconstruct the scene pool, export question text, recreate private crosswalks or reproduce original release identifiers. It is separate from the complete replay. A different source-file hash is rejected rather than silently substituted.
 
+An optional building-identity audit uses the checksum-matched measurements and metadata without requiring the scene pool:
+
+```console
+uv run python scripts/audit_building_identity.py --measurements ../external_inputs/measurements.csv --metadata ../external_inputs/metadata.csv --public-profiles ../paper_data/legacy_analysis/human/human_profiles_minimized.csv.gz --source-inventory ../paper_data/source_building/SOURCE_BUILDING_INVENTORY.csv --output-root outputs/building_identity
+```
+
+The metadata distinguishes 150 original-source building identifiers from 37 inferred groups in the office cohort. Building identity establishes neither room membership nor simultaneous presence. The audit recomputes 36 variance decompositions and reports identity origins using only release labels. It changes no frozen simulation input. The ten supporting source-group pools include three original and seven inferred identifiers.
+
 ## Tests and CI
 
 After a complete local replay, run all applicable tests with actual panel fixtures:
