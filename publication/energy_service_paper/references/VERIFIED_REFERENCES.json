@@ -1587,5 +1587,29 @@
     "url": "https://doi.org/10.5281/zenodo.5502441",
     "doi": "10.5281/zenodo.5502441",
     "reference_id": "enth_zenodo2021"
+  },
+  {
+    "authors": [
+      "Li, Yizheng",
+      "Zhao, Huan",
+      "Su, Guandong",
+      "Meng, Yang",
+      "Zhang, Yongan",
+      "Li, Yan",
+      "Ding, Ruichen",
+      "Chen, Zhangxing",
+      "Yan, Jinyue"
+    ],
+    "title": "Hong Kong building function and energy typology dataset for urban energy modeling",
+    "journal": "Scientific Data",
+    "year": 2026,
+    "volume": "",
+    "pages": "",
+    "url": "https://www.nature.com/articles/s41597-026-07921-w",
+    "doi": "10.1038/s41597-026-07921-w",
+    "reference_id": "li2026hktypology",
+    "metadata_source": "https://api.crossref.org/works/10.1038/s41597-026-07921-w",
+    "metadata_verified": "2026-10-24",
+    "publication_status": "Published online; volume and article number not yet supplied by Crossref at verification"
   }
 ]
