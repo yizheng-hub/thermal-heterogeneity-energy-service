@@ -30,28 +30,28 @@ jobs:
         run: uv sync --frozen --extra test
       - name: Verify exact source-only Git boundary
         run: |
-          uv run python scripts/check_release_layout.py --root .
-          uv run python scripts/check_git_release.py --root . --require-clean
-          uv run python scripts/release_scan.py --root . --mode licence-privacy
-          uv run python scripts/release_scan.py --root . --mode paths-identifiers
-          uv run python scripts/release_scan.py --root . --mode portability
+          uv run python src/utilities/check_release_layout.py --root .
+          uv run python src/utilities/check_git_release.py --root . --require-clean
+          uv run python src/utilities/release_scan.py --root . --mode licence-privacy
+          uv run python src/utilities/release_scan.py --root . --mode paths-identifiers
+          uv run python src/utilities/release_scan.py --root . --mode portability
       - name: Verify scientific provenance and model contracts
         run: |
-          uv run python scripts/validate_source_manifest.py data/source_manifest.csv --require-no-unknown
-          uv run python scripts/check_script_migration.py --inventory protocol/RETAINED_SCRIPT_INVENTORY.csv --map protocol/SCRIPT_MIGRATION_MAP.json --expect 43
-          uv run python scripts/validate_energyplus_manifest.py configs/energyplus_runs.csv --baseline-reuse configs/energyplus_dynamic_baseline_reuse.csv --contract configs/energyplus_level2_contract.json
+          uv run python src/utilities/validate_source_manifest.py data/metadata/source_manifest.csv --require-no-unknown
+          uv run python src/utilities/check_script_migration.py --inventory src/provenance/RETAINED_SCRIPT_INVENTORY.csv --map src/provenance/SCRIPT_MIGRATION_MAP.json --expect 43
+          uv run python src/utilities/validate_energyplus_manifest.py src/settings/energyplus_runs.csv --baseline-reuse src/settings/energyplus_dynamic_baseline_reuse.csv --contract src/settings/energyplus_level2_contract.json
       - name: Check code and read-only replay plan
         run: |
           uv run ruff check .
-          uv run python -m compileall -q src scripts ctl plot publication tests
-          uv run python ctl/reproduce.py --plan
+          uv run python -m compileall -q src tests reproduce.py
+          uv run python reproduce.py --plan
       - name: Run numeric contracts and synthetic end-to-end smoke
         run: uv run pytest -q --ignore=tests/contracts/test_figure_render_core.py --ignore=tests/contracts/test_main_figures_1_3.py --ignore=tests/contracts/test_figures_4_6.py
       - name: Install checksum-verified Gitleaks
-        run: uv run python scripts/install_gitleaks.py --destination "${{ runner.temp }}/gitleaks"
+        run: uv run python src/utilities/install_gitleaks.py --destination "${{ runner.temp }}/gitleaks"
       - name: Scan index, staged changes and history on Linux
         if: runner.os == 'Linux'
-        run: uv run python scripts/scan_secrets.py --gitleaks "${{ runner.temp }}/gitleaks/gitleaks"
+        run: uv run python src/utilities/scan_secrets.py --gitleaks "${{ runner.temp }}/gitleaks/gitleaks"
       - name: Scan index, staged changes and history on Windows
         if: runner.os == 'Windows'
-        run: uv run python scripts/scan_secrets.py --gitleaks "${{ runner.temp }}/gitleaks/gitleaks.exe"
+        run: uv run python src/utilities/scan_secrets.py --gitleaks "${{ runner.temp }}/gitleaks/gitleaks.exe"

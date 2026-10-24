@@ -26,7 +26,8 @@ def test_demographic_summary_disclosure_threshold(tmp_path, records, expected):
     root = Path(__file__).resolve().parents[2]
     path = (
         tmp_path
-        / "publication"
+        / "src"
+        / "analysis"
         / "support"
         / "science_audit"
         / "demographic_city_season_gender_summary.csv"
@@ -39,7 +40,7 @@ def test_demographic_summary_disclosure_threshold(tmp_path, records, expected):
     result = subprocess.run(
         [
             sys.executable,
-            str(root / "scripts" / "release_scan.py"),
+            str(root / "src/utilities" / "release_scan.py"),
             "--root",
             str(tmp_path),
             "--mode",
@@ -55,11 +56,11 @@ def test_demographic_summary_disclosure_threshold(tmp_path, records, expected):
 @pytest.mark.parametrize("change", ["none", "tampered_payload", "extra_file", "tampered_manifest"])
 def test_source_building_input_verification(tmp_path, change):
     repository = Path(__file__).resolve().parents[2]
-    script = tmp_path / "repository" / "scripts" / "unpack_source_building_data.py"
+    script = tmp_path / "repository" / "src" / "utilities" / "unpack_source_building_data.py"
     script.parent.mkdir(parents=True)
-    shutil.copyfile(repository / "scripts" / script.name, script)
-    metadata = script.parent.parent / "data"
-    metadata.mkdir()
+    shutil.copyfile(repository / "src/utilities" / script.name, script)
+    metadata = script.parents[2] / "data" / "metadata"
+    metadata.mkdir(parents=True)
     payload = tmp_path / "input"
     payload.mkdir()
     content = b"frozen input\n"

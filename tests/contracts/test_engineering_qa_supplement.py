@@ -3,7 +3,7 @@ import importlib.util
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SPEC = importlib.util.spec_from_file_location("engineering_sidecar", ROOT / "scripts/engineering_qa_supplement.py")
+SPEC = importlib.util.spec_from_file_location("engineering_sidecar", ROOT / "src/utilities/engineering_qa_supplement.py")
 SIDECAR = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(SIDECAR)
 

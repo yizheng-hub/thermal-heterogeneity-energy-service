@@ -24,6 +24,6 @@ The repository uses five rights-aware dispositions:
 
 `ZENODO_LARGE_AUDIT_OPTIONAL` is an additional non-Git class for a selected, separately reviewed native audit subset. It is not required for Level 1 reproduction.
 
-Every one of the 28 asset classes has an explicit disposition in `data/source_manifest.csv`. A missing or `UNKNOWN` disposition is a hard failure. The R0-R1 scaffold contains no analysis dataset.
+Every one of the 28 asset classes has an explicit disposition in `data/metadata/source_manifest.csv`. A missing or `UNKNOWN` disposition is a hard failure. Analysis datasets are excluded from Git.
 
 The bundled Natural Earth 1:110m land basemap is third-party public-domain material. Its pinned source and checksum are recorded in the package asset provenance and `THIRD_PARTY_NOTICES.md`; the project licences do not change its public-domain status.

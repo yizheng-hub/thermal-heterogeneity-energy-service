@@ -17,7 +17,7 @@ def parser() -> argparse.ArgumentParser:
     commands = result.add_subparsers(dest="command")
     for name in ("analysis", "figures", "si"):
         item = commands.add_parser(name)
-        item.add_argument("--config", default="configs/paper.yaml")
+        item.add_argument("--config", default="src/settings/paper.yaml")
         item.add_argument("--output")
         item.add_argument("--data-root")
     commands.choices["figures"].add_argument("--analysis")

@@ -11,10 +11,10 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def test_strict_feasibility_keeps_the_low_coefficient_loss_and_permission_boundary():
     spec = importlib.util.spec_from_file_location(
-        "strict_service", ROOT / "publication/experiments/candidate_support/strict_service.py")
+        "strict_service", ROOT / "src/analysis/experiments/candidate_support/strict_service.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    source = ROOT / "publication/support/candidate_support"
+    source = ROOT / "src/analysis/support/candidate_support"
     detail, summary, context = module.summarize(
         pd.read_csv(source / "candidate_scores.csv"),
         pd.read_csv(source / "service_anchors.csv"))

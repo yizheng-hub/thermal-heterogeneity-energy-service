@@ -18,7 +18,7 @@ def module(relative, name):
 
 
 def test_temporal_assets_preserve_existing_evidence_and_only_renumber_figures(tmp_path):
-    finalizer = module("publication/energy_service_paper/scripts/finalize_temporal_assets.py", "temporal_assets")
+    finalizer = module("src/analysis/energy_service_paper/scripts/finalize_temporal_assets.py", "temporal_assets")
     paper, seasonal, typical = [tmp_path / name for name in ["paper", "seasonal", "typical"]]
 
     def bundle(stem, marker):
@@ -57,7 +57,7 @@ def test_temporal_assets_preserve_existing_evidence_and_only_renumber_figures(tm
 
 
 def test_monthly_service_rollup_uses_occupied_weights_and_fixed_tail():
-    seasonal = module("publication/seasonal/derive_seasonal_comparison.py", "seasonal_numeric")
+    seasonal = module("src/analysis/seasonal/derive_seasonal_comparison.py", "seasonal_numeric")
     months = np.repeat(np.arange(1, 13), 2)
     people = np.column_stack([np.arange(1, 25), np.arange(24, 0, -1)]).astype(float)
     data = {"zone_ids": ["A", "B"], "temperatures": np.column_stack([months, 2 * months]).astype(float),
@@ -78,14 +78,14 @@ def test_monthly_service_rollup_uses_occupied_weights_and_fixed_tail():
 
 
 def test_seasons_cover_each_month_once_and_keep_winter_heating():
-    seasonal = module("publication/seasonal/derive_seasonal_comparison.py", "seasonal_periods")
+    seasonal = module("src/analysis/seasonal/derive_seasonal_comparison.py", "seasonal_periods")
     assert sorted(sum(seasonal.SEASONS.values(), [])) == list(range(1, 13))
     assert seasonal.SEASONS["Winter"] == [12, 1, 2]
     assert {"heating_electric_kwh", "gas_hhv_kwh", "cooling_electric_kwh"} <= set(seasonal.CARRIERS)
 
 
 def test_empty_result_panels_require_explicit_visible_status(tmp_path):
-    renderer = module("publication/energy_service_paper/scripts/render_control_service_figures.py", "temporal_renderer")
+    renderer = module("src/analysis/energy_service_paper/scripts/render_control_service_figures.py", "temporal_renderer")
     figure, axis = renderer.plt.subplots()
     source = tmp_path / "source.csv"
     source.write_text("selection_status\nengineering_rejected\n")
@@ -98,7 +98,7 @@ def test_empty_result_panels_require_explicit_visible_status(tmp_path):
 
 
 def test_direct_common_gap_comparison_matches_same_conditions_and_removes_floor_aliases():
-    seasonal = module("publication/seasonal/derive_seasonal_comparison.py", "regime_pairing")
+    seasonal = module("src/analysis/seasonal/derive_seasonal_comparison.py", "regime_pairing")
     rows = []
     for context, permission in [("Miami", "floor"), ("Seattle_small2019", "floor"), ("Seattle_small2019", "native_zone")]:
         for mode, fraction, gap in [("direct", -1, 5), ("equal_service", 1, 1), ("equal_service", .75, 3)]:

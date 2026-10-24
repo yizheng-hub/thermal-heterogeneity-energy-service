@@ -19,9 +19,9 @@ from thermal_heterogeneity.building.energyplus import (
 
 
 ROOT = Path(__file__).resolve().parents[2]
-MANIFEST = ROOT / "configs" / "energyplus_runs.csv"
-REUSE = ROOT / "configs" / "energyplus_dynamic_baseline_reuse.csv"
-CONTRACT = ROOT / "configs" / "energyplus_level2_contract.json"
+MANIFEST = ROOT / "src/settings" / "energyplus_runs.csv"
+REUSE = ROOT / "src/settings" / "energyplus_dynamic_baseline_reuse.csv"
+CONTRACT = ROOT / "src/settings" / "energyplus_level2_contract.json"
 
 
 def _sha(data: bytes) -> str:
@@ -71,7 +71,7 @@ def test_locked_manifest_and_baseline_reuse_contract() -> None:
     completed = subprocess.run(
         [
             sys.executable,
-            str(ROOT / "scripts" / "validate_energyplus_manifest.py"),
+            str(ROOT / "src/utilities" / "validate_energyplus_manifest.py"),
             str(MANIFEST),
             "--baseline-reuse",
             str(REUSE),

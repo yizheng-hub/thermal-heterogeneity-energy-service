@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 
-SOURCE = Path(__file__).resolve().parents[2] / "scripts/generate_demand_inputs.py"
+SOURCE = Path(__file__).resolve().parents[2] / "src/utilities/generate_demand_inputs.py"
 SPEC = importlib.util.spec_from_file_location("public_upstream_replay", SOURCE)
 REPLAY = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(REPLAY)
@@ -22,7 +22,7 @@ def test_external_scene_asset_is_locked_before_loading(tmp_path):
 
 
 def test_released_numeric_scenes_need_no_question_text_or_dialogue():
-    path = SOURCE.parents[1] / "data/numeric_scene_spec_v1.json"
+    path = SOURCE.parents[2] / "data/metadata/numeric_scene_spec_v1.json"
     scenes = REPLAY.numeric_scenes(path, numeric_only=True)
     assert len(scenes) == 19
     assert {scene["scene_id"] for scene in scenes} == set(REPLAY.SCENE_LOGIC)
@@ -34,7 +34,7 @@ def test_released_numeric_scenes_need_no_question_text_or_dialogue():
 
 
 def test_released_numeric_scene_tampering_is_rejected(tmp_path):
-    path = SOURCE.parents[1] / "data/numeric_scene_spec_v1.json"
+    path = SOURCE.parents[2] / "data/metadata/numeric_scene_spec_v1.json"
     altered = tmp_path / "numeric_scene_spec.json"
     altered.write_bytes(path.read_bytes() + b" ")
     with pytest.raises(ValueError, match="numeric_scenes SHA-256 differs"):

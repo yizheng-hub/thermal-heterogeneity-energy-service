@@ -1,6 +1,6 @@
 # Third-party notices
 
-This file records attribution and release boundaries. It is not a substitute for upstream licence text or terms. Exact versions, hashes and per-asset dispositions are in `data/source_manifest.csv`.
+This file records attribution and release boundaries. It is not a substitute for upstream licence text or terms. Exact versions, hashes and per-asset dispositions are in `data/metadata/source_manifest.csv`.
 
 ## Human thermal datasets
 
@@ -29,7 +29,7 @@ Times New Roman is required at render time but is not distributed by this reposi
 
 ## Upstream numerical demand replay
 
-The optional `scripts/generate_demand_inputs.py` retains the study's numerical
+The optional `src/utilities/generate_demand_inputs.py` retains the study's numerical
 Fanger/PMV fallback and virtual-persona update rules from its archived
 `run_full_archive_virtual_ltpref.py`. The archived routine describes the ISO 7730
 numerical heat balance. Earlier study scripts called `pythermalcomfort` for PMV,

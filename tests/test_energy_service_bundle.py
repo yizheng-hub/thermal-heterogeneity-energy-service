@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 
-MODULE = Path(__file__).resolve().parents[1] / "publication/energy_service/bundle.py"
+MODULE = Path(__file__).resolve().parents[1] / "src/analysis/energy_service/bundle.py"
 SPEC = importlib.util.spec_from_file_location("energy_service_bundle", MODULE)
 bundle = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(bundle)

@@ -20,8 +20,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-publication = [
-  "python-docx==1.2.0",
+notebook = [
+  "ipykernel==6.29.5",
+  "jupyterlab==4.2.5",
 ]
 test = [
   "pytest==8.3.3",
@@ -52,6 +53,6 @@ target-version = "py311"
 select = ["E4", "E7", "E9", "F63", "F7", "F82"]
 
 [tool.ruff.lint.per-file-ignores]
-"scripts/release_scan.py" = ["E402"]
-"scripts/validate_release_data.py" = ["E741"]
+"src/utilities/release_scan.py" = ["E402"]
+"src/utilities/validate_release_data.py" = ["E741"]
 

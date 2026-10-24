@@ -66,7 +66,7 @@ def synthetic_release(tmp_path: Path) -> tuple[Path, Path]:
     ).to_csv(data / "update.csv", index=False)
 
     repository = Path(__file__).resolve().parents[1]
-    config = yaml.safe_load((repository / "configs" / "paper.yaml").read_text(encoding="utf-8"))
+    config = yaml.safe_load((repository / "src/settings" / "paper.yaml").read_text(encoding="utf-8"))
     config["output"] = "output"
     config["data_root"] = "."
     config["assets"] = {
