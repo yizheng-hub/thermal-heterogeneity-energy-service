@@ -1,4 +1,4 @@
-"""Insert the seasonal and typical-day evidence in supplementary reading order."""
+"""Order supplementary evidence by its first citation in the main manuscript."""
 from pathlib import Path
 import argparse
 import hashlib
@@ -7,14 +7,35 @@ import re
 import shutil
 import tempfile
 
-OLD_TO_NEW = {n: n if n <= 9 else 12 if n == 10 else n + 3 for n in range(1, 22)}
+OLD_TO_NEW = {1: 16, 2: 2, 3: 1, 4: 3, 5: 4, 6: 5, 7: 6, 8: 7,
+              9: 17, 10: 10, 11: 8, 12: 9, 13: 20, 14: 21, 15: 22,
+              16: 23, 17: 12, 18: 13, 19: 14, 20: 15, 21: 24}
+TABLE_ORDER = (2, 3, 4, 5, 10, 11, 17, 12, 1, 6, 7, 13, 18, 8, 9, 14, 15, 19, 16)
+TABLE_MAP = {old: new for new, old in enumerate(TABLE_ORDER, 1)}
+SECTION_MAP = {'1': '7.1', '2': '7.2', '3': '1.1', '4': '1.2', '5': '1.3',
+               '6': '1.4', '7': '1.5', '8': '2', '8.1': '2.1', '8.2': '2.2',
+               '8.3': '3.1', '8.4': '9', '9': '4', '10': '5', '11': '6.1',
+               '12': '8.1', '12.1': '8.2', '12.2': '12.1', '13': '10',
+               '13.1': '10.1', '13.2': '3.2', '13.3': '10.2', '13.4': '10.3',
+               '13.5': '10.4', '14': '11', '14.1': '12.2', '15': '6.2',
+               '15.1': '6.2.1', '15.2': '6.2.2', '16': '6.3', '17': '13',
+               '17.1': '13.1', '18': '14'}
+SECTION_MAP.update({f'{n}.{k}': f'{SECTION_MAP[str(n)]}.{k}'
+                    for n in (9, 10, 11) for k in (1, 2, 3)})
 SUFFIXES = ("_word.png", ".png", ".pdf", ".svg")
 
 
 def figure_references(text):
     pattern = r"((?:Supplementary )?(?:Figures?|Figs?\.)\s+)((?:S\d+[a-z]?(?:[–,][a-z])?)(?:\s*(?:,|and|–)\s*S\d+[a-z]?(?:[–,][a-z])?)*)"
-    return re.sub(pattern, lambda m: m.group(1) + re.sub(
+    text = re.sub(pattern, lambda m: m.group(1) + re.sub(
         r"S(\d+)", lambda n: "S" + str(OLD_TO_NEW[int(n.group(1))]), m.group(2)), text)
+    for label, mapping in [('Sections?', SECTION_MAP), ('Tables?', TABLE_MAP)]:
+        pattern = rf'(Supplementary {label}\s+)(S\d+(?:\.\d+)*(?:\s*(?:,|and|–)\s*S\d+(?:\.\d+)*)*)'
+        def mapped(match):
+            return match[1] + re.sub(r'S(\d+(?:\.\d+)*)',
+                lambda n: 'S' + str(mapping[n[1] if label.startswith('Section') else int(n[1])]), match[2])
+        text = re.sub(pattern, mapped, text)
+    return text
 
 
 def digest(path):
@@ -48,9 +69,9 @@ def finalize(paper, seasonal, typical):
             body = figure_references(caption.split("|", 1)[1].strip())
             (folder / f"Figure_S{new:02d}_caption.txt").write_text(f"Supplementary Figure S{new} | {body}\n", encoding="utf-8")
             item["display_number"] = new
-    additions = [(10, "seasonal_direct", seasonal / "Supplementary_monthly_direct"),
-                 (11, "seasonal_common", seasonal / "Supplementary_monthly_common_service"),
-                 (13, "typical_day", typical / "TYPICAL_DAY_DR")]
+    additions = [(18, "seasonal_direct", seasonal / "Supplementary_monthly_direct"),
+                 (19, "seasonal_common", seasonal / "Supplementary_monthly_common_service"),
+                 (11, "typical_day", typical / "TYPICAL_DAY_DR")]
     for number, key, stem in additions:
         copy_bundle(stem, folder / f"Figure_S{number:02d}")
         raw = Path(str(stem) + "_caption.txt")
@@ -66,6 +87,14 @@ def finalize(paper, seasonal, typical):
     if [item["display_number"] for item in order] != list(range(1, 25)):
         raise ValueError("Supplementary figures are not a continuous S1-S24 series")
     order_path.write_text(json.dumps(order, indent=2) + "\n", encoding="utf-8")
+    (paper / 'SUPPLEMENTARY_READING_ORDER.json').write_text(json.dumps({
+        'main_first_cited_figures': list(range(1, 17)),
+        'figures_cited_only_inside_supplement': list(range(17, 25)),
+        'table_aliases_old_to_new': TABLE_MAP,
+        'section_aliases_old_to_new': SECTION_MAP,
+        'identity_panels': 'Historical S12a,b are now in displayed S1e,f',
+        'annual_severity_panels': 'Historical S12c,d are now displayed S22a,b',
+    }, indent=2) + '\n', encoding='utf-8')
     for number in range(1, 7):
         for name in ("caption.txt", "alt_text.txt"):
             path = paper / f"captions_alt/figure_{number:02d}" / name

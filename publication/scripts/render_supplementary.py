@@ -69,13 +69,20 @@ def configure():
 
 
 def canvas(titles):
-    fig, axes = plt.subplots(2, 2, figsize=(180 / 25.4, 177 / 25.4))
-    bounds = [
-        (0.13, 0.59, 0.34, 0.32),
-        (0.64, 0.59, 0.34, 0.32),
-        (0.13, 0.12, 0.34, 0.32),
-        (0.64, 0.12, 0.34, 0.32),
-    ]
+    if len(titles) == 6:
+        fig, axes = plt.subplots(3, 2, figsize=(180 / 25.4, 225 / 25.4))
+        bounds = [(x, y, 0.34, 0.22) for y in (0.735, 0.425, 0.115) for x in (0.13, 0.64)]
+    elif len(titles) == 2:
+        fig, axes = plt.subplots(2, 1, figsize=(180 / 25.4, 177 / 25.4))
+        bounds = [(0.14, 0.59, 0.82, 0.32), (0.14, 0.12, 0.82, 0.32)]
+    else:
+        fig, axes = plt.subplots(2, 2, figsize=(180 / 25.4, 177 / 25.4))
+        bounds = [
+            (0.13, 0.59, 0.34, 0.32),
+            (0.64, 0.59, 0.34, 0.32),
+            (0.13, 0.12, 0.34, 0.32),
+            (0.64, 0.12, 0.34, 0.32),
+        ]
     for i, (ax, title, rectangle) in enumerate(zip(axes.flat, titles, bounds)):
         ax.set_position(rectangle)
         ax.set_title(f"({chr(97+i)}) {title}", loc="left", pad=10)
@@ -113,24 +120,6 @@ def save(fig, out, number, caption, sources):
         ):
             label = ax.get_title(loc="left")[:3]
             ax.set_title(label + " " + title, loc="left", pad=18, fontsize=12, weight="bold")
-    elif number == 12:
-        ax = fig.axes[1]
-        arrays = [line.get_ydata().copy() for line in ax.lines[:2]]
-        ax.clear()
-        labels = ["Country", "City", "Building", "Within bldg", "Repeat"]
-        for y, (v, w) in enumerate(zip(*arrays)):
-            ax.plot([v, w], [y, y], color="#aaaaaa", lw=1)
-        for values, color, label in zip(
-            arrays, [PALETTE["blue"], PALETTE["vermillion"]], ["All records", "Known ID"]
-        ):
-            ax.scatter(values, range(5), s=35, color=color, label=label, zorder=3)
-        ax.set_yticks(range(5), labels)
-        ax.invert_yaxis()
-        ax.set_xlim(0, 65)
-        ax.set_xlabel("Variance share (%)")
-        ax.set_title("(b) Variance components", loc="left", pad=18, fontsize=12, weight="bold")
-        ax.tick_params(axis="x", labelrotation=0)
-        ax.legend(frameon=False, loc="lower right")
     elif number == 11:
         fig.axes[2].set_xticklabels(
             ["<20", "20–29", "30–39", "40–49", "50–59", "60+"], rotation=45, ha="right"
@@ -202,7 +191,7 @@ def save(fig, out, number, caption, sources):
         "stem": stem,
         "caption": caption,
         "sources": sources,
-        "panels": 4,
+        "panels": 6 if number == 2 else 2 if number == 12 else 4,
     }
 
 
@@ -210,7 +199,7 @@ def submission_supplement_layout(fig, number, out):
     """Keep ordinary SI panels on one grid and reserve map/diagram layouts."""
     before = layout_snapshot(fig)
     if number != 14:
-        for axis in fig.axes[:4]:
+        for axis in fig.axes[:6 if number == 2 else 4]:
             if number != 15:
                 axis.set_title(
                     axis.get_title(loc="left"), loc="left", pad=10, fontsize=12, fontweight="bold"
@@ -491,6 +480,8 @@ def main():
             "Unit-equal weighting",
             "Building-equal weighting",
             "Source-equal weighting",
+            "Identified-unit check",
+            "Variance components",
         ]
     )
     labels = {
@@ -533,13 +524,48 @@ def main():
         ax.set_xlabel("Archive variance share (%)")
         ax.set_xlim(-2, 85)
     a[0].legend(frameon=False, fontsize=11, loc="upper right")
+    identity_variance = pd.read_csv(args.science_audit / "variance_recheck.csv")
+    comps = list(identity_variance.component.drop_duplicates())
+    groups = list(identity_variance.cohort.drop_duplicates())
+    y = np.arange(len(groups))
+    left = np.zeros(len(groups))
+    for j, comp in enumerate(comps):
+        q = identity_variance[identity_variance.component == comp].set_index("cohort").reindex(groups)
+        a[4].barh(
+            y, q.share * 100, left=left, color=VARIANCE_COLORS[j], label=comp.replace("_", " ")
+        )
+        left += q.share.to_numpy() * 100
+    a[4].set_yticks(y, ["All records", "Known ID"])
+    a[4].set_xlabel("Archive variance share (%)")
+    a[4].set_ylim(-0.5, 2.45)
+    component_labels = ["Country", "City", "Building", "Within bldg", "Repeat"]
+    handles = [Patch(facecolor=VARIANCE_COLORS[j], edgecolor="none") for j in range(len(comps))]
+    a[4].legend(
+        handles, component_labels, frameon=False, loc="upper left", ncol=2,
+        handlelength=1, columnspacing=0.7, labelspacing=0.2,
+    )
+    arrays = [
+        identity_variance[identity_variance.cohort == group].set_index("component").reindex(comps).share.to_numpy() * 100
+        for group in groups
+    ]
+    for y, (v, w) in enumerate(zip(*arrays)):
+        a[5].plot([v, w], [y, y], color="#aaaaaa", lw=1)
+    for values, color, label in zip(
+        arrays, [PALETTE["blue"], PALETTE["vermillion"]], ["All records", "Known ID"]
+    ):
+        a[5].scatter(values, range(5), s=35, color=color, label=label, zorder=3)
+    a[5].set_yticks(range(5), component_labels)
+    a[5].invert_yaxis()
+    a[5].set_xlim(0, 65)
+    a[5].set_xlabel("Variance share (%)")
+    a[5].legend(frameon=False, loc="upper right")
     manifest.append(
         save(
             fig,
             out,
             2,
-            "Figure S2 | Hierarchical variance sensitivity. a–d, Leave-one-source variance shares under the four weighting schemes identified in the panel titles. Points are medians across twenty-seven source removals and whiskers give the minimum and maximum. Blue, gold and green denote Griffiths coefficients 0.33, 0.50 and 0.67 °C−1. The five components are country, city within country, building within city, analysis unit within building and repeated measurement within analysis unit. Building labels denote database groups; 150 IDs are original and 37 inferred.",
-            ["Fig1h.csv"],
+            "Figure S2 | Hierarchical variance and identity sensitivity. a–d, Leave-one-source variance shares under the four weighting schemes identified in the panel titles. Points are medians across twenty-seven source removals and whiskers give the minimum and maximum. Blue, gold and green denote Griffiths coefficients 0.33, 0.50 and 0.67 °C−1. The five components are country, city within country, building within city, analysis unit within building and repeated measurement within analysis unit. Building labels denote database groups; 150 IDs are original and 37 inferred. e,f, Hierarchical variance shares for all canonical records and the subset with subject-within-building identifiers. Component colours in e match Figure 1d. Blue and terracotta in f identify all records and known IDs, respectively. The identified-subject subset uses only original-source building IDs.",
+            ["Fig1h.csv", "science_audit/variance_recheck.csv"],
         )
     )
 
@@ -1042,70 +1068,29 @@ def main():
         )
     )
 
-    variance = pd.read_csv(args.science_audit / "variance_recheck.csv")
     severity = pd.read_csv(args.science_audit / "false_accept_exceedance_cells.csv")
     fig, a = canvas(
         [
-            "Identified-unit check",
-            "Variance components",
             "Service exceedance",
             "Substitute energy penalty",
         ]
     )
-    comps = list(variance.component.drop_duplicates())
-    groups = list(variance.cohort.drop_duplicates())
-    y = np.arange(len(groups))
-    left = np.zeros(len(groups))
-    for j, comp in enumerate(comps):
-        q = variance[variance.component == comp].set_index("cohort").reindex(groups)
-        a[0].barh(
-            y, q.share * 100, left=left, color=VARIANCE_COLORS[j], label=comp.replace("_", " ")
-        )
-        left += q.share.to_numpy() * 100
-    a[0].set_yticks(y, ["All records", "Known ID"])
-    a[0].set_xlabel("Archive variance share (%)")
-    a[0].set_ylim(-0.5, 2.45)
-    component_labels = ["Country", "City", "Building", "Within bldg", "Repeat"]
-    component_colors = VARIANCE_COLORS
-    handles = [Patch(facecolor=component_colors[j], edgecolor="none") for j in range(len(comps))]
-    a[0].legend(
-        handles,
-        component_labels,
-        frameon=False,
-        loc="upper left",
-        ncol=2,
-        handlelength=1,
-        columnspacing=0.7,
-    )
-    for j, g in enumerate(groups):
-        q = variance[variance.cohort == g].set_index("component").reindex(comps)
-        cohort_label = "All records" if str(g).lower().startswith("all") else "Known ID"
-        a[1].plot(
-            np.arange(len(comps)), q.share * 100, marker="o", color=COLORS[j], label=cohort_label
-        )
-    a[1].set_xticks(range(len(comps)), ["Country", "City", "Bldg", "Within\nbldg", "Repeat"])
-    a[1].tick_params(axis="x", labelsize=11, rotation=35)
-    a[1].set_ylabel("Variance share (%)")
-    a[1].legend(frameon=False, loc="upper left")
     exceed = next(c for c in severity if c in ["maximum_positive_excess_c"])
-    a[2].hist(severity[exceed], bins=20, color=COLORS[1], alpha=0.75)
-    a[2].set_xlabel("Maximum budget exceedance (°C)")
-    a[2].set_ylabel("False-accepted selections")
+    a[0].hist(severity[exceed], bins=20, color=COLORS[1], alpha=0.75)
+    a[0].set_xlabel("Maximum budget exceedance (°C)")
+    a[0].set_ylabel("False-accepted selections")
     cost_col = next(c for c in severity if c in ["full_alternative_energy_penalty_percent"])
     z = np.sort(severity[cost_col].dropna().to_numpy())
-    a[3].plot(z, np.arange(1, len(z) + 1) / len(z), color=COLORS[0])
-    a[3].set_xlabel("Substitute energy increase (%)")
-    a[3].set_ylabel("Cumulative fraction")
+    a[1].plot(z, np.arange(1, len(z) + 1) / len(z), color=COLORS[0])
+    a[1].set_xlabel("Substitute energy increase (%)")
+    a[1].set_ylabel("Cumulative fraction")
     manifest.append(
         save(
             fig,
             out,
             12,
-            "Figure S12 | Identity sensitivity and changed annual decisions. a,b, Hierarchical variance shares for all canonical records and the subset with subject-within-building identifiers. Component colours match Figure 1d, and cohort colours are identified in b. c, Maximum excess over the mean or tail service budget in the 117 false-accepted annual selections at archive spread. d, Cumulative distribution of the annual energy increase for the full-qualified substitute in sixty-three cases with an available substitute. Fifty-four cases without such a substitute are excluded from d. The identified-subject subset uses only original-source building IDs.",
-            [
-                "science_audit/variance_recheck.csv",
-                "science_audit/false_accept_exceedance_cells.csv",
-            ],
+            "Figure S12 | Annual service exceedance and substitute energy cost. a, Maximum excess over the mean or tail service budget in the 117 false-accepted annual selections at archive spread. b, Cumulative distribution of the annual energy increase for the full-qualified substitute in sixty-three cases with an available substitute. Fifty-four cases without such a substitute are excluded from b.",
+            ["science_audit/false_accept_exceedance_cells.csv"],
         )
     )
 

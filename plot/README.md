@@ -16,4 +16,10 @@ The temporal renderers `publication/seasonal/extend_main_figure_three.py` and
 figures. `finalize_temporal_assets.py` sets the final S1–S24 reading order and
 preserves the original six panels of main Figure 3 while adding panels g and h.
 
+Displayed supplementary figures S1–S16 follow their first citation in the main
+manuscript. Figures S17–S24 are cited inside the supplement. The finalizer also
+exports `SUPPLEMENTARY_READING_ORDER.json`, including the table-alias mapping;
+Source Data table filenames use the current displayed numbers. Original input
+panel names remain stable and are linked through `FIGURE_SOURCE_MAP.csv`.
+
 Normal and bold Times New Roman must be installed locally. Products are written inside the supplied replay directory and remain outside Git. Source routes and hashes are in `Supplementary_Data/FIGURE_SOURCE_MAP.csv`.

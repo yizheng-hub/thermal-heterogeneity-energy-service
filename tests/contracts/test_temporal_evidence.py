@@ -47,7 +47,11 @@ def test_temporal_assets_preserve_existing_evidence_and_only_renumber_figures(tm
     for old, new in finalizer.OLD_TO_NEW.items():
         assert (paper / f"supplementary_figures/Figure_S{new:02d}.pdf").read_text() == str(old)
     caption = (paper / "captions_alt/figure_01/caption.txt").read_text()
-    assert "Fig. S12" in caption and "Table S10" in caption and "Section S10" in caption
+    assert "Fig. S10" in caption and "Table S5" in caption and "Section S5" in caption
+    reading_order = json.loads((paper / 'SUPPLEMENTARY_READING_ORDER.json').read_text())
+    assert reading_order['main_first_cited_figures'] == list(range(1, 17))
+    assert reading_order['figures_cited_only_inside_supplement'] == list(range(17, 25))
+    assert sorted(reading_order['table_aliases_old_to_new'].values()) == list(range(1, 20))
     assert (paper / "figures/figure_03/figure_03.pdf").read_text() == "Figure_03_extended"
     assert len(list((paper / "supplementary_figures").glob("*_word.png"))) == 24
 

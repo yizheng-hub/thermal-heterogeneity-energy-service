@@ -141,6 +141,11 @@ def export_source_data(previous, paper, science, data, repo, out):
             shutil.copyfile(path, target / path.name)
     for path in sorted((out / "typical_day_dr/figures").glob("*.csv")):
         shutil.copyfile(path, figure_sources / path.name)
+    reading_order = json.loads((paper / 'SUPPLEMENTARY_READING_ORDER.json').read_text(encoding='utf-8'))
+    table_aliases = reading_order['table_aliases_old_to_new']
+    retained_tables = {old: (tables / f'TableS{old}.csv').read_bytes() for old in table_aliases}
+    for old, new in table_aliases.items():
+        (tables / f'TableS{new}.csv').write_bytes(retained_tables[old])
     export_supporting_sources(previous, paper, tables, data, repo)
     index = []
     for path in sorted(tables.rglob("*.csv*")):
