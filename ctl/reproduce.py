@@ -1,4 +1,4 @@
-"""Reproduce scientific analyses, 27 figures and source tables from external inputs."""
+"""Reproduce scientific analyses, 30 figures and source tables from external inputs."""
 from pathlib import Path
 import subprocess
 import sys

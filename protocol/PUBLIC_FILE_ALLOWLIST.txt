@@ -1,4 +1,4 @@
-# Exact scientific-code files. Manuscripts, templates, inputs and generated products are excluded.
+# Exact scientific source-only release file set.
 .gitattributes
 .github/workflows/release-ci.yml
 .gitignore
@@ -26,6 +26,8 @@ data/source_building_bundle_manifest.csv
 data/source_building_bundle_source.json
 data/source_manifest.csv
 data/TRANSFORM_PROVENANCE.csv
+data/typical_day_dr_bundle_manifest.csv
+data/typical_day_dr_bundle_source.json
 DATA_AND_SOFTWARE_LICENSES.md
 intermediate_files/README.md
 LICENSE
@@ -57,6 +59,7 @@ publication/energy_service_paper/references/MANAGEMENT_REFERENCES_EXTRA.json
 publication/energy_service_paper/references/RESIDENTIAL_REFERENCES_EXTRA.json
 publication/energy_service_paper/references/VERIFIED_REFERENCES.json
 publication/energy_service_paper/scripts/assemble_publication_assets.py
+publication/energy_service_paper/scripts/finalize_temporal_assets.py
 publication/energy_service_paper/scripts/render_control_service_figures.py
 publication/energy_service_paper/scripts/render_response_implementation_figures.py
 publication/energy_service_paper/scripts/render_response_traces.py
@@ -83,6 +86,8 @@ publication/reproduce_publication.py
 publication/scripts/geometry_audit.py
 publication/scripts/render_revised_main_figures.py
 publication/scripts/render_supplementary.py
+publication/seasonal/derive_seasonal_comparison.py
+publication/seasonal/extend_main_figure_three.py
 publication/support/candidate_support/candidate_scores.csv
 publication/support/candidate_support/INPUT_MANIFEST.json
 publication/support/candidate_support/regional_factors.csv
@@ -100,6 +105,9 @@ publication/support/science_audit/variance_recheck.csv
 publication/support/spatial_audit/metrics_summary.csv
 publication/support/spatial_audit/oof_predictions.csv
 publication/support/spatial_audit/paired_cluster_bootstrap_vs_mean.csv
+publication/typical_day_dr/README.txt
+publication/typical_day_dr/render.py
+publication/typical_day_dr/replay.py
 pyproject.toml
 README.md
 results/README.md
@@ -131,6 +139,7 @@ scripts/snapshot_analysis_sources.py
 scripts/unpack_energy_service_data.py
 scripts/unpack_paper_data.py
 scripts/unpack_source_building_data.py
+scripts/unpack_typical_day_dr_data.py
 scripts/validate_energyplus_manifest.py
 scripts/validate_release_data.py
 scripts/validate_source_manifest.py
@@ -182,6 +191,7 @@ tests/contracts/test_ordering.py
 tests/contracts/test_panel_registry.py
 tests/contracts/test_paths.py
 tests/contracts/test_rng.py
+tests/contracts/test_temporal_evidence.py
 tests/contracts/test_upstream_demand_replay.py
 tests/energy_service/conftest.py
 tests/energy_service/test_baseline_decision_contract.py

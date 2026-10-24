@@ -140,9 +140,14 @@ def file_sha256(path: Path) -> str:
 
 
 def export_result(fig, axes, directory: Path, stem: str, *, caption: str,
-                  sources: dict[str, Path]) -> dict:
+                  sources: dict[str, Path], documented_empty_axes=()) -> dict:
     """Export real results only, with exact input hashes and no inferred visual pass."""
-    if not sources or not caption.strip() or not axes or not all(ax.has_data() for ax in axes):
+    empty = [ax for ax in axes if not ax.has_data()]
+    if set(empty) != set(documented_empty_axes):
+        raise ValueError("Empty panels require explicit source-backed missing-status documentation")
+    if any(not any(t.get_text() == "No qualified trajectory" for t in ax.texts) for ax in empty):
+        raise ValueError("Each documented empty panel must visibly identify its qualification status")
+    if not sources or not caption.strip() or not axes:
         raise ValueError("Every panel needs real data, a caption and traced source files before export")
     before = {name: file_sha256(path) for name, path in sources.items()}
     audit = layout_audit(fig, axes)

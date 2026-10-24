@@ -55,3 +55,14 @@ arrays, minimized executable demand units, cohort metric/identifier strata,
 fixed candidate supports, zone capacities and a protocol locked before outcome
 scoring. These are frozen trajectories and archive-derived counterfactual
 cohorts. Original human records and identity crosswalks are not distributed.
+
+## Typical-day temporal supplement
+
+The final replay additionally verifies `typical_day_dr_bundle_manifest.csv` and
+`typical_day_dr_bundle_source.json`. They identify a separate externally supplied
+ZIP with 44 declared files (32 normalized full-year physical trajectories, four
+source calendars and eight locked protocol records), plus its manifest. Pass the
+unpacked directory with `--typical-day-data-root`. These are retained outputs
+from new physical simulations; the public analysis replay rescores them and
+does not claim to regenerate their full EnergyPlus input-generation history.
+No trajectory, manuscript or data ZIP is stored in this code repository.

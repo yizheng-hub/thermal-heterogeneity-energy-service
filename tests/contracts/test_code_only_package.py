@@ -32,8 +32,9 @@ def test_scientific_entry_plan_works_without_manuscripts_or_templates():
                             text=True, encoding="utf-8", capture_output=True, check=True)
     plan = json.loads(result.stdout)
     assert plan["manuscripts_required"] is False
-    assert plan["data_files"] == 877 and plan["figures"] == 27
-    assert len(plan["steps"]) == 7
+    assert plan["data_files"] == 877 and plan["figures"] == 30
+    assert plan["typical_day_data_files"] == 44 and plan["typical_day_manifest_files"] == 1
+    assert len(plan["steps"]) == 13
     assert all((ROOT / path).is_file() for path in plan["steps"])
     assert not any("document" in path or "compile_references" in path for path in plan["steps"])
 

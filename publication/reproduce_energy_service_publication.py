@@ -1,4 +1,4 @@
-"""Rebuild scientific comparisons, 27 figures and traceable source tables.
+"""Rebuild scientific comparisons, 30 figures and traceable source tables.
 
 External processed inputs are verified before analysis. No manuscript, Word
 template, raw survey or EnergyPlus runtime is required by this entry point.
@@ -47,6 +47,10 @@ def export_supporting_sources(previous, paper, tables, data, repo):
         source_lists[old_number] = [item["old_frozen_panel"] + ".csv"
                                    for item in panel_mapping if item["new_figure"] == f"Fig{old_main}"]
     source_lists[21] = ["Figure_sources/Supplementary_Figure_S21_source.csv"]
+    source_lists.update(seasonal_direct=["Seasonal/PERIOD_TOTALS.csv", "Seasonal/SELECTION_STATUS.csv"],
+                        seasonal_common=["Seasonal/PERIOD_TOTALS.csv", "Seasonal/SELECTION_STATUS.csv"],
+                        typical_day=["Typical_day_DR/THREE_DATE_COMPARISON.csv", "Typical_day_DR/EVENT_ALL_CANDIDATES.csv",
+                                     "Typical_day_DR/EVENT_SELECTIONS.csv", "Typical_day_DR/EVENT_HOURLY.csv.gz"])
 
     def locate(source_name):
         if source_name.startswith("engineering/"):
@@ -59,6 +63,8 @@ def export_supporting_sources(previous, paper, tables, data, repo):
             return repo / "src/thermal_heterogeneity/assets/ne_110m_land.geojson"
         if source_name == "MAIN_FIG6G_Q5_REGRET.csv":
             return previous / "decision_value" / source_name
+        if source_name.startswith(("Seasonal/", "Typical_day_DR/")):
+            return tables / source_name
         if source_name.startswith("Figure_sources/"):
             return tables / source_name
         if source_name.startswith("Fig") and "/" not in source_name:
@@ -128,6 +134,13 @@ def export_source_data(previous, paper, science, data, repo, out):
         shutil.copyfile(path, figure_sources / path.name)
     for path in sorted((paper / "figures/figure_01").glob("*source*.csv")):
         shutil.copyfile(path, figure_sources / path.name)
+    for directory, source_root in (("Seasonal", out / "seasonal"), ("Typical_day_DR", out / "typical_day_dr")):
+        target = tables / directory
+        target.mkdir(exist_ok=True)
+        for path in sorted(source_root.glob("*.csv*")):
+            shutil.copyfile(path, target / path.name)
+    for path in sorted((out / "typical_day_dr/figures").glob("*.csv")):
+        shutil.copyfile(path, figure_sources / path.name)
     export_supporting_sources(previous, paper, tables, data, repo)
     index = []
     for path in sorted(tables.rglob("*.csv*")):
@@ -150,6 +163,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-root", type=Path)
     parser.add_argument("--output-root", type=Path)
+    parser.add_argument("--typical-day-data-root", type=Path, help="Verified extracted 44-file normalized typical-day supplement")
     parser.add_argument("--plan", action="store_true", help="Show the scientific workflow without reading data or writing outputs.")
     args = parser.parse_args()
     publication = Path(__file__).resolve().parent
@@ -160,16 +174,20 @@ def main():
         raise RuntimeError("Install this checkout in the locked environment before reproduction")
     source = publication / "energy_service_paper"
     if args.plan:
-        scripts = [repo / "scripts/unpack_paper_data.py", publication / "reproduce_publication.py",
+        scripts = [repo / "scripts/unpack_paper_data.py", repo / "scripts/unpack_typical_day_dr_data.py",
+                   publication / "reproduce_publication.py",
                    publication / "reproduce_energy_service.py", source / "scripts/render_control_service_figures.py",
                    source / "scripts/render_response_implementation_figures.py", source / "scripts/render_response_traces.py",
-                   source / "scripts/assemble_publication_assets.py"]
+                   source / "scripts/assemble_publication_assets.py",
+                   publication / "seasonal/derive_seasonal_comparison.py", publication / "typical_day_dr/replay.py",
+                   publication / "typical_day_dr/render.py", publication / "seasonal/extend_main_figure_three.py",
+                   source / "scripts/finalize_temporal_assets.py"]
         print(json.dumps({"steps": [str(path.relative_to(repo).as_posix()) for path in scripts],
-                          "data_files": 877, "figures": 27, "manuscripts_required": False,
+                          "data_files": 877, "typical_day_data_files": 44, "typical_day_manifest_files": 1, "figures": 30, "manuscripts_required": False,
                           "physical_simulations_run": 0}, indent=2))
         return
-    if args.data_root is None or args.output_root is None:
-        parser.error("--data-root and --output-root are required unless --plan is used")
+    if args.data_root is None or args.output_root is None or args.typical_day_data_root is None:
+        parser.error("--data-root, --typical-day-data-root and --output-root are required unless --plan is used")
     data, out = args.data_root.resolve(), args.output_root.resolve()
     if out.exists():
         raise FileExistsError("Choose a new publication output directory")
@@ -190,6 +208,8 @@ def main():
 
     run("00_verify_combined_inputs", repo / "scripts/unpack_paper_data.py", "--root", data,
         "--report", out / "PAPER_INPUT_VERIFICATION.json")
+    run("00b_verify_typical_day_inputs", repo / "scripts/unpack_typical_day_dr_data.py",
+        "--root", args.typical_day_data_root.resolve())
     previous = out / "supporting_evidence"
     run("01_supporting_human_and_library_analyses", publication / "reproduce_publication.py",
         "--data-root", data / "legacy_analysis", "--source-building-data", data / "source_building",
@@ -209,11 +229,30 @@ def main():
         "--service-module", publication / "energy_service/thermal_service.py", "--output", flat)
     run("06_assemble_main_and_supporting_graphics", source / "scripts/assemble_publication_assets.py",
         "--previous-root", previous / "paper", "--stage-root", paper)
+    seasonal, typical = out / "seasonal", out / "typical_day_dr"
+    run("07_monthly_and_seasonal_analysis", publication / "seasonal/derive_seasonal_comparison.py",
+        "--engineering-root", data / "energy_service/engineering", "--annual-root", science / "annual",
+        "--factors", data / "energy_service/factors/regional_factors.csv",
+        "--analysis-module", publication / "energy_service/analyse_annual.py", "--output", seasonal)
+    run("08_typical_day_response_analysis", publication / "typical_day_dr/replay.py",
+        "--paper-data-root", data, "--annual-root", science / "annual",
+        "--supplement-root", args.typical_day_data_root.resolve(), "--output-root", typical)
+    run("09_typical_day_response_figure", publication / "typical_day_dr/render.py",
+        "--replay-root", typical, "--output-root", typical / "figures")
+    run("10_seasonal_main_and_supporting_figures", publication / "seasonal/extend_main_figure_three.py",
+        "--main-builder", source / "scripts/render_control_service_figures.py", "--annual-root", science / "annual",
+        "--seasonal-root", seasonal, "--output", seasonal / "figures")
+    run("11_temporal_asset_reading_order", source / "scripts/finalize_temporal_assets.py",
+        "--paper-root", paper, "--seasonal-figure-root", seasonal / "figures",
+        "--typical-figure-root", typical / "figures")
     source_data_count = export_source_data(previous, paper, science, data, repo, out)
     files = [{"path": path.relative_to(out).as_posix(), "sha256": sha256(path)}
              for path in sorted(out.rglob("*")) if path.is_file()]
     report = {"status": "PASS", "scope": "Scientific comparisons, figures and source data",
-              "main_figures": 6, "supplementary_figures": 21, "supplementary_numbered_tables": 19,
+              "external_paper_files": 877, "external_typical_day_files": 44,
+              "retained_new_typical_day_trajectories": 32,
+              "typical_day_analysis_replay_only": True,
+              "main_figures": 6, "supplementary_figures": 24, "supplementary_numbered_tables": 19,
               "source_data_csvs": source_data_count,
               "physical_simulations_run": 0, "building_parameters_retuned": False,
               "package_loaded_from_current_repository": True,

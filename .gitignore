@@ -285,6 +285,24 @@
 !/THIRD_PARTY_NOTICES.md
 !/uv.lock
 
+
+# Temporal scientific replay extension
+!/publication/seasonal/
+/publication/seasonal/*
+!/publication/typical_day_dr/
+/publication/typical_day_dr/*
+!/data/typical_day_dr_bundle_manifest.csv
+!/data/typical_day_dr_bundle_source.json
+!/publication/energy_service_paper/scripts/finalize_temporal_assets.py
+!/publication/seasonal/derive_seasonal_comparison.py
+!/publication/seasonal/extend_main_figure_three.py
+!/publication/typical_day_dr/README.txt
+!/publication/typical_day_dr/render.py
+!/publication/typical_day_dr/replay.py
+!/scripts/unpack_typical_day_dr_data.py
+!/tests/contracts/test_temporal_evidence.py
+
+
 # Always excluded, including after future allowlist edits
 **/raw/**
 **/external/**

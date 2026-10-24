@@ -152,7 +152,7 @@ def render_five(results, output):
     dump_source(output, 5, "participation_supplement", participating)
     caption = (
         (
-               "Figure 5 | Own-baseline July response and recovery. Response is the largest qualified positive "
+               "Figure 5 | Own-baseline July response and recovery on selected high-load weekdays. Response is the largest qualified positive "
                "power reduction among two amplitudes, with a two-hour event and 48-hour recovery. Qualification "
                "requires both baseline and perturbed operation to meet population and fixed-tail "
                "temperature-mismatch limits during the event and recovery. All shown baselines meet the window "

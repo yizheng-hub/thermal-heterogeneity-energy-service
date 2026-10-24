@@ -1,3 +1,8 @@
 # Scientific replay
 
-`reproduce.py` accepts `--data-root` for an externally supplied 877-file computational package and `--output-root` for a new local output directory. `--plan` shows seven top-level steps without reading data or writing results. Outputs include numerical analyses, all 27 figures and source-data tables. No manuscript drafts or Word templates are read. No physical simulation is performed.
+`reproduce.py` requires `--data-root` for the 877-file computational package,
+`--typical-day-data-root` for the separate 44-file normalized supplement and
+`--output-root` for a new local output directory. `--plan` lists 13 steps without
+reading data or writing results. The workflow produces numerical analyses,
+6 main and 24 supplementary figures, source-data tables and provenance. It reads
+no manuscript or Word template and runs no physical simulation.

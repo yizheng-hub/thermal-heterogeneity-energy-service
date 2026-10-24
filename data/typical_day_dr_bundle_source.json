@@ -1,0 +1,11 @@
+{
+  "archive_filename": "typical_day_dr_supplement_v1.zip",
+  "sha256": "a134b7068dcdebbff36475d495f6c29bd9af27afd4c9ea6b928bff36dba9f3c0",
+  "bytes": 19589535,
+  "manifest_sha256": "5b676c9553606ad4e25a7bba6936f596e136543c1236632f9d657e05a79543be",
+  "files": 44,
+  "hourly_trajectories": 32,
+  "scope": "Normalized hourly-output sidecar for independent analysis replay; no IDF, weather, executable, raw SQL or logs are redistributed.",
+  "physical_rerun_implemented": false,
+  "source_data_unchanged": true
+}
