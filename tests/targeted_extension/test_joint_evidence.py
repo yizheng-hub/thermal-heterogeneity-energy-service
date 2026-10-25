@@ -9,7 +9,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src/analysis/targeted_extension"))
 from audit_joint_evidence import verify_compositions, verify_signed_energy  # noqa: E402
-from build_joint_evidence import signed_enduses  # noqa: E402
+from build_joint_evidence import cooling_offsets, signed_enduses  # noqa: E402
 
 
 def fixed_compositions():
@@ -114,3 +114,21 @@ def test_independent_audit_rejects_a_change_outside_the_space_energy_boundary(tm
     np.savez(tmp_path / "alternative.npz", **values)
     with pytest.raises(ValueError, match="accounting failed"):
         verify_signed_energy(pairs, ledger, (manifest,), factors)
+
+
+def test_cooling_savings_do_not_imply_lower_total_energy_or_carbon():
+    # Hand-set balances: -10 cooling + 8 heating + 5 fans = +3 total.
+    # The other two outcomes retain a genuine saving and a carbon-only saving.
+    cases = pd.DataFrame({"comparison_mode": ["direct"] * 3 + ["equal_service"],
+        "permission": ["native_zone"] * 4, "status": ["matched"] * 4,
+        "delta_annual_cooling_electric_kwh": [-10., -10., -10., -10.],
+        "delta_annual_site_kwh": [3., -4., 3., 3.],
+        "delta_annual_operational_co2_kg": [1.5, -2., -1., 1.5],
+        "delta_interval_coverage_percentage_points": [5., 2., -1., 5.],
+        "delta_mean_reference_mismatch_c": [-.2, -.1, .1, -.2],
+        "delta_fixed_tail_reference_mismatch_c": [-.1, .1, .2, -.1]})
+    result = cooling_offsets(cases)
+    assert len(result) == 3
+    assert result.cooling_decreased.tolist() == [True, True, True]
+    assert result.cooling_saving_offset.tolist() == [True, False, False]
+    assert result.mean_and_tail_mismatch_improved.tolist() == [True, False, False]

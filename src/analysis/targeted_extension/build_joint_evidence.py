@@ -71,6 +71,18 @@ def signed_enduses(pairs, manifests):
     return pd.DataFrame(rows), error
 
 
+def cooling_offsets(pairs):
+    """Retain every direct native-zone pair, including opposite and null outcomes."""
+    cases = pairs.query("comparison_mode == 'direct' and permission == 'native_zone' and status == 'matched'").copy()
+    cases["cooling_decreased"] = cases.delta_annual_cooling_electric_kwh.lt(-1e-6)
+    cases["cooling_saving_offset"] = (cases.cooling_decreased
+        & cases.delta_annual_site_kwh.gt(1e-6) & cases.delta_annual_operational_co2_kg.gt(1e-6))
+    cases["range_coverage_improved"] = cases.delta_interval_coverage_percentage_points.gt(1e-9)
+    cases["mean_and_tail_mismatch_improved"] = (cases.delta_mean_reference_mismatch_c.lt(-1e-9)
+        & cases.delta_fixed_tail_reference_mismatch_c.lt(-1e-9))
+    return cases
+
+
 def run(repository_root, primary_replay_root, ctcd_root, output_root):
     root, primary, ctcd, output = map(Path, (repository_root, primary_replay_root, ctcd_root, output_root))
     output.mkdir(parents=True, exist_ok=True)
@@ -127,6 +139,8 @@ def run(repository_root, primary_replay_root, ctcd_root, output_root):
         root / "data/inputs/energy_service/engineering/ANNUAL_RUN_MANIFEST.csv",
         root / "data/inputs/ctcd_parallel/annual/engineering/ANNUAL_RUN_MANIFEST.csv"))
     ledger.to_csv(output / "SIGNED_ENDUSE_REALLOCATION.csv", index=False)
+    offsets = cooling_offsets(tables["CONTROL_COMPARISONS"])
+    offsets.to_csv(output / "COOLING_REDUCTION_OFFSETS.csv", index=False)
     native = tables["CONTROL_COMPARISONS"].query("permission == 'native_zone'")
     metrics = ("delta_site_pct", "delta_annual_operational_co2_kg", "delta_interval_coverage_percentage_points",
                "delta_mean_reference_mismatch_c", "delta_fixed_tail_reference_mismatch_c")
@@ -146,6 +160,11 @@ def run(repository_root, primary_replay_root, ctcd_root, output_root):
         "fixed_compositions": 6, "layouts": sorted(LAYOUTS), "distinct_spatial_conditions": 120,
         "logical_annual_candidates": 1728, "native_direct_rows": int(tables["ANNUAL_DIRECT"].permission.eq("native_zone").sum()),
         "enduse_hourly_closure_max_error_kwh": residual, "physical_parameters_changed": False,
+        "cooling_offset_audit": {"matched_pairs": len(offsets),
+            "cooling_decreased": int(offsets.cooling_decreased.sum()),
+            "total_energy_and_carbon_increased": int(offsets.cooling_saving_offset.sum()),
+            "offset_with_coverage_improvement": int((offsets.cooling_saving_offset & offsets.range_coverage_improved).sum()),
+            "offset_with_mean_and_tail_improvement": int((offsets.cooling_saving_offset & offsets.mean_and_tail_mismatch_improved).sum())},
         "source_annual_sha256": source_hashes}
     (output / "JOINT_EVIDENCE_QA.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     return report
