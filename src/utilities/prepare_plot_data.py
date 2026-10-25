@@ -19,6 +19,7 @@ JOINT_PANEL_SOURCES = (
     ("Fig. 3", "e", "service/DIRECT_COMMON_PAIR_AUDIT.csv"),
     ("Fig. 3", "f", "annual/ANNUAL_SERVICE_SELECTIONS.csv"),
     ("Fig. 3", "g", "seasonal/SEASONAL_SERVICE_BUDGET_DIAGNOSTIC.csv"),
+    ("Fig. 3", "h", "seasonal/TEMPORAL_COMPENSATION_PAIRS.csv"),
     ("Fig. 3", "h", "seasonal/PERIOD_TOTALS.csv"),
     *(("Fig. 4", panel, "joint_spatial/SPATIAL_PAIRS.csv") for panel in "abc"),
     *(("Fig. 4", panel, "joint_spatial/COMMON_LAYOUT_PAIRS.csv") for panel in "de"),

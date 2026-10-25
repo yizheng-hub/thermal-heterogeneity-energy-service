@@ -36,6 +36,8 @@ RETAINED = {"hvac_electric_kwh": "annual_electric_kwh",
             "fans_electric_kwh": "annual_fans_electric_kwh",
             "purchased_site_kwh": "annual_site_kwh",
             "operational_co2_kg": "annual_operational_co2_kg"}
+PAIR_KEYS = PROFILE_KEYS + ['permission', 'comparison_mode', 'service_fraction',
+                            'alternative', 'reference']
 
 
 def digest(path):
@@ -154,6 +156,77 @@ def validate_selection_grid(selections, direct, expected_layouts=3):
             raise ValueError('A seasonal comparison changed the declared compositions')
 
 
+def temporal_compensation(pairs):
+    """Summarize seasonal additions and savings for each fixed annual pair."""
+    expected_periods = set(SEASONS)
+    rows = []
+    for key, group in pairs.groupby(PAIR_KEYS, sort=True, dropna=False):
+        record = dict(zip(PAIR_KEYS, key))
+        annual = group[group.period_type.eq('annual')]
+        seasons = group[group.period_type.eq('season')]
+        if len(annual) != 1 or set(seasons.period) != expected_periods or len(seasons) != 4:
+            raise ValueError(f'Each temporal pair needs one annual and four seasonal rows: {record}')
+        for column in ['pair_status', 'alternative_status', 'reference_status',
+                       'alternative_run_id', 'reference_run_id', 'same_physical_operation']:
+            values = group[column].drop_duplicates()
+            if len(values) != 1:
+                raise ValueError(f'Temporal pair metadata changed within the year: {record}, {column}')
+            record[column] = values.iloc[0]
+        matched = record['pair_status'] == 'matched'
+        for metric, unit in [('purchased_site_kwh', 'site_kwh'),
+                             ('operational_co2_kg', 'operational_co2_kg')]:
+            annual_value = annual['delta_' + metric].iloc[0] if matched else np.nan
+            values = (seasons.set_index('period')['delta_' + metric]
+                      .reindex(SEASONS).astype(float)) if matched else pd.Series(np.nan, index=SEASONS)
+            for season, value in values.items():
+                record[season.lower() + '_delta_' + unit] = value
+            added = float(values.clip(lower=0).sum()) if matched else np.nan
+            avoided = float((-values.clip(upper=0)).sum()) if matched else np.nan
+            net = float(values.sum()) if matched else np.nan
+            gross = added + avoided if matched else np.nan
+            error = abs(net - annual_value) if matched else np.nan
+            if matched and not np.isclose(net, annual_value, rtol=1e-10, atol=1e-7):
+                raise ValueError(f'Seasons do not close to the annual pair: {record}, {metric}')
+            record.update({
+                'seasonal_added_' + unit: added,
+                'seasonal_avoided_' + unit: avoided,
+                'seasonal_net_' + unit: net,
+                'annual_delta_' + unit: annual_value,
+                'seasonal_annual_closure_error_' + unit: error,
+                'opposing_seasonal_' + unit + '_directions':
+                    bool(added > 1e-7 and avoided > 1e-7) if matched else pd.NA,
+                'seasonal_' + unit + '_offset_fraction':
+                    float(1 - abs(net) / gross) if matched and gross > 1e-7 else (0. if matched else np.nan),
+            })
+        rows.append(record)
+    table = pd.DataFrame(rows)
+    summary = []
+    for key, group in table.groupby(['comparison_mode', 'service_fraction'], sort=True):
+        matched = group[group.pair_status.eq('matched')]
+        distinct = matched[~matched.same_physical_operation.astype(bool)]
+        row = dict(zip(['comparison_mode', 'service_fraction'], key))
+        row.update(layouts_included='|'.join(sorted(group.layout.unique())),
+                   designed_pairs=len(group), matched_pairs=len(matched),
+                   same_physical_operation_pairs=int(matched.same_physical_operation.astype(bool).sum()),
+                   distinct_physical_operation_pairs=len(distinct))
+        for unit in ['site_kwh', 'operational_co2_kg']:
+            annual = matched['annual_delta_' + unit]
+            opposing = matched['opposing_seasonal_' + unit + '_directions'].astype(bool)
+            distinct_offsets = distinct['seasonal_' + unit + '_offset_fraction']
+            row.update({
+                'opposing_seasonal_' + unit + '_direction_pairs': int(opposing.sum()),
+                'annual_' + unit + '_increase_pairs': int(annual.gt(1e-7).sum()),
+                'annual_' + unit + '_decrease_pairs': int(annual.lt(-1e-7).sum()),
+                'annual_' + unit + '_zero_pairs': int(annual.abs().le(1e-7).sum()),
+                'opposing_and_annual_' + unit + '_increase_pairs': int((opposing & annual.gt(1e-7)).sum()),
+                'opposing_and_annual_' + unit + '_decrease_pairs': int((opposing & annual.lt(-1e-7)).sum()),
+                'distinct_seasonal_' + unit + '_offset_fraction_median':
+                    float(distinct_offsets.median()) if len(distinct_offsets) else np.nan,
+            })
+        summary.append(row)
+    return table, pd.DataFrame(summary)
+
+
 def derive(args):
     sys.dont_write_bytecode = True
     sys.path.insert(0, str(args.analysis_module.resolve().parent))
@@ -247,7 +320,11 @@ def derive(args):
         pair = {k: alternative[k] for k in pairing} | {'alternative': alternative['control'],
                 'reference': 'uniform_average', 'pair_status': 'matched' if matched else 'unmatched',
                 'alternative_status': alternative['selection_status'],
-                'reference_status': reference['selection_status'] if reference else 'missing_design'}
+                'reference_status': reference['selection_status'] if reference else 'missing_design',
+                'alternative_run_id': alternative.get('run_id', ''),
+                'reference_run_id': reference.get('run_id', '') if reference else '',
+                'same_physical_operation': (alternative.get('run_id', '') == reference.get('run_id', ''))
+                    if matched else pd.NA}
         for metric in SERVICE + CARRIERS + ['purchased_site_kwh', 'operational_co2_kg']:
             pair['delta_' + metric] = alternative.get(metric, np.nan) - reference.get(metric, np.nan) if matched else np.nan
         if matched:
@@ -265,10 +342,14 @@ def derive(args):
                                   pair['delta_' + target], rtol=1e-10, atol=1e-7):
                     raise ValueError('Added minus released hourly energy does not close to the period difference')
         pairs.append(pair)
-    pd.DataFrame(pairs).to_csv(args.output / 'PAIRED_PERIOD_DIFFERENCES.csv', index=False)
+    pair_table = pd.DataFrame(pairs)
+    pair_table.to_csv(args.output / 'PAIRED_PERIOD_DIFFERENCES.csv', index=False)
+    compensation, compensation_summary = temporal_compensation(pair_table)
+    compensation.to_csv(args.output / 'TEMPORAL_COMPENSATION_PAIRS.csv', index=False)
+    compensation_summary.to_csv(args.output / 'TEMPORAL_COMPENSATION_SUMMARY.csv', index=False)
     # Describe every declared composition/placement stratum, including unmatched
     # designs. These strata are not independent experiments.
-    seasonal_pairs = pd.DataFrame(pairs)
+    seasonal_pairs = pair_table
     seasonal_pairs = seasonal_pairs[seasonal_pairs.period_type.eq('season')]
     delta_summary = []
     for key, group in seasonal_pairs.groupby(['context', 'comparison_mode', 'period', 'alternative'], sort=True):
@@ -380,6 +461,14 @@ def derive(args):
                'weighting': 'Native people within the locked occupied source window, divided equally among assigned profiles in each zone',
                'tail': 'Same retained annual 27-profile tail in every month and season; equal mean of profile-level occupied-time averages',
                'seasonal_budget_diagnostic': 'Each selected annual plan is compared with the same-period common25 reference mean/tail using unchanged annual-tail membership. Seasonal checks are descriptive and are not new selection requirements; no plan is reselected.',
+               'temporal_compensation': {
+                   'pair_table': 'TEMPORAL_COMPENSATION_PAIRS.csv',
+                   'summary_table': 'TEMPORAL_COMPENSATION_SUMMARY.csv',
+                   'definition': 'Seasonal additions sum positive spring/summer/autumn/winter paired changes; seasonal savings sum their absolute negative changes. Offset fraction is 1 - abs(annual net)/(additions + savings).',
+                   'matched_pairs': int(compensation.pair_status.eq('matched').sum()),
+                   'maximum_site_energy_closure_error_kwh': float(compensation.seasonal_annual_closure_error_site_kwh.max()),
+                   'maximum_operational_co2_closure_error_kg': float(compensation.seasonal_annual_closure_error_operational_co2_kg.max()),
+               },
                'paired_summary_interpretation': f'All {3 * expected_layouts} composition/placement strata per context/mode/alternative/season; retained zero-match rows. Strata share fixed profiles and physical runs and are not independent experimental replicates.',
                'service_interpretation': 'Reference mismatch and model-derived interval coverage; not measured satisfaction',
                'accounting': 'Purchased site = frozen HVAC electricity + gas HHV. Pumps and the separate HVAC meter remain separate channels; neither is silently added to the locked HVAC denominator.',

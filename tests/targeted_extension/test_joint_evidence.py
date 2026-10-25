@@ -9,7 +9,9 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src/analysis/targeted_extension"))
 from audit_joint_evidence import verify_compositions, verify_signed_energy  # noqa: E402
-from build_joint_evidence import cooling_offsets, signed_enduses  # noqa: E402
+from build_joint_evidence import (  # noqa: E402
+    cooling_offsets, signed_enduses, write_joint_temporal_summary,
+)
 
 
 def fixed_compositions():
@@ -132,3 +134,31 @@ def test_cooling_savings_do_not_imply_lower_total_energy_or_carbon():
     assert result.cooling_decreased.tolist() == [True, True, True]
     assert result.cooling_saving_offset.tolist() == [True, False, False]
     assert result.mean_and_tail_mismatch_improved.tolist() == [True, False, False]
+
+
+def test_joint_temporal_summary_uses_only_the_common_layout_pair_table(tmp_path):
+    rows = []
+    for index in range(96):
+        same = index < 67
+        distinct_index = index - 67
+        annual = 0. if same else (1. if distinct_index < 21 else -1.)
+        opposing = not same and distinct_index < 28
+        rows.append({"data_source": "ASHRAE" if index < 48 else "CTCD",
+            "comparison_mode": "equal_service", "service_fraction": 1.,
+            "layout": "random_mixing" if index % 2 else "demand_ordered",
+            "pair_status": "matched", "same_physical_operation": same,
+            "annual_delta_site_kwh": annual, "annual_delta_operational_co2_kg": annual,
+            "opposing_seasonal_site_kwh_directions": opposing,
+            "opposing_seasonal_operational_co2_kg_directions": opposing,
+            "seasonal_site_kwh_offset_fraction": .5 if not same else 0.,
+            "seasonal_operational_co2_kg_offset_fraction": .5 if not same else 0.})
+    pd.DataFrame(rows).to_csv(tmp_path / "TEMPORAL_COMPENSATION_PAIRS.csv", index=False)
+    summary = write_joint_temporal_summary(tmp_path)
+    assert (tmp_path / "TEMPORAL_COMPENSATION_SUMMARY.csv").is_file()
+    assert summary.matched_pairs.sum() == 96
+    assert summary.same_physical_operation_pairs.sum() == 67
+    assert summary.distinct_physical_operation_pairs.sum() == 29
+    assert summary.opposing_seasonal_site_kwh_direction_pairs.sum() == 28
+    assert summary.annual_site_kwh_increase_pairs.sum() == 21
+    assert summary.annual_site_kwh_decrease_pairs.sum() == 8
+    assert set(summary.layouts_included) == {"demand_ordered|random_mixing"}

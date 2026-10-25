@@ -36,6 +36,43 @@ def combine(paths):
     return pd.concat(frames, ignore_index=True)
 
 
+def write_joint_temporal_summary(seasonal_root):
+    """Summarize the already filtered common-layout temporal pairs."""
+    seasonal_root = Path(seasonal_root)
+    pairs = pd.read_csv(seasonal_root / "TEMPORAL_COMPENSATION_PAIRS.csv")
+    rows = []
+    for key, group in pairs.groupby(
+            ["data_source", "comparison_mode", "service_fraction"], sort=True):
+        matched = group[group.pair_status.eq("matched")]
+        same = matched.same_physical_operation.astype(bool)
+        distinct = matched[~same]
+        row = dict(zip(("data_source", "comparison_mode", "service_fraction"), key))
+        row.update(layouts_included="|".join(sorted(group.layout.unique())),
+                   designed_pairs=len(group), matched_pairs=len(matched),
+                   same_physical_operation_pairs=int(same.sum()),
+                   distinct_physical_operation_pairs=len(distinct))
+        for unit in ("site_kwh", "operational_co2_kg"):
+            annual = matched["annual_delta_" + unit]
+            opposing = matched["opposing_seasonal_" + unit + "_directions"].astype(bool)
+            offsets = distinct["seasonal_" + unit + "_offset_fraction"]
+            row.update({
+                "opposing_seasonal_" + unit + "_direction_pairs": int(opposing.sum()),
+                "annual_" + unit + "_increase_pairs": int(annual.gt(1e-7).sum()),
+                "annual_" + unit + "_decrease_pairs": int(annual.lt(-1e-7).sum()),
+                "annual_" + unit + "_zero_pairs": int(annual.abs().le(1e-7).sum()),
+                "opposing_and_annual_" + unit + "_increase_pairs":
+                    int((opposing & annual.gt(1e-7)).sum()),
+                "opposing_and_annual_" + unit + "_decrease_pairs":
+                    int((opposing & annual.lt(-1e-7)).sum()),
+                "distinct_seasonal_" + unit + "_offset_fraction_median":
+                    float(offsets.median()) if len(offsets) else np.nan,
+            })
+        rows.append(row)
+    summary = pd.DataFrame(rows)
+    summary.to_csv(seasonal_root / "TEMPORAL_COMPENSATION_SUMMARY.csv", index=False)
+    return summary
+
+
 def signed_enduses(pairs, manifests):
     """Sum signed hourly changes before averaging; means retain additive closure."""
     locations = {}
@@ -128,6 +165,8 @@ def run(repository_root, primary_replay_root, ctcd_root, output_root):
             other = right / path.name
             if not other.is_file():
                 continue
+            if folder == "seasonal" and path.name == "TEMPORAL_COMPENSATION_SUMMARY.csv":
+                continue
             frame = combine((("ASHRAE", path), ("CTCD", other)))
             if path.name == "implementation_cost_scenarios.csv":
                 original = frame.drop(columns="data_source")
@@ -135,6 +174,8 @@ def run(repository_root, primary_replay_root, ctcd_root, output_root):
                     raise ValueError("Implementation cost assumptions differ between sources")
                 frame = original.drop_duplicates().reset_index(drop=True)
             frame.to_csv(target / path.name, index=False)
+        if folder == "seasonal":
+            write_joint_temporal_summary(target)
     ledger, residual = signed_enduses(tables["CONTROL_COMPARISONS"], (
         root / "data/inputs/energy_service/engineering/ANNUAL_RUN_MANIFEST.csv",
         root / "data/inputs/ctcd_parallel/annual/engineering/ANNUAL_RUN_MANIFEST.csv"))

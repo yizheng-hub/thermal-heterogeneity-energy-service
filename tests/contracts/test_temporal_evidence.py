@@ -112,3 +112,58 @@ def test_direct_common_gap_comparison_matches_same_conditions_and_removes_floor_
     assert set(paired.permission) == {"floor", "native_zone"}
     assert paired.composition_id.eq(1).all()
     assert paired.delta_site_pct_direct.eq(5).all() and paired.delta_site_pct_common.eq(1).all()
+
+
+def test_temporal_compensation_closes_seasons_and_distinguishes_same_runs():
+    seasonal = module("src/analysis/seasonal/derive_seasonal_comparison.py", "temporal_compensation")
+    rows = []
+
+    def add_pair(comparison_mode, fraction, alternative, reference_run, alternative_run, site, carbon):
+        periods = list(seasonal.SEASONS) + ["Annual"]
+        for index, period in enumerate(periods):
+            rows.append({"context": "Miami", "composition_id": 1, "layout": "random_mixing",
+                "permission": "native_zone", "comparison_mode": comparison_mode,
+                "service_fraction": fraction, "alternative": alternative, "reference": "uniform_average",
+                "period_type": "season" if period != "Annual" else "annual", "period": period,
+                "pair_status": "matched", "alternative_status": "selected", "reference_status": "selected",
+                "alternative_run_id": alternative_run, "reference_run_id": reference_run,
+                "same_physical_operation": alternative_run == reference_run,
+                "delta_purchased_site_kwh": site[index],
+                "delta_operational_co2_kg": carbon[index]})
+
+    add_pair("direct", -1., "personal_center", "uniform", "personal",
+             [10., -4., 2., -1., 7.], [5., -2., 1., -.5, 3.5])
+    add_pair("equal_service", 1., "personal_center", "shared", "shared",
+             [0., 0., 0., 0., 0.], [0., 0., 0., 0., 0.])
+    add_pair("equal_service", 1., "ltpref_interval", "uniform", "range",
+             [2., -3., 1., -1., -1.], [1., -1.5, .5, -.5, -.5])
+    pairs, summary = seasonal.temporal_compensation(pd.DataFrame(rows))
+    direct = pairs[pairs.comparison_mode.eq("direct")].iloc[0]
+    assert direct.alternative_run_id == "personal" and direct.reference_run_id == "uniform"
+    assert not direct.same_physical_operation
+    assert direct.seasonal_added_site_kwh == 12.
+    assert direct.seasonal_avoided_site_kwh == 5.
+    assert np.isclose(direct.seasonal_site_kwh_offset_fraction, 1 - 7 / 17)
+    assert direct.seasonal_annual_closure_error_site_kwh == 0.
+    equal = summary[summary.comparison_mode.eq("equal_service")].iloc[0]
+    assert equal.matched_pairs == 2 and equal.same_physical_operation_pairs == 1
+    assert equal.distinct_physical_operation_pairs == 1
+    assert equal.opposing_seasonal_site_kwh_direction_pairs == 1
+    assert equal.annual_site_kwh_decrease_pairs == 1 and equal.annual_site_kwh_zero_pairs == 1
+
+
+def test_temporal_compensation_rejects_a_nonclosing_annual_total():
+    seasonal = module("src/analysis/seasonal/derive_seasonal_comparison.py", "temporal_nonclosure")
+    rows = []
+    for period, value in [("Spring", 1.), ("Summer", 2.), ("Autumn", 3.), ("Winter", 4.),
+                          ("Annual", 11.)]:
+        rows.append({"context": "Miami", "composition_id": 1, "layout": "random_mixing",
+            "permission": "native_zone", "comparison_mode": "direct", "service_fraction": -1.,
+            "alternative": "personal_center", "reference": "uniform_average",
+            "period_type": "annual" if period == "Annual" else "season", "period": period,
+            "pair_status": "matched", "alternative_status": "selected", "reference_status": "selected",
+            "alternative_run_id": "personal", "reference_run_id": "uniform",
+            "same_physical_operation": False, "delta_purchased_site_kwh": value,
+            "delta_operational_co2_kg": value})
+    with pytest.raises(ValueError, match="Seasons do not close"):
+        seasonal.temporal_compensation(pd.DataFrame(rows))
