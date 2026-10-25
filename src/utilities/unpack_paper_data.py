@@ -41,10 +41,12 @@ def main() -> None:
         parser.error("--dest is only used when unpacking --bundle")
     destination = (args.root or args.dest).resolve()
     if args.root:
+        # The CTCD supplement has its own locked manifest and replay verifier.
+        # Keep the original 877-file archive inventory unchanged.
         actual = {
             path.relative_to(destination).as_posix()
             for path in destination.rglob("*")
-            if path.is_file()
+            if path.is_file() and path.relative_to(destination).parts[0] != "ctcd_external"
         }
         if actual != set(expected):
             raise ValueError("Extracted energy-service input file set differs from its manifest")

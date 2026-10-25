@@ -10,3 +10,5 @@
 src/analysis/support/** -text
 data/metadata/source_building_bundle_manifest.csv -text
 data/** -text
+data/metadata/ctcd_bundle_manifest.csv whitespace=cr-at-eol
+data/metadata/ctcd_bundle_source.json whitespace=cr-at-eol

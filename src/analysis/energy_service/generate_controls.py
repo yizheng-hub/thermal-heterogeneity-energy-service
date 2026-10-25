@@ -37,14 +37,18 @@ def interval_mse(cdf, low, high):
     return np.maximum(result, 0.)
 
 
-def generate(input_root):
+def generate(input_root, *, profile_tables=None,
+             permissions=("building", "floor", "native_zone"), expected_commands=1296):
     contexts = json.loads((input_root / "controller/CONTEXTS.json").read_text(encoding="utf-8"))
     designs = []
     for city, cfg in contexts.items():
         with np.load(input_root / cfg["probes"], allow_pickle=False) as saved:
             probes = dict(saved)
-        with np.load(input_root / cfg["profiles"], allow_pickle=False) as saved:
-            data = pd.DataFrame(dict(saved))
+        if profile_tables is None:
+            with np.load(input_root / cfg["profiles"], allow_pickle=False) as saved:
+                data = pd.DataFrame(dict(saved))
+        else:
+            data = profile_tables[city]
         x = probes["uniform_target_c"]
         grid = np.round(np.arange(x.min(), x.max() + .00001, .1), 8)
         energy_proxy = np.interp(grid, x, probes["purchased_site_kwh"])
@@ -71,7 +75,7 @@ def generate(input_root):
                     "ltpref_interval": interval_mse(cdfs[zone], local.controller_lower_c.to_numpy(),
                                                      local.controller_upper_c.to_numpy()),
                 }
-            for permission in ("building", "floor", "native_zone"):
+            for permission in permissions:
                 bindings = {z: ("building" if permission == "building" else
                                 cfg["floor_groups"][z] if permission == "floor" else z)
                             for z in zones}
@@ -96,8 +100,8 @@ def generate(input_root):
                                         "targets_c": targets,
                                         "permission_alias": "building" if permission == "floor"
                                         and cfg["floor_binding_equals_building"] else ""})
-    if len(designs) != 1296:
-        raise ValueError("Expected exactly 1296 locked logical commands")
+    if len(designs) != expected_commands:
+        raise ValueError(f"Expected exactly {expected_commands} logical commands")
     return designs
 
 

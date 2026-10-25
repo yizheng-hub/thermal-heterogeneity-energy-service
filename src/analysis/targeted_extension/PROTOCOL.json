@@ -1,0 +1,37 @@
+{
+  "version": "bounded-energy-service-extension-20261025-v1",
+  "title": "Human thermal heterogeneity reshapes building energy, carbon and flexibility",
+  "targets": ["Nature Energy", "Joule", "Energy & Environmental Science"],
+  "physical_parameters": "frozen; no recalibration or building replacement",
+  "primary_source": "engineering-qualified retained physical trajectories",
+  "new_physical_runs": "only if a specified comparison cannot be answered from retained trajectories; no open-ended search",
+  "service": {
+    "reference": "retain all declared candidates including common 25 C fallback",
+    "primary_realized_service_matching_tolerance_c": 0.05,
+    "sensitivity_matching_tolerances_c": [0.02, 0.10],
+    "matching_dimensions": ["population absolute mismatch", "fixed reference-tail absolute mismatch"],
+    "matching_tolerance_meaning": "numerical comparison resolution, not an empirical acceptability threshold",
+    "candidate_interpolation": false
+  },
+  "spatial": {
+    "primary": "fixed profiles, random-placement absolute service limits and tail identities, equal-profile weighting",
+    "sensitivity": "native occupancy weighting",
+    "single_floor_alias": "deduplicate floor and building permissions",
+    "nested_candidate_ordering": "mathematical property, not an independent empirical discovery"
+  },
+  "response": {
+    "primary": "own annual-selected baseline; event and 48-hour recovery service checks",
+    "decomposition": ["positive power reduction", "baseline service", "event service", "recovery service"],
+    "accounting": "two-hour event plus 48-hour recovery, electricity and heating gas separately",
+    "date_classes": "original February/July peak dates; existing July median and P90 checks kept separate",
+    "annual_capacity_claim": false
+  },
+  "personal_ranges": {
+    "method": "retain the Li et al. Building and Environment 2026 elicitation framework and existing numerical adaptation",
+    "doi": "10.1016/j.buildenv.2026.114586",
+    "new_empirical_validation": false,
+    "checks": ["implementation provenance", "range geometry and reference alignment", "existing Griffiths and width sensitivities"],
+    "interpretation": "model-generated scenario inputs; not new measured individual acceptance ranges"
+  },
+  "stopping_rule": "complete the four specified checks, retain all outcomes and missing matches, cross-review, update documents/figures/replay once; do not add unrelated experiments"
+}

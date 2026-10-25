@@ -7,7 +7,7 @@ import os
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--figure", nargs="+", help="Figure IDs: 1 ... 6 or S1 ... S24; default is all")
+    parser.add_argument("--figure", nargs="+", help="Figure IDs: 1 ... 6 or S1 ... S25; default is all")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     notebook = json.loads((root / "plot/Plot.ipynb").read_text(encoding="utf-8"))
@@ -28,6 +28,7 @@ def main():
             label = cell.get("metadata", {}).get("figure")
             if label == "Setup" or selected is None or label in selected:
                 exec(compile("".join(cell["source"]), f"Plot.ipynb:{label}", "exec"), namespace)
+        namespace["refresh_plot_inputs"](root / "results")
     finally:
         os.chdir(previous)
 

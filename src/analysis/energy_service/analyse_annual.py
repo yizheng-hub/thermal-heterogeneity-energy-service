@@ -160,6 +160,8 @@ def main():
     parser.add_argument("--engineering-root", type=Path, required=True)
     parser.add_argument("--factors", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
+    parser.add_argument("--expected-designs", type=int, default=1296)
+    parser.add_argument("--expected-profile-groups", type=int, default=36)
     args = parser.parse_args()
     root, out = args.engineering_root.resolve(), args.output_root
     out.mkdir(parents=True, exist_ok=True)
@@ -168,8 +170,8 @@ def main():
     designs = pd.read_csv(manifest_path, keep_default_na=False)
     profiles = pd.read_csv(profiles_path)
     factors = pd.read_csv(args.factors).set_index("city")
-    if len(designs) != 1296 or designs.duplicated(KEYS + ["variant"]).any():
-        raise ValueError("The locked 1296 logical control designs are incomplete or duplicated")
+    if len(designs) != args.expected_designs or designs.duplicated(KEYS + ["variant"]).any():
+        raise ValueError(f"The declared {args.expected_designs} logical control designs are incomplete or duplicated")
     if not set(designs.engineering_status).issubset(FINAL):
         raise ValueError("Annual engineering collection still contains unfinished designs")
     groups = {}
@@ -178,8 +180,8 @@ def main():
         if len(group) != 267 or group.profile_id.nunique() != 267:
             raise ValueError(f"Expected 267 unique assigned profiles in {key}")
         groups[key] = group
-    if len(groups) != 36:
-        raise ValueError("Expected 3 compositions x3 placements x4 contexts")
+    if len(groups) != args.expected_profile_groups:
+        raise ValueError(f"Expected {args.expected_profile_groups} declared profile/context/placement groups")
     hashes = {}
     cache = {}
 

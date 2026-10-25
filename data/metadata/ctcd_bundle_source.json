@@ -1,0 +1,31 @@
+{
+  "scope": "Bounded CTCD external office-composition control comparison",
+  "dataset_doi": "10.1038/s41597-023-02568-3",
+  "source_raw_files": {
+    "I": {
+      "file": "Chinese Thermal Comfort Dataset Class I.csv",
+      "sha256": "7a59ce782d9a55df8b0045c257e6fc66939feef8de7d1e66e0155efc55965370",
+      "records": 7246,
+      "thermal_preference_column": false
+    },
+    "II": {
+      "file": "Chinese Thermal Comfort Dataset Class II.csv",
+      "sha256": "d4e6c64ac341e10e974cabfc6cf114256b6025852ee87a7580eda58706aa79f8",
+      "records": 26184,
+      "thermal_preference_column": false
+    },
+    "III": {
+      "file": "Chinese Thermal Comfort Dataset Class III.csv",
+      "sha256": "ec94121c8ce92a7bb7429c0a8a17b059cf70928e9294acc3b006d7630a6454d8",
+      "records": 8547,
+      "thermal_preference_column": false
+    }
+  },
+  "files_excluding_manifest": 230,
+  "manifest_sha256": "812af6e458d783de19ca3a9edb01edfef09a6b25b186556d364c240fcfb8b95b",
+  "new_annual_runs": 89,
+  "exact_retained_inputs": 19,
+  "source_alignment_qa_sha256": "a6242080e2c6e4065530c2f15f6fff87f35a4ff6c9e9cb914bd85f36688e4917",
+  "source_control_protocol_sha256": "aa148ab78d542a30ed34ab8a2a514a3603eca7a8a1ea385f7d188e3df3bf73df",
+  "raw_source_redistribution_rights_asserted": false
+}
