@@ -12,7 +12,7 @@ import sys
 
 JOINT_PANEL_SOURCES = (
     ("Fig. 1", "g", "DEMAND_COMPOSITION_PROFILES.csv"),
-    *(("Fig. 2", panel, "annual/ANNUAL_DIRECT.csv") for panel in "abcdf"),
+    *(("Fig. 2", panel, "annual/ANNUAL_DIRECT.csv") for panel in "abcd"),
     ("Fig. 2", "e", "annual/CONTROL_COMPARISONS.csv"),
     *(("Fig. 3", panel, "annual/CONTROL_COMPARISONS.csv") for panel in "abd"),
     ("Fig. 3", "c", "SIGNED_ENDUSE_REALLOCATION.csv"),
@@ -44,6 +44,12 @@ JOINT_PANEL_SOURCES = (
         "joint_events/JOINT_EVENT_STAGE_COUNTS.csv", "joint_events/JOINT_EVENT_STAGE_DECISIONS.csv")),
 )
 
+INFORMATION_PANEL_SOURCE = (
+    "Fig. 2",
+    "f",
+    "decision_value/INFORMATION_HIERARCHY_SUMMARY.csv",
+)
+
 
 def refresh_joint_source_map(destination):
     mapping = Path(destination) / "FIGURE_SOURCE_MAP.csv"
@@ -67,6 +73,22 @@ def refresh_joint_source_map(destination):
             "source_kind": "Source Data", "relative_path": relative,
             "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
             "identifier_note": "Six fixed compositions; source labels retain provenance"})
+    figure, panel, relative = INFORMATION_PANEL_SOURCE
+    path = Path(destination) / relative
+    if not path.is_file():
+        raise FileNotFoundError(f"The Figure 2 information-sufficiency source is missing: {relative}")
+    rows.append({
+        "current_figure": figure,
+        "panel": panel,
+        "source_key": relative,
+        "source_kind": "Source Data",
+        "relative_path": relative,
+        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "identifier_note": (
+            "Fixed-plan-library review; 606 resolved decisions form the panel denominator, "
+            "with 402 unresolved cells reported separately"
+        ),
+    })
     with mapping.open("w", encoding="utf-8", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields)
         writer.writeheader()
@@ -111,6 +133,48 @@ def prepare_joint_sources(parallel, destination):
         writer.writeheader()
         writer.writerows(sorted(index, key=lambda row: row["path"]))
     refresh_joint_source_map(destination)
+
+
+def prepare_information_hierarchy(replay, destination):
+    """Copy the derived information hierarchy and index its panel source."""
+    replay, destination = Path(replay), Path(destination)
+    source = replay / "information_hierarchy"
+    required = (
+        source / "INFORMATION_HIERARCHY_SUMMARY.csv",
+        source / "INFORMATION_HIERARCHY_SUMMARY.json",
+    )
+    missing = [path for path in required if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(
+            "Information-hierarchy replay outputs are missing: "
+            + ", ".join(str(path) for path in missing)
+        )
+    target = destination / "decision_value"
+    target.mkdir(parents=True, exist_ok=True)
+    for path in required:
+        shutil.copyfile(path, target / path.name)
+
+    index_path = destination / "SOURCE_DATA_INDEX.csv"
+    with index_path.open(encoding="utf-8-sig", newline="") as stream:
+        reader = csv.DictReader(stream)
+        fields, index = reader.fieldnames, list(reader)
+    relative = "decision_value/INFORMATION_HIERARCHY_SUMMARY.csv"
+    index = [row for row in index if row["path"] != relative]
+    copied = destination / relative
+    with copied.open(encoding="utf-8-sig", newline="") as stream:
+        rows = csv.reader(stream)
+        columns = len(next(rows))
+        count = sum(1 for _ in rows)
+    index.append({
+        "path": relative,
+        "rows": count,
+        "columns": columns,
+        "sha256": hashlib.sha256(copied.read_bytes()).hexdigest(),
+    })
+    with index_path.open("w", encoding="utf-8", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(sorted(index, key=lambda row: row["path"]))
 
 
 def refresh_plot_inputs(destination):
@@ -291,6 +355,7 @@ def prepare(root, replay):
             writer = csv.DictWriter(stream, fieldnames=fields)
             writer.writeheader()
             writer.writerows(mappings)
+    prepare_information_hierarchy(replay, destination)
     prepare_joint_sources(replay / "ctcd_parallel", destination)
     return refresh_plot_inputs(destination)
 

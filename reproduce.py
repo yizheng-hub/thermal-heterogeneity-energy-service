@@ -32,9 +32,9 @@ if __name__ == "__main__":
         plan["steps"].append("src/analysis/targeted_extension/run_extension.py")
         plan["steps"].append("src/analysis/targeted_extension/replay_ctcd_external.py")
         plan["steps"].append("src/analysis/targeted_extension/replay_parallel_main.py")
-        plan["steps"].append("src/analysis/targeted_extension/reviewer_sensitivity.py")
         plan["steps"].append(
             "src/analysis/experiments/decision_value/summarize_information_hierarchy.py")
+        plan["steps"].append("src/analysis/targeted_extension/reviewer_sensitivity.py")
         plan["bounded_extension"] = "Four retained-trajectory checks; frozen physics unchanged"
         plan["external_office_composition"] = "CTCD: regenerate 144 commands and score retained annual trajectories"
         ctcd = json.loads((root / "data/metadata/ctcd_bundle_source.json").read_text(encoding="utf-8"))
@@ -67,13 +67,6 @@ if __name__ == "__main__":
                     "--repository-root", str(root), "--primary-replay-root", str(replay),
                     "--output-root", str(replay / "ctcd_parallel")],
                    cwd=root, env=environment, check=True)
-    subprocess.run([sys.executable, str(root / "src/utilities/prepare_plot_data.py"),
-                    "--replay", str(replay)], cwd=root, env=environment, check=True)
-    subprocess.run([sys.executable,
-                    str(root / "src/analysis/targeted_extension/reviewer_sensitivity.py"),
-                    "--repository-root", str(root),
-                    "--output-root", str(replay / "reviewer_sensitivity")],
-                   cwd=root, env=environment, check=True)
     subprocess.run([
         sys.executable,
         str(root / "src/analysis/experiments/decision_value/"
@@ -81,9 +74,16 @@ if __name__ == "__main__":
         "--phase-map",
         str(replay / "supporting_evidence/analysis/tables/result6_phase_map.csv"),
         "--control-comparisons",
-        str(root / "results/Joint_main/annual/CONTROL_COMPARISONS.csv"),
+        str(replay / "ctcd_parallel/joint_main/annual/CONTROL_COMPARISONS.csv"),
         "--output-root", str(replay / "information_hierarchy"),
     ], cwd=root, env=environment, check=True)
+    subprocess.run([sys.executable, str(root / "src/utilities/prepare_plot_data.py"),
+                    "--replay", str(replay)], cwd=root, env=environment, check=True)
+    subprocess.run([sys.executable,
+                    str(root / "src/analysis/targeted_extension/reviewer_sensitivity.py"),
+                    "--repository-root", str(root),
+                    "--output-root", str(replay / "reviewer_sensitivity")],
+                   cwd=root, env=environment, check=True)
     subprocess.run([sys.executable, str(root / "plot/reproduce.py")],
                    cwd=root, env=environment, check=True)
     report_path = replay / "SCIENTIFIC_REPLAY_RUN.json"
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     report["additional_steps"] = [
         {"step": name, "returncode": 0} for name in
         ("bounded_comparison_checks", "ctcd_external_replay", "parallel_main_replay",
-         "prepare_plot_data", "reviewer_sensitivity", "information_hierarchy",
+         "information_hierarchy", "prepare_plot_data", "reviewer_sensitivity",
          "31_notebook_figures")]
     report["final_figures_from_editable_notebook"] = True
     with (root / "results/SOURCE_DATA_INDEX.csv").open(encoding="utf-8-sig", newline="") as stream:

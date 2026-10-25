@@ -5,6 +5,22 @@ import json
 import os
 
 
+REQUIRED_FIGURE_INPUTS = {
+    "Figure_02": ("results/decision_value/INFORMATION_HIERARCHY_SUMMARY.csv",),
+}
+
+
+def validate_figure_inputs(root, active_labels):
+    missing = []
+    for label in active_labels:
+        for relative in REQUIRED_FIGURE_INPUTS.get(label, ()):
+            if not (root / relative).is_file():
+                missing.append((label, relative))
+    if missing:
+        detail = ", ".join(f"{label}: {relative}" for label, relative in missing)
+        raise FileNotFoundError(f"Required figure input is missing: {detail}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--figure", nargs="+", help="Figure IDs: 1 ... 6 or S1 ... S25; default is all")
@@ -18,6 +34,8 @@ def main():
               if cell["cell_type"] == "code"}
     if selected is not None and selected - labels:
         parser.error(f"Unknown figure IDs: {sorted(selected - labels)}")
+    active_labels = (labels - {"Setup", None}) if selected is None else selected
+    validate_figure_inputs(root, active_labels)
     previous = Path.cwd()
     try:
         os.chdir(root)

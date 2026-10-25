@@ -192,6 +192,7 @@ def main():
         scripts = [repo / "src/utilities/unpack_paper_data.py", repo / "src/utilities/unpack_typical_day_dr_data.py",
                    publication / "reproduce_publication.py",
                    publication / "reproduce_energy_service.py", source / "scripts/render_control_service_figures.py",
+                   publication / "experiments/decision_value/summarize_information_hierarchy.py",
                    source / "scripts/render_response_implementation_figures.py", source / "scripts/render_response_traces.py",
                    source / "scripts/assemble_publication_assets.py",
                    publication / "seasonal/derive_seasonal_comparison.py", publication / "typical_day_dr/replay.py",
@@ -232,11 +233,21 @@ def main():
     science = out / "energy_service"
     run("02_three_controls_and_spatial_comparisons", publication / "reproduce_energy_service.py",
         "--input-root", data / "energy_service", "--output-root", science)
+    hierarchy = out / "information_hierarchy"
+    run(
+        "02b_information_hierarchy",
+        publication / "experiments/decision_value/summarize_information_hierarchy.py",
+        "--phase-map", previous / "analysis/tables/result6_phase_map.csv",
+        "--control-comparisons", science / "annual/CONTROL_COMPARISONS.csv",
+        "--output-root", hierarchy,
+    )
     paper = out / "paper"
     flat = paper / "figures"
     flat.mkdir(parents=True)
     run("03_service_energy_spatial_figures", source / "scripts/render_control_service_figures.py",
-        "--annual-root", science / "annual", "--output", flat)
+        "--annual-root", science / "annual",
+        "--information-summary", hierarchy / "INFORMATION_HIERARCHY_SUMMARY.csv",
+        "--output", flat)
     run("04_response_and_management_figures", source / "scripts/render_response_implementation_figures.py",
         "--results-root", science, "--output", flat)
     run("05_own_baseline_temperature_traces", source / "scripts/render_response_traces.py",

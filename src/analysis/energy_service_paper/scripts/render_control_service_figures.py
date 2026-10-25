@@ -309,6 +309,96 @@ def empirical_steps(ax, frame, metric, xlabel, scale=1.0):
     ax.xaxis.set_major_locator(MaxNLocator(4))
 
 
+def information_sufficiency_counts(frame):
+    """Validate and return the fixed-library information-sufficiency counts."""
+    block = frame.loc[
+        frame["evidence_block"].eq("zone_mean_to_full_profile_decision_review")
+    ].copy()
+    required = {
+        "design_cells",
+        "full_profile_resolvable_cells",
+        "zone_mean_safe_cells",
+        "distribution_required_cells",
+        "finite_library_unresolved_cells",
+        "zone_mean_selected_plan_fails_full_review_cells",
+    }
+    if set(block["metric"]) < required:
+        missing = sorted(required - set(block["metric"]))
+        raise ValueError(f"Information hierarchy is missing metrics: {missing}")
+    values = {
+        metric: int(block.loc[block["metric"].eq(metric), "count"].iloc[0])
+        for metric in required
+    }
+    denominators = {
+        metric: int(block.loc[block["metric"].eq(metric), "denominator"].iloc[0])
+        for metric in required
+    }
+    if values["zone_mean_safe_cells"] + values["distribution_required_cells"] != values[
+        "full_profile_resolvable_cells"
+    ]:
+        raise ValueError("Mean-sufficient and distribution-required counts must partition resolved decisions")
+    if values["full_profile_resolvable_cells"] + values["finite_library_unresolved_cells"] != values[
+        "design_cells"
+    ]:
+        raise ValueError("Resolved and unresolved counts must partition the full design")
+    if denominators["zone_mean_safe_cells"] != values["full_profile_resolvable_cells"]:
+        raise ValueError("The mean-sufficient denominator must be the resolved decisions")
+    if denominators["distribution_required_cells"] != values["full_profile_resolvable_cells"]:
+        raise ValueError("The distribution-required denominator must be the resolved decisions")
+    if denominators["zone_mean_selected_plan_fails_full_review_cells"] != values[
+        "full_profile_resolvable_cells"
+    ]:
+        raise ValueError("The failed-selection denominator must be the resolved decisions")
+    if denominators["finite_library_unresolved_cells"] != values["design_cells"]:
+        raise ValueError("Unresolved decisions must retain the full-design denominator")
+    if values["zone_mean_selected_plan_fails_full_review_cells"] > values[
+        "distribution_required_cells"
+    ]:
+        raise ValueError("Failed selected plans must be a subset of distribution-required decisions")
+    return values
+
+
+def information_sufficiency_panel(ax, frame):
+    """Plot one resolved-decision denominator and a separately labelled unresolved count."""
+    counts = information_sufficiency_counts(frame)
+    resolved = counts["full_profile_resolvable_cells"]
+    sufficient = counts["zone_mean_safe_cells"]
+    distribution = counts["distribution_required_cells"]
+    failed = counts["zone_mean_selected_plan_fails_full_review_cells"]
+    unresolved = counts["finite_library_unresolved_cells"]
+    design = counts["design_cells"]
+    remaining = distribution - failed
+
+    ax.barh(0.62, sufficient, left=0, height=0.24, color="#A9C7D4", edgecolor="white")
+    ax.barh(0.62, distribution, left=sufficient, height=0.24,
+            color="#D7B2A3", edgecolor="white")
+    ax.text(sufficient / 2, 0.62, f"{sufficient}", ha="center", va="center")
+    ax.text(sufficient + distribution / 2, 0.62, f"{distribution}", ha="center", va="center")
+    ax.text(sufficient / 2, 0.87, "Mean sufficient", ha="center", va="center")
+    ax.text(sufficient + distribution / 2, 0.87, "Distribution required",
+            ha="center", va="center")
+
+    subset_left = sufficient + remaining
+    ax.barh(0.28, failed, left=subset_left, height=0.11,
+            color="#C78470", edgecolor="white")
+    ax.plot([subset_left, subset_left, resolved], [0.44, 0.48, 0.48],
+            color="#8E746B", linewidth=0.75)
+    ax.text(subset_left + failed / 2 - 0.03 * resolved, 0.10,
+            f"{failed} selected plans failed\nfull-profile review",
+            ha="center", va="center")
+    ax.text(resolved / 2, -0.32,
+            f"{unresolved}/{design:,} unresolved in tested library\n"
+            f"(outside the {resolved}-decision denominator)",
+            ha="center", va="center")
+    ax.set_xlim(0, resolved)
+    ax.set_ylim(-0.55, 1.02)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    return counts
+
+
 def placement_forest(ax, frame, metric, xlabel, *, scale=1.0):
     """All paired placements, separated by context and placement, without a heat table."""
     for context_index, context in enumerate(CONTEXT_ORDER):
@@ -332,23 +422,23 @@ def placement_forest(ax, frame, metric, xlabel, *, scale=1.0):
     ax.set_ylabel("")
 
 
-def render_figure_two(tables, annual_root, output):
+def render_figure_two(tables, annual_root, output, information_summary):
     direct = tables["ANNUAL_DIRECT"].query("permission == 'native_zone'").copy()
     if len(direct) != 108:
         raise ValueError("The zone-level direct comparison must contain 108 logical rows")
-    direct["strict_profile_coverage_pct"] = (
-        direct.profiles_with_no_occupied_hour_interval_violation / direct.assigned_profile_count * 100
-    )
     direct.to_csv(output / "Figure_02_source_data.csv", index=False)
+    information = pd.read_csv(information_summary)
+    information.loc[
+        information["evidence_block"].eq("zone_mean_to_full_profile_decision_review")
+    ].to_csv(output / "Figure_02_information_sufficiency_source_data.csv", index=False)
     specs = [
         ("Mean reference mismatch", "mean_reference_mismatch_c", "Mean deviation (°C)", 1, False),
         ("Fixed-tail mismatch", "fixed_tail_reference_mismatch_c", "Tail deviation (°C)", 1, False),
         ("Temperature-range coverage", "modeled_interval_person_hour_coverage", "Covered person-hours (%)", 100, True),
         ("Least-served profiles", "profile_coverage_p10", "10th-percentile coverage (%)", 100, True),
         ("Outside-range mismatch", "modeled_interval_mean_excess_c", "Mean excess (°C)", 1, False),
-        ("Always within range", "strict_profile_coverage_pct", "Profiles without violations (%)", 1, True),
     ]
-    fig, axes = six_panel_canvas([s[0] for s in specs], bounds=[
+    fig, axes = six_panel_canvas([s[0] for s in specs] + ["Demand information needed"], bounds=[
         (19, 125, 67, 35), (109, 125, 67, 35),
         (19, 72, 86, 35), (128, 72, 48, 35),
         (19, 19, 67, 35), (109, 19, 67, 35)])
@@ -361,7 +451,7 @@ def render_figure_two(tables, annual_root, output):
         raise ValueError("Expected the frozen 16 complete three-control direct comparisons")
     complete.to_csv(output / "Figure_02_matched_three_source_data.csv", index=False)
     summaries = []
-    for letter, ax, (_, metric, label, scale, percentage) in zip("abcdef", axes, specs):
+    for letter, ax, (_, metric, label, scale, percentage) in zip("abcde", axes[:5], specs):
         if letter in "cd":
             empirical_steps(ax, complete, metric, label, scale)
             for control, group in complete.groupby("control"):
@@ -370,6 +460,12 @@ def render_figure_two(tables, annual_root, output):
         else:
             summaries += [dict(panel=letter, **r) for r in point_summary(
                 ax, direct, metric, label, scale=scale, percentage=percentage)]
+    counts = information_sufficiency_panel(axes[5], information)
+    summaries += [
+        {"panel": "f", "metric": metric, "count": value,
+         "comparison": "zone_mean_to_full_profile_decision_review"}
+        for metric, value in counts.items()
+    ]
     axes[2].set_ylabel("Cases at or below (%)")
     axes[3].set_ylabel("Cases at or below (%)")
     axes[2].set_xlabel("Covered person-hours (%)", labelpad=3)
@@ -383,7 +479,7 @@ def render_figure_two(tables, annual_root, output):
                "temperature commands in existing thermal zones and use the predeclared "
                "minimum-predicted-mismatch variant. Each context has nine composition–placement cases per "
                "controller. Engineering-checked trajectories passed equipment, ventilation, numerical and energy-accounting "
-               "checks. In a,b,e,f, small points denote engineering-checked cases, connected grey lines link the same "
+               "checks. In a,b,e, small points denote engineering-checked cases, connected grey lines link the same "
                "composition–placement case, and larger symbols and whiskers show medians and interquartile "
                "ranges. a, Mean absolute temperature mismatch from assigned reference centres, weighted by "
                "occupied person-hours. b, Mean occupied-time mismatch for the same 27 profiles worst served by "
@@ -392,13 +488,19 @@ def render_figure_two(tables, annual_root, output):
                "percentile of individual profile coverage. The steps in c,d use the same 16 complete "
                "three-control conditions (16 cases per controller), without fitting a density. Other panels "
                "retain all engineering-checked cases, including conditions missing another controller. e, Average degrees "
-               "outside assigned intervals over occupied hours. f, Profiles with no occupied interval violation. "
+               "outside assigned intervals over occupied hours. f, Information sufficiency in a separate fixed-plan-library "
+               "review. Among 606 decisions with a full-profile-qualified action, 275 were mean sufficient and 331 required "
+               "the within-zone distribution; in 250 of the latter, the plan selected from zone means failed full-profile "
+               "review. A further 402 of 1,008 design cells had no full-profile-qualified action in the tested library and "
+               "are displayed separately from the 606-decision denominator. "
                "Engineering-checked counts in Uniform average/Personal centre/Personal range order are "
                f"{', '.join(f'{name} {n}' for name,n in zip(CONTEXT_LABELS.values(),counts))}"
                ". Service references are reconstructed centres and model-derived intervals."
     ))
-    result = export_result(fig, axes, output, "Figure_02", caption=caption,
-                           sources={"ANNUAL_DIRECT.csv": annual_root / "ANNUAL_DIRECT.csv"})
+    result = export_result(fig, axes, output, "Figure_02", caption=caption, sources={
+        "ANNUAL_DIRECT.csv": annual_root / "ANNUAL_DIRECT.csv",
+        "INFORMATION_HIERARCHY_SUMMARY.csv": information_summary,
+    })
     write_panel_summaries(output, 2, summaries)
     plt.close(fig)
     return result
@@ -600,6 +702,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check-style", action="store_true")
     parser.add_argument("--annual-root", type=Path)
+    parser.add_argument("--information-summary", type=Path)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     if args.check_style:
@@ -607,12 +710,17 @@ def main() -> None:
                           "fonts": configure_style(), "page_mm": [WIDTH_MM, HEIGHT_MM],
                           "data_bounds_mm": DATA_BOUNDS_MM, "control_colors": CONTROL_COLORS}, indent=2))
         return
-    if args.annual_root is None or args.output is None:
-        parser.error("Use --check-style or provide both --annual-root and --output")
+    if args.annual_root is None or args.information_summary is None or args.output is None:
+        parser.error(
+            "Use --check-style or provide --annual-root, --information-summary and --output"
+        )
     tables = read_annual_tables(args.annual_root)
     args.output.mkdir(parents=True, exist_ok=True)
-    manifest = [renderer(tables, args.annual_root, args.output)
-                for renderer in (render_figure_two, render_figure_three, render_figure_four)]
+    manifest = [
+        render_figure_two(tables, args.annual_root, args.output, args.information_summary),
+        render_figure_three(tables, args.annual_root, args.output),
+        render_figure_four(tables, args.annual_root, args.output),
+    ]
     (args.output / "ANNUAL_FIGURE_MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"figures": len(manifest), "output": str(args.output),
                       "actual_visual_review": "PENDING"}, indent=2))

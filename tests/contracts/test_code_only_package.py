@@ -34,7 +34,7 @@ def test_scientific_entry_plan_works_without_manuscripts_or_templates():
     assert plan["manuscripts_required"] is False
     assert plan["data_files"] == 877 and plan["figures"] == 31
     assert plan["typical_day_data_files"] == 44 and plan["typical_day_manifest_files"] == 1
-    assert len(plan["steps"]) == 18
+    assert len(plan["steps"]) == 19
     assert "src/analysis/targeted_extension/replay_ctcd_external.py" in plan["steps"]
     assert "144 commands" in plan["external_office_composition"]
     assert plan["ctcd_data_files"] == 230 and plan["ctcd_manifest_files"] == 1

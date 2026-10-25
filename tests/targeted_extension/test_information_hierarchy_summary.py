@@ -8,6 +8,9 @@ from analysis.experiments.decision_value.summarize_information_hierarchy import 
     summarize_building_mean_to_zone_mean,
     summarize_zone_mean_to_full,
 )
+from analysis.energy_service_paper.scripts.render_control_service_figures import (
+    information_sufficiency_counts,
+)
 
 
 def test_zone_mean_to_full_counts_are_derived_from_rows():
@@ -158,3 +161,30 @@ def test_current_row_level_results_reproduce_declared_counts():
     building_zone = summarize_building_mean_to_zone_mean(pd.read_csv(control_path))
     assert building_zone["designed_comparisons"] == 48
     assert building_zone["matched_comparisons"] == 24
+
+
+def test_information_panel_keeps_resolved_and_full_design_denominators_separate():
+    rows = []
+    counts = {
+        "design_cells": (1008, 1008),
+        "full_profile_resolvable_cells": (606, 1008),
+        "zone_mean_safe_cells": (275, 606),
+        "distribution_required_cells": (331, 606),
+        "finite_library_unresolved_cells": (402, 1008),
+        "zone_mean_selected_plan_fails_full_review_cells": (250, 606),
+    }
+    for metric, (count, denominator) in counts.items():
+        rows.append({
+            "evidence_block": "zone_mean_to_full_profile_decision_review",
+            "metric": metric,
+            "count": count,
+            "denominator": denominator,
+        })
+    parsed = information_sufficiency_counts(pd.DataFrame(rows))
+    assert parsed["zone_mean_safe_cells"] + parsed["distribution_required_cells"] == 606
+    assert parsed["finite_library_unresolved_cells"] == 402
+
+    invalid = pd.DataFrame(rows)
+    invalid.loc[invalid.metric.eq("finite_library_unresolved_cells"), "denominator"] = 606
+    with pytest.raises(ValueError, match="full-design denominator"):
+        information_sufficiency_counts(invalid)

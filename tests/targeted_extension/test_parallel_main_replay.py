@@ -86,6 +86,9 @@ def test_current_main_panel_map_replaces_old_inputs_and_preserves_si(tmp_path):
         path = tmp_path / "Joint_main" / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("value\n1\n")
+    information = tmp_path / module.INFORMATION_PANEL_SOURCE[2]
+    information.parent.mkdir(parents=True, exist_ok=True)
+    information.write_text("metric,count,denominator\nzone_mean_safe_cells,275,606\n")
     module.refresh_joint_source_map(tmp_path)
     with mapping.open(newline="") as stream:
         rows = list(csv.DictReader(stream))
@@ -93,5 +96,28 @@ def test_current_main_panel_map_replaces_old_inputs_and_preserves_si(tmp_path):
     assert not any(row["source_key"] in {"old_main", "old_compositions"} for row in rows)
     panels = {(row["current_figure"], row["panel"]) for row in rows}
     assert ("Fig. 3", "h") in panels and ("Fig. 1", "g") in panels
+    assert ("Fig. 2", "f") in panels
     for row in rows[1:]:
         assert row["sha256"] == hashlib.sha256((tmp_path / row["relative_path"]).read_bytes()).hexdigest()
+
+
+def test_information_hierarchy_is_copied_and_indexed(tmp_path):
+    module = plot_collector()
+    replay, destination = tmp_path / "replay", tmp_path / "results"
+    source = replay / "information_hierarchy"
+    source.mkdir(parents=True)
+    (source / "INFORMATION_HIERARCHY_SUMMARY.csv").write_text(
+        "metric,count,denominator\nzone_mean_safe_cells,275,606\n"
+    )
+    (source / "INFORMATION_HIERARCHY_SUMMARY.json").write_text('{"status":"PASS"}\n')
+    destination.mkdir()
+    (destination / "SOURCE_DATA_INDEX.csv").write_text(
+        "path,rows,columns,sha256\nold.csv,1,1,locked\n"
+    )
+    module.prepare_information_hierarchy(replay, destination)
+    copied = destination / "decision_value/INFORMATION_HIERARCHY_SUMMARY.csv"
+    assert copied.read_bytes() == (source / copied.name).read_bytes()
+    with (destination / "SOURCE_DATA_INDEX.csv").open(newline="") as stream:
+        index = {row["path"]: row for row in csv.DictReader(stream)}
+    assert index["old.csv"]["sha256"] == "locked"
+    assert index[copied.relative_to(destination).as_posix()]["rows"] == "1"

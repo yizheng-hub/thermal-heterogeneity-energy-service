@@ -58,6 +58,16 @@ def test_source_map_index_follows_added_panels_without_rehashing_science(tmp_pat
     assert rows[1]["sha256"] == "locked"
 
 
+def test_figure_two_requires_information_hierarchy_source(tmp_path):
+    runner = load_module("plot_reproduce_required_inputs", ROOT / "plot/reproduce.py")
+    with pytest.raises(FileNotFoundError, match="INFORMATION_HIERARCHY_SUMMARY.csv"):
+        runner.validate_figure_inputs(tmp_path, {"Figure_02"})
+    source = tmp_path / "results/decision_value/INFORMATION_HIERARCHY_SUMMARY.csv"
+    source.parent.mkdir(parents=True)
+    source.write_text("metric,count\nzone_mean_safe_cells,275\n", encoding="utf-8")
+    runner.validate_figure_inputs(tmp_path, {"Figure_02"})
+
+
 @pytest.mark.parametrize("selection", [None, "3"])
 def test_plot_cli_refreshes_after_all_or_single_figure(tmp_path, monkeypatch, selection):
     runner = load_module("plot_reproduce_refresh", ROOT / "plot/reproduce.py")
