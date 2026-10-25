@@ -69,6 +69,7 @@
 /src/analysis/experiments/candidate_support/*
 !/src/analysis/experiments/decision_value/
 /src/analysis/experiments/decision_value/*
+!/src/analysis/experiments/decision_value/summarize_information_hierarchy.py
 !/src/analysis/experiments/management_cost/
 /src/analysis/experiments/management_cost/*
 !/src/analysis/experiments/source_building_robustness/
@@ -308,6 +309,7 @@
 !/tests/targeted_extension/test_response_recovery.py
 !/tests/targeted_extension/test_service_frontier.py
 !/tests/targeted_extension/test_spatial_effects.py
+!/tests/targeted_extension/test_information_hierarchy_summary.py
 
 !/src/utilities/audit_frozen_model_foundation.py
 !/tests/unit/test_model_foundation_audit.py
@@ -344,3 +346,5 @@
 !/src/analysis/targeted_extension/audit_joint_evidence.py
 !/tests/targeted_extension/test_joint_evidence.py
 !/tests/contracts/test_paper_input_inventory.py
+!/src/analysis/targeted_extension/reviewer_sensitivity.py
+!/tests/targeted_extension/test_reviewer_sensitivity.py

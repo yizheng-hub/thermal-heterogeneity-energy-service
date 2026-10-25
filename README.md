@@ -26,7 +26,7 @@ The final temporal extension also requires the separately supplied normalized ty
 uv run --frozen python src/utilities/unpack_typical_day_dr_data.py --bundle ../typical_day_dr_supplement_v1.zip --dest data/typical_days
 ```
 
-Choose a new output directory. The complete replay verifies the inputs, recomputes the human and three-control analyses, regenerates the original 1,296 and parallel 864 annual control vectors, evaluates annual/event service, energy, carbon, synchronized portfolios and cost scenarios, and produces **six main and 25 supplementary figures**. The main comparison combines six fixed compositions on the two shared layouts. Source labels identify provenance rather than a comparison between countries or datasets. It writes all result tables, traceable source-data CSVs and their index, the figure-to-source map, logs and `SCIENTIFIC_REPLAY_RUN.json`. Monthly and four-season service, heating/cooling carriers and carbon are recomputed from all 8,760 annual hours. Typical-day response analyses recompute the original peak-day comparison and two additional July date classes from the retained physical outputs; this replay does not regenerate those 32 EnergyPlus trajectories. No manuscript or Word template is read. No Word document is built.
+Choose a new output directory. The complete replay verifies the inputs, recomputes the human and three-control analyses, regenerates the original 1,296 and parallel 864 annual control vectors, evaluates annual/event service, energy, carbon, synchronized portfolios and cost scenarios, and produces **six main and 25 supplementary figures**. The main comparison combines six fixed compositions on the two shared layouts. Source labels identify provenance rather than a comparison between countries or datasets. It writes all result tables, traceable source-data CSVs and their index, the figure-to-source map, logs and `SCIENTIFIC_REPLAY_RUN.json`. It also rebuilds the common-25 leave-one-candidate check, response/recovery horizon audit and the two separately scoped demand-information summaries used in the final text. Monthly and four-season service, heating/cooling carriers and carbon are recomputed from all 8,760 annual hours. Typical-day response analyses recompute the original peak-day comparison and two additional July date classes from the retained physical outputs; this replay does not regenerate those 32 EnergyPlus trajectories. No manuscript or Word template is read. No Word document is built.
 
 Times New Roman normal and bold fonts must be installed locally to render the figures. Fonts are not redistributed. Missing fonts stop rendering. On Windows, short external data/output paths avoid legacy path-length limits.
 
@@ -124,6 +124,15 @@ uv run python plot/reproduce.py --figure 3 4 5 S25
 ```
 
 The extension retains the published Li et al. elicitation framework as the demand-method assumption. Personal ranges remain model-generated inputs. Approximate service matching uses a declared 0.05 C window on both population and fixed-tail mismatch, with 0.02/0.10 C sensitivities. This is a comparison resolution, not measured comfort or model accuracy. Outputs and figure inputs are in `output/replay/targeted_extension` and `results/Targeted_extension`, respectively.
+
+The complete replay also derives the final reviewer sensitivities from frozen results. These checks add no EnergyPlus run and do not change building physics:
+
+```console
+uv run python src/analysis/targeted_extension/reviewer_sensitivity.py --repository-root . --output-root output/replay/reviewer_sensitivity
+uv run python src/analysis/experiments/decision_value/summarize_information_hierarchy.py --phase-map output/replay/supporting_evidence/analysis/tables/result6_phase_map.csv --control-comparisons results/Joint_main/annual/CONTROL_COMPARISONS.csv --output-root output/replay/information_hierarchy
+```
+
+The building-mean/zone-mean direct-control contrast and the zone-mean/full-profile fixed-library review use different populations, action supports and denominators. Their outputs remain separate and are not treated as one causal attrition sequence.
 
 ## Aligned demand compositions
 

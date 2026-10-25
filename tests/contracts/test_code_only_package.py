@@ -34,11 +34,16 @@ def test_scientific_entry_plan_works_without_manuscripts_or_templates():
     assert plan["manuscripts_required"] is False
     assert plan["data_files"] == 877 and plan["figures"] == 31
     assert plan["typical_day_data_files"] == 44 and plan["typical_day_manifest_files"] == 1
-    assert len(plan["steps"]) == 16
+    assert len(plan["steps"]) == 18
     assert "src/analysis/targeted_extension/replay_ctcd_external.py" in plan["steps"]
     assert "144 commands" in plan["external_office_composition"]
     assert plan["ctcd_data_files"] == 230 and plan["ctcd_manifest_files"] == 1
     assert "src/analysis/targeted_extension/replay_parallel_main.py" in plan["steps"]
+    assert "src/analysis/targeted_extension/reviewer_sensitivity.py" in plan["steps"]
+    assert (
+        "src/analysis/experiments/decision_value/summarize_information_hierarchy.py"
+        in plan["steps"]
+    )
     assert plan["parallel_ctcd_data_files"] == 1007 and plan["parallel_ctcd_manifest_files"] == 1
     assert plan["main_demand_compositions"] == 6 and plan["common_main_layouts"] == 2
     assert plan["joint_portfolio_offices"] == 144

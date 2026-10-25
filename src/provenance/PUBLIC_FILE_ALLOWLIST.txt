@@ -62,6 +62,7 @@ src/analysis/experiments/decision_value/audit_assignment_provenance.py
 src/analysis/experiments/decision_value/PERSON_DISJOINT_EXTENSION_PROTOCOL.json
 src/analysis/experiments/decision_value/PROTOCOL.json
 src/analysis/experiments/decision_value/run_decision_value.py
+src/analysis/experiments/decision_value/summarize_information_hierarchy.py
 src/analysis/experiments/management_cost/ASSUMPTIONS.json
 src/analysis/experiments/management_cost/reproduce_costs.py
 src/analysis/experiments/source_building_robustness/run_robustness.py
@@ -103,6 +104,7 @@ src/analysis/targeted_extension/replay_ctcd_external.py
 src/analysis/targeted_extension/replay_ctcd_parallel.py
 src/analysis/targeted_extension/replay_parallel_main.py
 src/analysis/targeted_extension/response_recovery.py
+src/analysis/targeted_extension/reviewer_sensitivity.py
 src/analysis/targeted_extension/run_extension.py
 src/analysis/targeted_extension/service_frontier.py
 src/analysis/targeted_extension/spatial_effects.py
@@ -230,6 +232,7 @@ tests/targeted_extension/test_ctcd_alignment.py
 tests/targeted_extension/test_ctcd_controls.py
 tests/targeted_extension/test_ctcd_parallel.py
 tests/targeted_extension/test_ctcd_parallel_package.py
+tests/targeted_extension/test_information_hierarchy_summary.py
 tests/targeted_extension/test_joint_evidence.py
 tests/targeted_extension/test_parallel_cohort_summary.py
 tests/targeted_extension/test_parallel_main_replay.py
@@ -237,6 +240,7 @@ tests/targeted_extension/test_parallel_spatial_identity.py
 tests/targeted_extension/test_plot_input_refresh.py
 tests/targeted_extension/test_range_assumptions.py
 tests/targeted_extension/test_response_recovery.py
+tests/targeted_extension/test_reviewer_sensitivity.py
 tests/targeted_extension/test_service_frontier.py
 tests/targeted_extension/test_spatial_effects.py
 tests/targeted_extension/test_ventilation_adaptation.py
