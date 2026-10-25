@@ -1,4 +1,4 @@
-"""Audit the retained personal-range inputs and finite demand sensitivities.
+"""Audit the retained Personal range inputs and finite demand sensitivities.
 
 The published elicitation framework is retained as the method assumption. This
 script checks its numerical application and existing sensitivity outputs; it

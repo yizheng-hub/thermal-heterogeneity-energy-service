@@ -111,14 +111,13 @@ def render(stage_root, output, results_root=None, engineering_root=None, service
         "Supplementary Figure S21 | Hourly own-baseline response and recovery. a,b, Purchased HVAC "
         "electricity under own-baseline and perturbed July operation in Port Angeles and Seattle. c,d, "
         "Native-occupancy-weighted zone operative temperature. e,f, Hourly mean reference mismatch of the fixed "
-        "27-profile tail. Solid grey and dashed gold lines show each personal-centre controller's own "
+        "27-profile tail. Solid grey and dashed gold lines show each Personal centre controller's own "
         "annual baseline and its selected response. Shading marks the two-hour event, followed by 48 "
         "calendar recovery hours. Temperature and service curves appear only during native occupied "
         "hours. Panels c,e enlarge the first six hours in Port Angeles, whose remaining recovery window "
         "is unoccupied; panels a,b,d,f retain the full 50-hour window. The first qualified native-zone "
-        "personal-centre condition in composition–placement order "
-        "was selected separately in each context. The deterministic trace selection did not rank response "
-        "magnitude. Both conditions use composition 2026102001 and random mixing."
+        "Personal centre condition in composition–placement order "
+        "was selected separately in each context. Both conditions use composition 2026102001 and random mixing."
     )
     result = export_result(fig, axes, output, "Supplementary_Figure_S21", caption=caption, sources=sources)
     pd.DataFrame(records).to_csv(output / "Supplementary_Figure_S21_source.csv", index=False)

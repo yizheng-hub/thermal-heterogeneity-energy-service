@@ -115,7 +115,7 @@ The exact Git allowlist denies manuscript files, generated products, external as
 
 ## Bounded energy-service extension
 
-The complete entry point also reruns four checks from retained physical trajectories: common-service selection and observed Pareto frontiers, placement/permission effects with one fixed tail and absolute contract, event/baseline/recovery accounting with single-floor aliases removed, and the existing personal-range method/definition sensitivities. It adds no physical simulation and changes no frozen building parameters. The protocol is `src/analysis/targeted_extension/PROTOCOL.json`. To run only these checks on an existing replay:
+The complete entry point also reruns four checks from retained physical trajectories: common-service selection and observed Pareto frontiers, placement/permission effects with one fixed tail and absolute contract, event/baseline/recovery accounting with single-floor aliases removed, and the existing Personal range method/definition sensitivities. It adds no physical simulation and changes no frozen building parameters. The protocol is `src/analysis/targeted_extension/PROTOCOL.json`. To run only these checks on an existing replay:
 
 ```console
 uv run python src/analysis/targeted_extension/run_extension.py --replay-root output/replay --output-root output/replay/targeted_extension

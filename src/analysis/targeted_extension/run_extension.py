@@ -63,7 +63,7 @@ def main():
         "outputs": {p.relative_to(output).as_posix(): digest(p)
                     for p in sorted(output.rglob("*.csv"))},
         "scope": "Reanalysis of retained trajectories and existing regenerated-control sensitivities; "
-                 "not new empirical personal-range validation or global control optimization.",
+                 "not new empirical Personal range validation or global control optimization.",
     }
     (output / "BOUNDED_EXTENSION_MANIFEST.json").write_text(
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

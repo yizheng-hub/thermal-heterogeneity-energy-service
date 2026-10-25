@@ -956,7 +956,7 @@ CAPTIONS = {
     ),
     3: (
         "**Figure 3 | Demand location redistributes annual energy and carbon under three "
-        "controls.** **a,** Uniform-average, personal-centre and personal-range control "
+        "controls.** **a,** Uniform average, personal centre and personal range control "
         "families generate physical actions in the same building under identical operating "
         "permissions. These controls are distinct from the mean and full-distribution "
         "qualification representations used to score the same actions. **b,** Assigned P10–P90 "
@@ -976,7 +976,7 @@ CAPTIONS = {
         "default uniform-versus-alternative paired definitions, separated by control and "
         "context: 54 increases, 3 decreases, 36 ties, 7 direction-unstable comparisons and 30 "
         "unmatched comparisons. **h,** Outcome shares across Griffiths energy, Griffiths carbon "
-        "and personal-range-width sensitivity families with explicit denominators and the same outcome "
+        "and personal range-width sensitivity families with explicit denominators and the same outcome "
         "colour/hatch key as panel g. Population assignments are controlled archive scenarios "
         "rather than claims of local population representativeness; carbon factors are fixed "
         "regional scenarios."
@@ -1007,8 +1007,8 @@ ALT_TEXT = {
         "confidence intervals are wider there."
     ),
     3: (
-        "Eight-panel portrait figure. Panel a compares three control families—uniform-average, "
-        "personal-centre and personal-range controls—under the same building and operating "
+        "Eight-panel portrait figure. Panel a compares three control families—Uniform average, "
+        "personal centre and personal range controls—under the same building and operating "
         "permissions. Mean and full-distribution are separate qualification representations "
         "used to score generated actions, not additional controls. Population scenarios differ "
         "in both demand centre and width. A centre-by-spread grid defines independent "

@@ -1044,11 +1044,11 @@ def clarify_control_caption(text, *, uses_three_controls=False):
     text = text.replace("P10–P90/P25–P75", "10th–90th and 25th–75th percentile ranges")
     text = text.replace("P10–P90", "10th–90th percentiles").replace("P25–P75", "25th–75th percentiles")
     text = text.replace("percentiles ranges", "percentile ranges").replace("percentiles intervals", "percentile intervals")
-    text = text.replace("LTPref interval", "Personal range").replace("LTPref control", "Personal-range control")
-    text = text.replace("LTPref conditions", "personal-range conditions")
+    text = text.replace("LTPref interval", "Personal range").replace("LTPref control", "Personal range control")
+    text = text.replace("LTPref conditions", "personal range conditions")
     text = text.replace("native-zone", "zone-level").replace("building-bound", "building-wide")
     text = text.replace("admitted", "engineering-checked").replace("Admitted", "Engineering-checked")
-    if uses_three_controls or "Personal range" in text or "personal-range" in text:
+    if uses_three_controls or "Personal range" in text or "personal range" in text:
         text = text.rstrip() + (" Personal range uses model-generated individual temperature ranges. "
                                "All controls choose shared targets within the permitted spaces.")
     if uses_three_controls and re.search(r"fixed[- ](?:annual[- ])?tail", text) and "worst served" not in text:

@@ -196,9 +196,9 @@ def test_figure_3_separates_controls_from_qualification_representations():
         pytest.skip("panel-data v2 is materialized by the reproducibility workflow")
     for text in (CAPTIONS[3], ALT_TEXT[3]):
         lower = text.lower()
-        assert "uniform-average" in lower
-        assert "personal-centre" in lower
-        assert "personal-range" in lower
+        assert "uniform average" in lower
+        assert "personal centre" in lower
+        assert "personal range" in lower
         assert "control families" in lower
         assert "mean and full-distribution" in lower
         assert "qualification representations" in lower

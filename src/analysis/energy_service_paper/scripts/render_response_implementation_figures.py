@@ -164,7 +164,7 @@ def render_five(results, output):
                "standardized 108-office portfolios with zone-level or building-wide commands. e, Synchronized "
                "recovery excess peak with zone-level commands. f, Population and fixed-tail mismatch divided by "
                "their own event and recovery limits, for all selected positive zone-level July responses (16 "
-               "uniform-average, 12 personal-centre and 12 personal-range conditions). Hollow and solid symbols identify "
+               "Uniform average, 12 Personal centre and 12 Personal range conditions). Hollow and solid symbols identify "
                "baseline and perturbed operation. The dashed line is the qualification limit. Panel b uses nine "
                "composition–placement cases per control and context. Zero denotes an eligible baseline with no "
                "positive qualified tested action. Portfolios share declared composition, not observed city "
@@ -302,7 +302,7 @@ def render_six(results, output):
     caption = (
         (
                "Figure 6 | Service, energy bills and implementation resources. Control changes are relative to "
-               "uniform-average control under matched conditions. a, Zone-level direct US controls: interval "
+               "Uniform average control under matched conditions. a, Zone-level direct US controls: interval "
                "coverage versus annual energy-bill change. b, US bill changes under common temperature-mismatch "
                "requirements across distinct permissions (126 matched comparisons). Points and whiskers show "
                "cases and median interquartile ranges. c, Cumulative distribution of 118 declared resource-cost "

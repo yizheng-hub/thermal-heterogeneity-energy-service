@@ -349,7 +349,7 @@ def plot_control_inputs(input_root, out):
         "and points retain every zone command. d, The maximum minus minimum zone target of each "
         "minimum-predicted-mismatch plan, separated by command permission and control. Points give all declared "
         "plans, thick segments span P10–P90 and larger white-edged points mark medians. "
-        "Uniform, personal-centre and personal-range controls are grey, gold and green. Small-building "
+        "Uniform, Personal centre and Personal range controls are grey, gold and green. Small-building "
         "floor and building permissions coincide. Commands are model inputs, not measured room temperatures."
     )
     metadata = {path.relative_to(input_root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -730,7 +730,7 @@ def main():
             fig,
             out,
             5,
-            "Figure S5 | Demand-centre energy effects by archive composition. a–d, Median annual site-energy changes relative to the Δ=0 reference among bilaterally resolved selections at archive-derived spread in Miami, New Delhi, Port Angeles and Seattle, respectively. The horizontal coordinate is the applied demand-centre shift. Blue, mauve and green denote the United States, India and multinational archive compositions. Curves have no value where a comparator is unavailable. These compositions are assigned archive scenarios.",
+            "Figure S5 | Demand-centre energy effects by archive composition. a–d, Median annual site-energy changes relative to the Δ=0 reference among cases with qualifying selections in both conditions at archive-derived spread in Miami, New Delhi, Port Angeles and Seattle, respectively. The horizontal coordinate is the applied demand-centre shift. Blue, mauve and green denote the United States, India and multinational archive compositions. Curves have no value where a comparator is unavailable. These compositions are assigned archive scenarios.",
             ["Fig3d.csv"],
         )
     )
@@ -999,7 +999,7 @@ def main():
             fig,
             out,
             10,
-            "Figure S10 | Energy-bill headroom and carbon accounting. a,c,d, Annual operational-carbon change versus energy-bill headroom for matched non-uniform controls in Miami, Port Angeles and Seattle, using historical state-average commercial energy prices. b, New Delhi headroom at service-budget fraction 0.75 and assumed power factor 0.95 as the assumed commercial gas price varies from 0 to 15 INR/kWh HHV. Gold/green denote personal-centre/personal-range control. Lines are scenario means and bands span matched constructed scenarios. Positive/negative headroom denotes energy-bill saving/increase before implementation costs. The gas-price axis is an assumed stress range. USD and INR denote United States dollars and Indian rupees. HHV denotes higher heating value.",
+            "Figure S10 | Energy-bill headroom and carbon accounting. a,c,d, Annual operational-carbon change versus energy-bill headroom for matched non-uniform controls in Miami, Port Angeles and Seattle, using historical state-average commercial energy prices. b, New Delhi headroom at service-budget fraction 0.75 and assumed power factor 0.95 as the assumed commercial gas price varies from 0 to 15 INR/kWh HHV. Gold/green denote Personal centre/Personal range control. Lines are scenario means and bands span matched constructed scenarios. Positive/negative headroom denotes energy-bill saving/increase before implementation costs. The gas-price axis is an assumed stress range. USD and INR denote United States dollars and Indian rupees. HHV denotes higher heating value.",
             ["building/regional_carbon_cost.csv.gz", "contracts/carbon_boundary_contract.json"],
         )
     )

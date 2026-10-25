@@ -1,4 +1,4 @@
-"""Rebuild scientific comparisons, 30 figures and traceable source tables.
+"""Rebuild scientific comparisons, 31 figures and traceable source tables.
 
 External processed inputs are verified before analysis. No manuscript, Word
 template, raw survey or EnergyPlus runtime is required by this entry point.

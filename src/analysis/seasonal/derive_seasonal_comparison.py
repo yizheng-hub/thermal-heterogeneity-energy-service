@@ -575,7 +575,7 @@ def render(table, args):
         figure.legend([Patch(facecolor=c, alpha=.85) for c in stack_colors], stack_labels,
                       loc='lower center', bbox_to_anchor=(.5, .024), ncol=4, frameon=False,
                       columnspacing=1.4, handlelength=1.4, handletextpad=.45)
-        figure.text(.5, .014, 'Energy stack: uniform-average baseline; lines: total purchased energy for each control',
+        figure.text(.5, .014, 'Energy stack: Uniform average baseline; lines: total purchased energy for each control',
                     ha='center', fontsize=11)
         figure.canvas.draw()
         # Verify that all panel frames use identical dimensions and align in rows.
@@ -589,7 +589,7 @@ def render(table, args):
         caption = (f'Monthly service and energy from retained complete 8760-hour annual trajectories: {title.lower()}. '
                    'Panels show all twelve months for the prespecified first composition, random mixing, and zone-level control permission. '
                    'Left panels use absolute temperature-reference mismatch weighted by actual native people within the locked occupied window. '
-                   'Right panels show uniform-average electricity components (heating, cooling, fans) and gas HHV as a stack; '
+                   'Right panels show Uniform average electricity components (heating, cooling, fans) and gas HHV as a stack; '
                    'the three control lines show total purchased HVAC electricity plus gas HHV. '
                    'The frozen HVAC electricity channel closes to heating, cooling, and fans; the separately retained pumps and HVAC-meter channels '
                    'are available in PERIOD_TOTALS.csv and are not added to that locked electricity denominator. '

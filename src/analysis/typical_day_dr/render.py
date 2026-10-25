@@ -109,7 +109,7 @@ def main():
         ax.tick_params(axis="both", direction="out", length=3, width=.7, pad=3)
         for text in ax.get_xticklabels() + ax.get_yticklabels():
             text.set_fontproperties(normal)
-        title = fig.text(left, bottom + .276, f"{chr(97 + index)}  {label}", ha="left", va="bottom", fontproperties=bold)
+        title = fig.text(left, bottom + .276, f"({chr(97 + index)}) {label}", ha="left", va="bottom", fontproperties=bold)
         titles.append(title)
     control_handles = [Line2D([], [], color=COLORS[control], marker=MARKERS[control], linewidth=1.1, markersize=4.6,
                               label=LABELS[control]) for control in COLORS]

@@ -85,7 +85,7 @@ def summarize_zone_mean_to_full(phase: pd.DataFrame) -> dict[str, int | float]:
 
 
 def summarize_building_mean_to_zone_mean(comparisons: pd.DataFrame) -> dict[str, int | float]:
-    """Summarize the matched direct Uniform-average/Personal-centre contrast."""
+    """Summarize the matched direct Uniform average/Personal centre contrast."""
 
     required = {
         "comparison_mode",
@@ -106,7 +106,7 @@ def summarize_building_mean_to_zone_mean(comparisons: pd.DataFrame) -> dict[str,
         & comparisons["control"].eq("personal_center")
     ].copy()
     if selected.empty:
-        raise ValueError("No native-zone direct Personal-centre comparisons found")
+        raise ValueError("No native-zone direct Personal centre comparisons found")
     matched = selected.loc[selected["status"].eq("matched")]
     tolerance = 1e-9
     return {
@@ -171,7 +171,7 @@ def build_rows(
             "designed_comparisons",
             direct_n,
             direct_n,
-            "Direct Uniform-average versus Personal-centre comparisons under native-zone commands.",
+            "Direct Uniform average versus Personal centre comparisons under native-zone commands.",
             control_source,
             "comparison_mode=direct; permission=native_zone; control=personal_center",
         ),
@@ -183,7 +183,7 @@ def build_rows(
             direct_n,
             "Both direct control runs passed the engineering and availability checks.",
             control_source,
-            "status=matched within the direct native-zone Personal-centre subset",
+            "status=matched within the direct native-zone Personal centre subset",
         ),
     ]
     for metric, definition in (
@@ -202,7 +202,7 @@ def build_rows(
                 matched_n,
                 definition,
                 control_source,
-                "matched direct native-zone Personal-centre versus Uniform-average pairs",
+                "matched direct native-zone Personal centre versus Uniform average pairs",
             )
         )
 
@@ -311,7 +311,7 @@ def main() -> None:
         ),
         "building_mean_to_zone_mean": {
             "question": "What changes when direct targets use assigned zone means instead of one building-wide mean?",
-            "scope": "Matched direct Uniform-average versus Personal-centre runs under native-zone commands.",
+            "scope": "Matched direct Uniform average versus Personal centre runs under native-zone commands.",
             "counts": building_zone,
         },
         "zone_mean_to_full_profile": {
