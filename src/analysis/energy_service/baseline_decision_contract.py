@@ -26,7 +26,7 @@ def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def rows(path):
+def rows(path, expected_rows=324):
     with Path(path).open(encoding="utf-8-sig", newline="") as stream:
         result = list(csv.DictReader(stream))
     for row in result:
@@ -34,8 +34,8 @@ def rows(path):
             if row[name] and not float(row[name]).is_integer():
                 raise ValueError("Baseline composition and variant must be integer-valued")
             row[name] = int(float(row[name])) if row[name] else ""
-    if len(result) != 324 or len({tuple(row[k] for k in KEYS) for row in result}) != 324:
-        raise ValueError("Expected exactly 324 unique own-baseline decisions")
+    if len(result) != expected_rows or len({tuple(row[k] for k in KEYS) for row in result}) != expected_rows:
+        raise ValueError(f"Expected exactly {expected_rows} unique own-baseline decisions")
     return sorted(result, key=lambda row: tuple(row[k] for k in KEYS))
 
 
@@ -45,10 +45,10 @@ def decision_sha256(records):
                                     separators=(",", ":")).encode()).hexdigest()
 
 
-def verify_baseline(path, generation, contract):
+def verify_baseline(path, generation, contract, expected_rows=324):
     if contract["source_baseline_csv_sha256"] != generation["baseline_selection_sha256"]:
         raise ValueError("Derived decision contract does not bind the original pre-event evidence")
-    current = rows(path)
+    current = rows(path, expected_rows)
     if decision_sha256(current) != contract["decision_sha256"]:
         raise ValueError("Own-baseline run identifiers, states or variants changed")
     if len(contract["service_references"]) != len(current):
@@ -72,12 +72,13 @@ def main():
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--generation", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--expected-rows", type=int, default=324)
     args = parser.parse_args()
     generation = json.loads(args.generation.read_text(encoding="utf-8"))
     source_sha = sha256(args.baseline)
     if source_sha != generation["baseline_selection_sha256"]:
         raise ValueError("Derive the sidecar only from the unchanged original pre-event baseline CSV")
-    source = rows(args.baseline)
+    source = rows(args.baseline, args.expected_rows)
     result = {"source_baseline_csv_sha256": source_sha,
               "source_event_generation_sha256": sha256(args.generation),
               "derived_after_generation_from_verified_original": True,

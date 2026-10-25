@@ -139,7 +139,7 @@ def summarize(frame, groups, metrics):
     return pd.DataFrame(rows)
 
 
-def verify_people_and_tails(annual_root, common_root):
+def verify_people_and_tails(annual_root, common_root, expected_layouts=3):
     profiles = pd.read_csv(annual_root / "PROFILE_ANNUAL_SERVICE.csv.gz",
                            usecols=["context", "composition_id", "layout", "profile_id"])
     profiles = profiles.drop_duplicates()
@@ -147,7 +147,7 @@ def verify_people_and_tails(annual_root, common_root):
     for anchor in anchors.itertuples(index=False):
         block = profiles[(profiles.context == anchor.context) & (profiles.composition_id == anchor.composition_id)]
         identities = [set(group.profile_id) for _, group in block.groupby("layout")]
-        if len(identities) != 3 or len(identities[0]) != 267 or any(ids != identities[0] for ids in identities):
+        if len(identities) != expected_layouts or len(identities[0]) != 267 or any(ids != identities[0] for ids in identities):
             raise ValueError("Placement comparisons do not preserve the same 267 identities")
         fixed = set(anchor.fixed_tail_profile_ids.split("|"))
         if len(fixed) != 27 or not fixed.issubset(identities[0]):
@@ -167,7 +167,7 @@ def nested_audit(nested, aliases):
     return frame
 
 
-def run(source, output):
+def run(source, output, expected_layouts=3):
     annual, common, nested = source / "annual", source / "common_layout", source / "nested_permissions"
     paths = [annual / "ANNUAL_DIRECT.csv", annual / "PROFILE_ANNUAL_SERVICE.csv.gz",
              common / "COMMON_LAYOUT_CANDIDATES.csv", common / "COMMON_LAYOUT_SELECTIONS.csv",
@@ -177,7 +177,7 @@ def run(source, output):
     aliases = direct.loc[direct.permission_alias.notna(), ["context", "permission", "permission_alias"]].drop_duplicates()
     candidates = pd.read_csv(paths[2])
     selected = pd.read_csv(paths[3])
-    blocks = verify_people_and_tails(annual, common)
+    blocks = verify_people_and_tails(annual, common, expected_layouts)
     direct_common = candidates[candidates.variant.eq(0)].copy()
     direct_common["comparison_mode"] = "direct"
     direct_common["service_fraction"] = -1.0
@@ -245,8 +245,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-root", type=Path, default=root / "output/replay/energy_service")
     parser.add_argument("--output-root", type=Path, default=root / "output/targeted_extension/spatial")
+    parser.add_argument("--expected-layouts", type=int, choices=(2, 3), default=3)
     args = parser.parse_args()
-    report = run(args.source_root.resolve(), args.output_root.resolve())
+    report = run(args.source_root.resolve(), args.output_root.resolve(), args.expected_layouts)
     print(json.dumps({key: report[key] for key in ["status", "physical_runs_added", "independent_spatial_conditions", "rows"]}))
 
 

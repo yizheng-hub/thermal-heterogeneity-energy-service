@@ -1,0 +1,10 @@
+{
+  "scope": "Parallel CTCD two-layout, three-permission office comparison with own-baseline events; source cohort is kept separate from ASHRAE.",
+  "files_excluding_manifest": 1007,
+  "manifest_sha256": "ca3802a6f9b6e66caed791f25be84f03bdb1ccf95df6446ea327bfd88843ef94",
+  "annual_logical": 864,
+  "event_logical": 432,
+  "dataset_doi": "10.1038/s41597-023-02568-3",
+  "all_execution_decisions_final": true,
+  "raw_source_redistribution_rights_asserted": false
+}

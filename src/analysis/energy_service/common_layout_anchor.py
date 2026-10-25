@@ -24,6 +24,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--annual-root", required=True, type=Path)
     parser.add_argument("--output-root", required=True, type=Path)
+    parser.add_argument("--expected-layouts", type=int, choices=(2, 3), default=3)
     args = parser.parse_args()
     out = args.output_root
     out.mkdir(parents=True, exist_ok=True)
@@ -32,6 +33,11 @@ def main():
         "PROFILE_ANNUAL_SERVICE.csv.gz", "ANNUAL_SERVICE_SELECTIONS.csv", "DR_BASELINES.csv")}
     initial_hashes = {name: digest(path) for name, path in paths.items()}
     candidates = pd.read_csv(paths["ANNUAL_ALL_CANDIDATES.csv"])
+    declared_layouts = {"random_mixing", "demand_ordered"}
+    if args.expected_layouts == 3:
+        declared_layouts.add("source_structured")
+    if set(candidates.layout) != declared_layouts or len(candidates) != 432 * args.expected_layouts:
+        raise ValueError("Annual candidates do not match the declared layout design")
     anchors = pd.read_csv(paths["ANNUAL_ANCHORS.csv"])
     tails = pd.read_csv(paths["FIXED_TAIL_MEMBERSHIPS.csv"])
     profiles = pd.read_csv(paths["PROFILE_ANNUAL_SERVICE.csv.gz"])
@@ -142,7 +148,9 @@ def main():
     selected.to_csv(out / "COMMON_LAYOUT_SELECTIONS.csv", index=False)
     paired = pd.DataFrame(pairs)
     paired.to_csv(out / "COMMON_LAYOUT_PAIRS.csv", index=False)
-    if len(rescored) != 2592 or len(selected) != 2592 or len(paired) != 1728:
+    expected_rows = 432 * args.expected_layouts * len(VIEWS)
+    expected_pairs = 432 * (args.expected_layouts - 1) * len(VIEWS)
+    if len(rescored) != expected_rows or len(selected) != expected_rows or len(paired) != expected_pairs:
         raise ValueError("The full two-weight-view common-layout diagnostic grid is incomplete")
     if initial_hashes != {name: digest(path) for name, path in paths.items()}:
         raise ValueError("A primary product or DR baseline changed during the SI diagnostic")

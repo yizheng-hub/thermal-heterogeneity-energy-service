@@ -62,7 +62,7 @@ def match_comparison_regimes(compared):
 
 def export_comparison_regimes(args):
     paired = match_comparison_regimes(pd.read_csv(args.annual_root / 'CONTROL_COMPARISONS.csv'))
-    if len(paired) != 114:
+    if getattr(args, 'expected_layouts', 3) == 3 and len(paired) != 114:
         raise ValueError('Expected 114 like-for-like direct/common-service comparisons')
     paired.to_csv(args.output / 'PAIRED_COMPARISON_REGIMES.csv', index=False)
     direct, common = paired.delta_site_pct_direct.abs(), paired.delta_site_pct_common.abs()
@@ -130,6 +130,30 @@ def check_value(checks, identity, metric, method, actual, expected):
         raise ValueError(f"Annual closure failed: {identity}, {metric}, {method}")
 
 
+def validate_selection_grid(selections, direct, expected_layouts=3):
+    layouts = {'random_mixing', 'demand_ordered'}
+    if expected_layouts == 3:
+        layouts.add('source_structured')
+    elif expected_layouts != 2:
+        raise ValueError('Expected two comparable layouts or the original three layouts')
+    expected = 4 * 3 * expected_layouts * 3
+    native_direct = direct[direct.permission.eq('native_zone')]
+    if (len(selections) != expected * 2 or len(native_direct) != expected
+            or selections.duplicated(KEYS + ['comparison_mode']).any()
+            or set(selections.context) != set(CONTEXTS)
+            or set(selections.layout) != layouts
+            or set(selections.control) != set(CONTROLS)
+            or set(selections.comparison_mode) != {'direct', 'equal_service'}):
+        raise ValueError(f'Expected all 4 contexts x 3 compositions x {expected_layouts} layouts '
+                         'x 3 controls x 2 modes, with unique native-zone cells')
+    compositions = set(selections.composition_id)
+    if len(compositions) != 3:
+        raise ValueError('Expected the same three declared compositions throughout')
+    for _, group in selections.groupby(['context', 'layout', 'control', 'comparison_mode']):
+        if set(group.composition_id) != compositions:
+            raise ValueError('A seasonal comparison changed the declared compositions')
+
+
 def derive(args):
     sys.dont_write_bytecode = True
     sys.path.insert(0, str(args.analysis_module.resolve().parent))
@@ -146,8 +170,8 @@ def derive(args):
     selections = pd.concat([direct, service[service.service_fraction.eq(1.0)]], ignore_index=True)
     selections = selections[selections.permission.eq("native_zone")].copy()
     selections = selections.sort_values(KEYS + ["comparison_mode"]).reset_index(drop=True)
-    if len(selections) != 216 or len(direct[direct.permission.eq('native_zone')]) != 108:
-        raise ValueError("Expected all 4 contexts x 3 compositions x 3 layouts x 3 controls x 2 modes")
+    expected_layouts = getattr(args, 'expected_layouts', 3)
+    validate_selection_grid(selections, direct, expected_layouts)
     profile_groups = {key: g.sort_values('profile_id', kind='mergesort').reset_index(drop=True)
                       for key, g in profiles.groupby(PROFILE_KEYS, sort=True)}
     tail_groups = {key: set(g.profile_id) for key, g in tails.groupby(PROFILE_KEYS, sort=True)}
@@ -242,8 +266,8 @@ def derive(args):
                     raise ValueError('Added minus released hourly energy does not close to the period difference')
         pairs.append(pair)
     pd.DataFrame(pairs).to_csv(args.output / 'PAIRED_PERIOD_DIFFERENCES.csv', index=False)
-    # Describe all nine composition/placement strata, including unmatched
-    # designs. These are design strata, not nine independent experiments.
+    # Describe every declared composition/placement stratum, including unmatched
+    # designs. These strata are not independent experiments.
     seasonal_pairs = pd.DataFrame(pairs)
     seasonal_pairs = seasonal_pairs[seasonal_pairs.period_type.eq('season')]
     delta_summary = []
@@ -356,7 +380,7 @@ def derive(args):
                'weighting': 'Native people within the locked occupied source window, divided equally among assigned profiles in each zone',
                'tail': 'Same retained annual 27-profile tail in every month and season; equal mean of profile-level occupied-time averages',
                'seasonal_budget_diagnostic': 'Each selected annual plan is compared with the same-period common25 reference mean/tail using unchanged annual-tail membership. Seasonal checks are descriptive and are not new selection requirements; no plan is reselected.',
-               'paired_summary_interpretation': 'All 9 composition/placement strata per context/mode/alternative/season; retained zero-match rows. Strata share fixed profiles and physical runs and are not independent experimental replicates.',
+               'paired_summary_interpretation': f'All {3 * expected_layouts} composition/placement strata per context/mode/alternative/season; retained zero-match rows. Strata share fixed profiles and physical runs and are not independent experimental replicates.',
                'service_interpretation': 'Reference mismatch and model-derived interval coverage; not measured satisfaction',
                'accounting': 'Purchased site = frozen HVAC electricity + gas HHV. Pumps and the separate HVAC meter remain separate channels; neither is silently added to the locked HVAC denominator.',
                'figure_primary': {'composition_id': args.figure_composition, 'layout': 'random_mixing', 'permission': 'native_zone'},
@@ -371,6 +395,16 @@ def derive(args):
     provenance = {key: summary.pop(key) for key in ['source_sha256', 'hourly_inputs_sha256']}
     (args.output / 'SOURCE_PROVENANCE.json').write_text(json.dumps(provenance, indent=2) + '\n', encoding='utf-8')
     (args.output / 'ROLLUP_SUMMARY.json').write_text(json.dumps(summary, indent=2) + '\n', encoding='utf-8')
+    if expected_layouts == 2:
+        scope = {'layouts': sorted(selections.layout.unique().tolist()),
+                 'compositions': sorted(selections.composition_id.unique().tolist()),
+                 'contexts': CONTEXTS, 'permission': 'native_zone',
+                 'retained_selection_rows': len(selections),
+                 'operation_modes': ['direct', 'equal_service_fraction_1'],
+                 'coverage': 'Complete retained annual histories summarized by all twelve months and four meteorological seasons; annual selections and annual tail identities remain fixed.',
+                 'new_physical_runs': 0, 'reselection': False,
+                 'cohort_comparison': 'Each cohort retains its own demand inputs and service references; records from different cohorts are not pooled.'}
+        (args.output / 'COHORT_SCOPE.json').write_text(json.dumps(scope, indent=2) + '\n', encoding='utf-8')
     return table, summary
 
 
@@ -584,6 +618,7 @@ def main():
     parser.add_argument('--analysis-module', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--figure-composition', type=int, default=2026102001)
+    parser.add_argument('--expected-layouts', type=int, choices=(2, 3), default=3)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     table, summary = derive(args)

@@ -2,11 +2,114 @@
 from pathlib import Path
 import argparse
 import csv
+import gzip
 import hashlib
 import json
 import shutil
 import subprocess
 import sys
+
+
+JOINT_PANEL_SOURCES = (
+    ("Fig. 1", "g", "DEMAND_COMPOSITION_PROFILES.csv"),
+    *(("Fig. 2", panel, "annual/ANNUAL_DIRECT.csv") for panel in "abcdf"),
+    ("Fig. 2", "e", "annual/CONTROL_COMPARISONS.csv"),
+    *(("Fig. 3", panel, "annual/CONTROL_COMPARISONS.csv") for panel in "abd"),
+    ("Fig. 3", "c", "SIGNED_ENDUSE_REALLOCATION.csv"),
+    ("Fig. 3", "e", "service/DIRECT_COMMON_PAIR_AUDIT.csv"),
+    ("Fig. 3", "f", "annual/ANNUAL_SERVICE_SELECTIONS.csv"),
+    ("Fig. 3", "g", "seasonal/SEASONAL_SERVICE_BUDGET_DIAGNOSTIC.csv"),
+    ("Fig. 3", "h", "seasonal/PERIOD_TOTALS.csv"),
+    *(("Fig. 4", panel, "joint_spatial/SPATIAL_PAIRS.csv") for panel in "abc"),
+    *(("Fig. 4", panel, "joint_spatial/COMMON_LAYOUT_PAIRS.csv") for panel in "de"),
+    ("Fig. 4", "f", "joint_spatial/STATIC_COVERAGE_BOUND.csv"),
+    ("Fig. 4", "f", "joint_spatial/STATIC_AND_ANNUAL_COVERAGE.csv"),
+    ("Fig. 5", "a", "joint_portfolio/portfolio_hourly.csv"),
+    ("Fig. 5", "b", "joint_events/JOINT_EVENT_CASE_SERVICE_ENERGY.csv"),
+    *(("Fig. 5", panel, "joint_events/JOINT_EVENT_PORTFOLIO_RESPONSE.csv") for panel in "cde"),
+    ("Fig. 5", "f", "joint_events/JOINT_EVENT_STAGE_COUNTS_BY_CONTROL.csv"),
+    *(("Fig. 6", panel, "costs/all_signed_paired_costs.csv") for panel in "abf"),
+    ("Fig. 6", "c", "costs/implementation_cost_scenarios.csv"),
+    ("Fig. 6", "c", "costs/command_scope_management_boundaries.csv"),
+    ("Fig. 6", "d", "costs/bill_implementation_boundaries.csv"),
+    ("Fig. 6", "e", "costs/command_scope_management_boundaries.csv"),
+    ("Supplementary Fig. S18", "figure inputs", "seasonal/PERIOD_TOTALS.csv"),
+    ("Supplementary Fig. S19", "figure inputs", "seasonal/PERIOD_TOTALS.csv"),
+    *(("Supplementary Fig. S25", panel, source) for panel in "ab" for source in (
+        "service/DIRECT_COMMON_STRATA.csv", "service/NEAR_SERVICE_CONDITION_SUMMARY.csv")),
+    *(("Supplementary Fig. S25", panel, source) for panel in "cd" for source in (
+        "joint_spatial_diagnostics/SPATIAL_PAIRS.csv", "joint_spatial_diagnostics/SPATIAL_INTERACTIONS.csv")),
+    *(("Supplementary Fig. S25", panel, source) for panel in "ef" for source in (
+        "joint_events/JOINT_EVENT_STAGE_COUNTS.csv", "joint_events/JOINT_EVENT_STAGE_DECISIONS.csv")),
+)
+
+
+def refresh_joint_source_map(destination):
+    mapping = Path(destination) / "FIGURE_SOURCE_MAP.csv"
+    if not mapping.is_file():
+        return
+    with mapping.open(encoding="utf-8-sig", newline="") as stream:
+        reader = csv.DictReader(stream)
+        fields, rows = reader.fieldnames, list(reader)
+    replaced = {f"Fig. {number}" for number in range(2, 7)}
+    rows = [row for row in rows if row["current_figure"] not in replaced
+            and row["current_figure"] not in {"Supplementary Fig. S18", "Supplementary Fig. S19"}
+            and not (row["current_figure"] == "Fig. 1" and row["panel"] == "g")
+            and not (row["current_figure"] == "Supplementary Fig. S25"
+                     and row["panel"] in {"a", "b", "c", "d", "e", "f", "a,b", "c,d", "e,f"})]
+    for figure, panel, source in JOINT_PANEL_SOURCES:
+        relative = "Joint_main/" + source
+        path = Path(destination) / relative
+        if not path.is_file():
+            raise FileNotFoundError(f"A final panel source is missing: {relative}")
+        rows.append({"current_figure": figure, "panel": panel, "source_key": relative,
+            "source_kind": "Source Data", "relative_path": relative,
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "identifier_note": "Six fixed compositions; source labels retain provenance"})
+    with mapping.open("w", encoding="utf-8", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def prepare_joint_sources(parallel, destination):
+    """Copy final joint numerical evidence without changing its source tables."""
+    parallel, destination = Path(parallel), Path(destination)
+    if not (parallel / "joint_main/JOINT_EVIDENCE_QA.json").is_file():
+        return
+    qa = json.loads((parallel / "joint_main/JOINT_EVIDENCE_QA.json").read_text(encoding="utf-8"))
+    if qa.get("status") != "PASS":
+        raise ValueError("Joint evidence has not passed its final checks")
+    target = destination / "Joint_main"
+    copies = [(parallel / "joint_main", target)] + [
+        (parallel / name, target / name) for name in (
+            "joint_spatial", "joint_spatial_diagnostics", "joint_events", "joint_portfolio")]
+    for source, copied in copies:
+        if not source.is_dir():
+            raise FileNotFoundError(f"A final joint evidence component is missing: {source}")
+        for path in sorted(source.rglob("*")):
+            if not path.is_file() or path.suffix not in (".csv", ".gz", ".json"):
+                continue
+            item = copied / path.relative_to(source)
+            item.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, item)
+    with (destination / "SOURCE_DATA_INDEX.csv").open(encoding="utf-8-sig", newline="") as stream:
+        reader = csv.DictReader(stream)
+        fields, index = reader.fieldnames, list(reader)
+    index = [row for row in index if not row["path"].startswith("Joint_main/")]
+    for path in sorted(target.rglob("*.csv*")):
+        opener = gzip.open if path.suffix == ".gz" else open
+        with opener(path, "rt", encoding="utf-8-sig", newline="") as stream:
+            rows = csv.reader(stream)
+            columns = len(next(rows))
+            count = sum(1 for _ in rows)
+        index.append({"path": path.relative_to(destination).as_posix(), "rows": count, "columns": columns,
+                      "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+    with (destination / "SOURCE_DATA_INDEX.csv").open("w", encoding="utf-8", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(sorted(index, key=lambda row: row["path"]))
+    refresh_joint_source_map(destination)
 
 
 def refresh_plot_inputs(destination):
@@ -187,6 +290,7 @@ def prepare(root, replay):
             writer = csv.DictWriter(stream, fieldnames=fields)
             writer.writeheader()
             writer.writerows(mappings)
+    prepare_joint_sources(replay / "ctcd_parallel", destination)
     return refresh_plot_inputs(destination)
 
 

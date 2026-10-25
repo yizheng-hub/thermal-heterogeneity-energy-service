@@ -108,6 +108,8 @@ def main():
     parser.add_argument("--factors", required=True, type=Path)
     parser.add_argument("--areas", required=True, type=Path)
     parser.add_argument("--output-root", required=True, type=Path)
+    parser.add_argument("--expected-baselines", type=int, default=324)
+    parser.add_argument("--expected-profile-groups", type=int, default=36)
     args = parser.parse_args()
     root, out = args.engineering_root.resolve(), args.output_root
     inputs = {"events": root / "EVENT_RUN_MANIFEST.csv", "annual_runs": root / "ANNUAL_RUN_MANIFEST.csv",
@@ -128,14 +130,15 @@ def main():
     decision_contract = json.loads(inputs["baseline_decisions"].read_text(encoding="utf-8"))
     if decision_contract["source_event_generation_sha256"] != source_hash["event_generation"]:
         raise ValueError("Baseline decision sidecar does not bind the original event generation evidence")
-    baseline_verification = verify_baseline(inputs["baselines"], generation, decision_contract)
+    baseline_verification = verify_baseline(inputs["baselines"], generation, decision_contract,
+                                            args.expected_baselines)
     if (generation["physical_refits"] != 0 or not generation["per_strategy_baselines"] or
         not generation["event_dates_from_frozen_common25"] or
         generation["event_dates_sha256"] != source_hash["event_dates"]):
         raise ValueError("Event generation does not match the frozen own-baseline/date contract")
     designs = pd.read_csv(inputs["events"], keep_default_na=False)
-    if len(designs) != 648 or designs.duplicated(KEYS + ["amplitude_c"]).any():
-        raise ValueError("Expected 648 complete logical event designs")
+    if len(designs) != args.expected_baselines * 2 or designs.duplicated(KEYS + ["amplitude_c"]).any():
+        raise ValueError(f"Expected {args.expected_baselines * 2} complete logical event designs")
     if not set(designs.engineering_status).issubset(FINAL):
         raise ValueError("Event engineering collection contains unfinished/export-failed designs")
     if set(designs.amplitude_c) != {.5, 1.}:
@@ -154,7 +157,7 @@ def main():
     factors = pd.read_csv(args.factors).set_index("city")
     areas = pd.read_csv(args.areas).set_index("climate_context").floor_area_m2.to_dict()
     baseline_rows = {tuple(getattr(row, key) for key in KEYS): row for row in baselines.itertuples(index=False)}
-    if len(baseline_rows) != 324 or len(baselines) != 324:
+    if len(baseline_rows) != args.expected_baselines or len(baselines) != args.expected_baselines:
         raise ValueError("Expected one own-family budget-1 baseline per logical controller")
     hashes = {}
 
@@ -179,7 +182,7 @@ def main():
         if len(group) != 267 or len(fixed) != 27 or len(anchor_row) != 1:
             raise ValueError(f"Profiles, annual tail identities or common25 anchor inconsistent: {key}")
         groups[key] = (group, fixed, anchor_row.iloc[0].anchor_run_id)
-    if len(groups) != 36:
+    if len(groups) != args.expected_profile_groups:
         raise ValueError("Incomplete actual profile placement groups")
 
     score_cache, anchor_cache = {}, {}
@@ -356,7 +359,11 @@ def main():
     anchor_output = [dict(zip(PROFILE_KEYS + ["event_month"], key)) | {"anchor_run_id": groups[key[:3]][2]} | value for key, value in sorted(anchor_cache.items())]
     pd.DataFrame(anchor_output).to_csv(out / "EVENT_SERVICE_ANCHORS.csv", index=False)
     profiles[["composition_id", "layout"]].drop_duplicates().sort_values(["composition_id", "layout"]).to_csv(out / "PORTFOLIO_DESIGN_TYPES.csv", index=False)
-    if len(all_candidates) != 5184 or len(selections) != 2592 or len(paired) != 1728 or len(types) != 648:
+    expected_selections = args.expected_baselines * 2 * len(BUDGETS)
+    if (len(all_candidates) != len(designs) * 2 * len(BUDGETS)
+            or len(selections) != expected_selections
+            or len(paired) != expected_selections * 2 // 3
+            or len(types) != args.expected_baselines * 2):
         raise ValueError("Incomplete predeclared event outcome grid")
     if source_hash != {key: digest(path) for key, path in inputs.items()}:
         raise ValueError("Event source inputs changed during analysis")

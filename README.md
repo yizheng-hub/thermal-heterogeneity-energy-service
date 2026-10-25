@@ -26,7 +26,7 @@ The final temporal extension also requires the separately supplied normalized ty
 uv run --frozen python src/utilities/unpack_typical_day_dr_data.py --bundle ../typical_day_dr_supplement_v1.zip --dest data/typical_days
 ```
 
-Choose a new output directory. The complete replay verifies the inputs, recomputes the human and three-control analyses, regenerates 1,296 annual control vectors, evaluates annual/event service, energy, carbon, synchronized portfolios and cost scenarios, and produces **six main and 25 supplementary figures**. It writes all result tables, traceable source-data CSVs and their index, the figure-to-source map, logs and `SCIENTIFIC_REPLAY_RUN.json`. Monthly and four-season service, heating/cooling carriers and carbon are recomputed from all 8,760 annual hours. Typical-day response analyses recompute the original peak-day comparison and two additional July date classes from the retained physical outputs; this replay does not regenerate those 32 EnergyPlus trajectories. No manuscript or Word template is read. No Word document is built.
+Choose a new output directory. The complete replay verifies the inputs, recomputes the human and three-control analyses, regenerates the original 1,296 and parallel 864 annual control vectors, evaluates annual/event service, energy, carbon, synchronized portfolios and cost scenarios, and produces **six main and 25 supplementary figures**. The main comparison combines six fixed compositions on the two shared layouts. Source labels identify provenance rather than a comparison between countries or datasets. It writes all result tables, traceable source-data CSVs and their index, the figure-to-source map, logs and `SCIENTIFIC_REPLAY_RUN.json`. Monthly and four-season service, heating/cooling carriers and carbon are recomputed from all 8,760 annual hours. Typical-day response analyses recompute the original peak-day comparison and two additional July date classes from the retained physical outputs; this replay does not regenerate those 32 EnergyPlus trajectories. No manuscript or Word template is read. No Word document is built.
 
 Times New Roman normal and bold fonts must be installed locally to render the figures. Fonts are not redistributed. Missing fonts stop rendering. On Windows, short external data/output paths avoid legacy path-length limits.
 
@@ -58,7 +58,7 @@ Run the setup cell once, then any of the 31 individual figure cells. Each cell c
 
 ## Reproduction boundaries
 
-The main replay starts from retained operative temperatures, occupancy, calendars, thermostat commands and purchased energy carriers. It recalculates outcomes from these frozen inputs. It does **not** run EnergyPlus or recalibrate building physics. Demand profiles are references, not confirmed prototype occupants; physical gains remain unchanged. Service describes reconstructed temperature mismatch and model-derived interval coverage, not measured satisfaction. The 108-office portfolios are declared aggregation scenarios, not real city stocks.
+The main replay starts from retained operative temperatures, occupancy, calendars, thermostat commands and purchased energy carriers. It recalculates outcomes from these frozen inputs. It does **not** run EnergyPlus or recalibrate building physics. Demand profiles are references, not confirmed prototype occupants; physical gains remain unchanged. Service describes reconstructed temperature mismatch and model-derived interval coverage, not measured satisfaction. The joint 144-office inventory is a declared aggregation scenario, not real city stock. The original 108-office inventory remains a source-layout sensitivity.
 
 The current model-input generator reconstructs 489 normalized annual/event inputs when four externally supplied models and weather files satisfy `data/metadata/energy_service_model_contract.json`:
 
@@ -125,7 +125,7 @@ uv run python plot/reproduce.py --figure 3 4 5 S25
 
 The extension retains the published Li et al. elicitation framework as the demand-method assumption. Personal ranges remain model-generated inputs. Approximate service matching uses a declared 0.05 C window on both population and fixed-tail mismatch, with 0.02/0.10 C sensitivities. This is a comparison resolution, not measured comfort or model accuracy. Outputs and figure inputs are in `output/replay/targeted_extension` and `results/Targeted_extension`, respectively.
 
-## Chinese demand-composition comparison
+## Aligned demand compositions
 
 The complete replay also requires the separately supplied `data/inputs/ctcd_external` supplement. It contains the overlap-screened executable office profiles, declared allocations, controller commands, engineering records and compressed hourly trajectories. Its manifest is locked by `data/metadata/ctcd_bundle_manifest.csv`. It stays outside Git along with the original data. The [Scientific Data article](https://doi.org/10.1038/s41597-023-02568-3) and [official OSF deposit](https://osf.io/d465n/) identify the three upstream files; original files and derived computational supplements retain their applicable access terms.
 
@@ -138,6 +138,16 @@ uv run python src/analysis/targeted_extension/replay_ctcd_external.py --input-ro
 ```
 
 Outputs are separate in `output/replay/ctcd_external`; final plotting inputs are in `results/CTCD_external`. These are source-composition scenarios, not matched local residents. The current physical models are offices. Residential records are not represented as residential energy simulations.
+
+The final main experiment additionally requires `data/inputs/ctcd_parallel`, containing 1,007 declared files and its manifest. The tracked specification is `data/metadata/ctcd_parallel_bundle_manifest.csv`, with scope and manifest checksum in `ctcd_parallel_bundle_source.json`. This 395-MB local computational supplement is excluded from Git. It contains the executable pool, exact commands, complete prepared inputs, hourly outcomes and final engineering decisions for 864 annual and 432 event candidates, with the original random/zone subset retained as provenance. Annual candidates comprise 302 unique physical inputs, including 235 that passed engineering checks and 67 exclusions. All 22 unique event inputs passed. Exclusions are retained and never promoted to usable service outcomes.
+
+To replay only the final joint analyses after the primary replay is available:
+
+```console
+uv run python src/analysis/targeted_extension/replay_parallel_main.py --primary-replay-root output/replay --output-root output/parallel_replay
+```
+
+This entry verifies the portable supplement, regenerates all 864 commands, then recomputes annual, common-service, placement/permission, four-season, own-baseline response/recovery, 72-office component and joint 144-office portfolio, and implementation-cost results. The two common layouts are random mixing and demand ordering. The three original compositions and three aligned CTCD compositions retain their declared draws. Shared input pools, occupants and weather are not re-sampled for presentation. Joint plotting tables are copied into `results/Joint_main` by `prepare_plot_data.py`, and each figure cell reads those numerical inputs. The original source-structured layout remains a supporting sensitivity because CTCD does not supply verified building or room membership.
 
 ## Model foundations
 

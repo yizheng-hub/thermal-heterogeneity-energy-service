@@ -63,13 +63,13 @@ def validate_retained(root):
             "unique_status_counts": counts}
 
 
-def verify_contract(annual_root, engineering_root):
+def verify_contract(annual_root, engineering_root, expected_anchors=12):
     """The new runs cannot redefine their common25 budgets or tail identities."""
     expected = pd.read_csv(engineering_root / "BASELINE_DECISION_CONTRACT.csv")
     actual = pd.read_csv(annual_root / "ANNUAL_ANCHORS.csv")
     paired = expected.merge(actual, on=KEYS, suffixes=("_before", "_after"), validate="many_to_one")
-    if len(paired) != 48 or len(actual) != 12:
-        raise ValueError("Expected twelve anchors and four budgets for each")
+    if len(paired) != expected_anchors * 4 or len(actual) != expected_anchors:
+        raise ValueError(f"Expected {expected_anchors} anchors and four budgets for each")
     for column in ("anchor_mean_c", "anchor_fixed_tail_c"):
         if not np.allclose(paired[column + "_before"], paired[column + "_after"], rtol=0., atol=1e-9):
             raise ValueError("The predeclared absolute service anchor changed")
@@ -85,7 +85,7 @@ def verify_contract(annual_root, engineering_root):
     for column in ("mean_budget_c", "fixed_tail_budget_c"):
         if not np.allclose(paired[column + "_selected"], paired[column + "_before"], rtol=0., atol=1e-9):
             raise ValueError("A control used a different predeclared service budget")
-    return {"anchors": 12, "budget_contracts": 48, "fixed_tail_memberships": len(old_tail),
+    return {"anchors": expected_anchors, "budget_contracts": expected_anchors * 4, "fixed_tail_memberships": len(old_tail),
             "absolute_tolerance_c": 1e-9, "status": "PASS"}
 
 

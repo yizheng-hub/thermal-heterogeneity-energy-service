@@ -31,11 +31,18 @@ if __name__ == "__main__":
         plan["figures"] = 31
         plan["steps"].append("src/analysis/targeted_extension/run_extension.py")
         plan["steps"].append("src/analysis/targeted_extension/replay_ctcd_external.py")
+        plan["steps"].append("src/analysis/targeted_extension/replay_parallel_main.py")
         plan["bounded_extension"] = "Four retained-trajectory checks; frozen physics unchanged"
         plan["external_office_composition"] = "CTCD: regenerate 144 commands and score retained annual trajectories"
         ctcd = json.loads((root / "data/metadata/ctcd_bundle_source.json").read_text(encoding="utf-8"))
         plan["ctcd_data_files"] = ctcd["files_excluding_manifest"]
         plan["ctcd_manifest_files"] = 1
+        parallel = json.loads((root / "data/metadata/ctcd_parallel_bundle_source.json").read_text(encoding="utf-8"))
+        plan["parallel_ctcd_data_files"] = parallel["files_excluding_manifest"]
+        plan["parallel_ctcd_manifest_files"] = 1
+        plan["main_demand_compositions"] = 6
+        plan["common_main_layouts"] = 2
+        plan["joint_portfolio_offices"] = 144
         print(json.dumps(plan, indent=2))
         raise SystemExit(0)
     status = subprocess.call(command, cwd=root, env=environment)
@@ -52,6 +59,11 @@ if __name__ == "__main__":
                     "--main-input-root", str(root / "data/inputs/energy_service"),
                     "--output-root", str(replay / "ctcd_external")],
                    cwd=root, env=environment, check=True)
+    subprocess.run([sys.executable,
+                    str(root / "src/analysis/targeted_extension/replay_parallel_main.py"),
+                    "--repository-root", str(root), "--primary-replay-root", str(replay),
+                    "--output-root", str(replay / "ctcd_parallel")],
+                   cwd=root, env=environment, check=True)
     subprocess.run([sys.executable, str(root / "src/utilities/prepare_plot_data.py"),
                     "--replay", str(replay)], cwd=root, env=environment, check=True)
     subprocess.run([sys.executable, str(root / "plot/reproduce.py")],
@@ -61,9 +73,14 @@ if __name__ == "__main__":
     report["supplementary_figures"] = 25
     report["bounded_extension_manifest"] = "targeted_extension/BOUNDED_EXTENSION_MANIFEST.json"
     report["external_ctcd_replay"] = "ctcd_external/CTCD_REPLAY_QA.json"
+    report["parallel_main_replay"] = "ctcd_parallel/PARALLEL_MAIN_REPLAY_QA.json"
+    report["main_demand_compositions"] = 6
+    report["common_main_layouts"] = 2
+    report["joint_portfolio_offices"] = 144
     report["additional_steps"] = [
         {"step": name, "returncode": 0} for name in
-        ("bounded_comparison_checks", "ctcd_external_replay", "prepare_plot_data", "31_notebook_figures")]
+        ("bounded_comparison_checks", "ctcd_external_replay", "parallel_main_replay",
+         "prepare_plot_data", "31_notebook_figures")]
     report["final_figures_from_editable_notebook"] = True
     with (root / "results/SOURCE_DATA_INDEX.csv").open(encoding="utf-8-sig", newline="") as stream:
         report["final_plot_source_data_csvs"] = sum(1 for _ in csv.DictReader(stream))

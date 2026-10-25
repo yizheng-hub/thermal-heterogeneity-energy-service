@@ -22,6 +22,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--annual-root", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
+    parser.add_argument("--expected-layouts", type=int, choices=(2, 3), default=3)
     args = parser.parse_args()
     source = args.annual_root
     out = args.output_root
@@ -29,6 +30,11 @@ def main():
     candidates_path = source / "ANNUAL_ALL_CANDIDATES.csv"
     anchors_path = source / "ANNUAL_ANCHORS.csv"
     candidates = pd.read_csv(candidates_path)
+    declared_layouts = {"random_mixing", "demand_ordered"}
+    if args.expected_layouts == 3:
+        declared_layouts.add("source_structured")
+    if set(candidates.layout) != declared_layouts or len(candidates) != 432 * args.expected_layouts:
+        raise ValueError("Annual candidates do not match the declared layout design")
     anchors = {tuple(row[k] for k in PROFILE_KEYS): row for row in pd.read_csv(anchors_path).to_dict("records")}
     selections = []
     inherited_candidates = 0
@@ -62,7 +68,7 @@ def main():
                            selection_status="selected" if chosen else "service_unavailable")
                 selections.append(row)
     table = pd.DataFrame(selections)
-    if len(table) != 1296:
+    if len(table) != 432 * args.expected_layouts:
         raise ValueError("Nested-permission diagnostic lost logical design cells")
     table.to_csv(out / "NESTED_PERMISSION_SELECTIONS.csv", index=False)
     pairs = pair_outputs(table, "permission", ["building", "floor", "native_zone"],

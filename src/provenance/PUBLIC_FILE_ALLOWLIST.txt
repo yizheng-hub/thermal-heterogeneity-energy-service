@@ -7,6 +7,8 @@ data/metadata/analysis_bundle_manifest.csv
 data/metadata/analysis_bundle_release.json
 data/metadata/ctcd_bundle_manifest.csv
 data/metadata/ctcd_bundle_source.json
+data/metadata/ctcd_parallel_bundle_manifest.csv
+data/metadata/ctcd_parallel_bundle_source.json
 data/metadata/energy_service_bundle_manifest.csv
 data/metadata/energy_service_bundle_source.json
 data/metadata/energy_service_model_contract.json
@@ -41,6 +43,7 @@ src/analysis/energy_service/baseline_decision_contract.py
 src/analysis/energy_service/bundle.py
 src/analysis/energy_service/common_layout_anchor.py
 src/analysis/energy_service/dense_uniform_service_bound.py
+src/analysis/energy_service/derive_joint_spatial.py
 src/analysis/energy_service/generate_controls.py
 src/analysis/energy_service/generate_model_inputs.py
 src/analysis/energy_service/nested_permissions.py
@@ -88,15 +91,22 @@ src/analysis/support/science_audit/variance_recheck.csv
 src/analysis/support/spatial_audit/metrics_summary.csv
 src/analysis/support/spatial_audit/oof_predictions.csv
 src/analysis/support/spatial_audit/paired_cluster_bootstrap_vs_mean.csv
+src/analysis/targeted_extension/audit_joint_evidence.py
+src/analysis/targeted_extension/build_joint_evidence.py
 src/analysis/targeted_extension/ctcd_alignment.py
 src/analysis/targeted_extension/ctcd_controls.py
+src/analysis/targeted_extension/ctcd_parallel.py
+src/analysis/targeted_extension/ctcd_parallel_events.py
 src/analysis/targeted_extension/PROTOCOL.json
 src/analysis/targeted_extension/range_assumptions.py
 src/analysis/targeted_extension/replay_ctcd_external.py
+src/analysis/targeted_extension/replay_ctcd_parallel.py
+src/analysis/targeted_extension/replay_parallel_main.py
 src/analysis/targeted_extension/response_recovery.py
 src/analysis/targeted_extension/run_extension.py
 src/analysis/targeted_extension/service_frontier.py
 src/analysis/targeted_extension/spatial_effects.py
+src/analysis/targeted_extension/summarize_parallel_cohorts.py
 src/analysis/typical_day_dr/README.txt
 src/analysis/typical_day_dr/render.py
 src/analysis/typical_day_dr/replay.py
@@ -166,6 +176,7 @@ src/utilities/generate_demand_inputs.py
 src/utilities/install_gitleaks.py
 src/utilities/materialize_release_data.py
 src/utilities/package_ctcd_external.py
+src/utilities/package_ctcd_parallel.py
 src/utilities/prepare_energy_service_data.py
 src/utilities/prepare_plot_data.py
 src/utilities/release_scan.py
@@ -197,6 +208,8 @@ tests/contracts/test_figures_4_6.py
 tests/contracts/test_main_figures_1_3.py
 tests/contracts/test_ordering.py
 tests/contracts/test_panel_registry.py
+tests/contracts/test_paper_input_inventory.py
+tests/contracts/test_parallel_seasonal_scope.py
 tests/contracts/test_paths.py
 tests/contracts/test_rng.py
 tests/contracts/test_strict_service_sensitivity.py
@@ -206,6 +219,7 @@ tests/energy_service/conftest.py
 tests/energy_service/test_baseline_decision_contract.py
 tests/energy_service/test_cost_boundaries.py
 tests/energy_service/test_events.py
+tests/energy_service/test_parallel_events.py
 tests/energy_service/test_portfolio.py
 tests/energy_service/test_room_interval_feasibility.py
 tests/energy_service/test_thermal_service.py
@@ -214,6 +228,12 @@ tests/regression/test_independent_verify.py
 tests/smoke/test_level1_smoke.py
 tests/targeted_extension/test_ctcd_alignment.py
 tests/targeted_extension/test_ctcd_controls.py
+tests/targeted_extension/test_ctcd_parallel.py
+tests/targeted_extension/test_ctcd_parallel_package.py
+tests/targeted_extension/test_joint_evidence.py
+tests/targeted_extension/test_parallel_cohort_summary.py
+tests/targeted_extension/test_parallel_main_replay.py
+tests/targeted_extension/test_parallel_spatial_identity.py
 tests/targeted_extension/test_plot_input_refresh.py
 tests/targeted_extension/test_range_assumptions.py
 tests/targeted_extension/test_response_recovery.py

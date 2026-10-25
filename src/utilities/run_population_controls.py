@@ -11,6 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -133,6 +134,47 @@ def export_and_gate(folder, context, zones, baseline, hourly_path):
     return quality
 
 
+def retained_result(job, repository, models, source):
+    """Reuse an exact recorded decision, including rejected inputs without scores."""
+    def location(value):
+        path = Path(value)
+        return path if path.is_absolute() else repository / path
+
+    rid = job["run_id"]
+    cached_folder = models / "current_run_gates" / job["cached_run_id"]
+    qa_path = (location(job["cached_qa_path"]) if job.get("cached_qa_path") else
+               cached_folder / "ENGINEERING_QA.json")
+    if job.get("cached_qa_sha256") and sha(qa_path) != job["cached_qa_sha256"]:
+        raise ValueError("Cached engineering QA checksum changed")
+    quality = json.loads(qa_path.read_text())
+    if job.get("cached_engineering_status"):
+        qualified = job["cached_engineering_status"] in {"cached_qualified", "new_qualified"}
+        if bool(quality["engineering_pass"]) != qualified:
+            raise ValueError("Cached original engineering decision changed")
+    original_idf = (location(job["cached_idf_path"]) if job.get("cached_idf_path") else
+                    cached_folder / "input.idf")
+    if original_idf.is_file():
+        if signature(original_idf.read_text()) != job["normalized_idf_sha256"]:
+            raise ValueError("Cached model is not identical to the generated model")
+    elif job.get("cached_normalized_idf_sha256") != job["normalized_idf_sha256"]:
+        raise ValueError("Cached input lacks the matching retained normalized identity")
+    hourly = location(job["cached_hourly_path"]) if job.get("cached_hourly_path") else None
+    if quality["engineering_pass"] and hourly is None:
+        raise ValueError("A qualified cached decision needs its actual hourly trajectory")
+    if hourly is not None:
+        if job.get("cached_hourly_sha256") and sha(hourly) != job["cached_hourly_sha256"]:
+            raise ValueError("Cached hourly checksum changed")
+        with np.load(hourly, allow_pickle=False) as saved:
+            if saved["temperatures"].shape[0] != 8760:
+                raise ValueError("Cached trajectory is incomplete")
+    return {"run_id": rid, "context": job["context"],
+            "engineering_status": "cached_qualified" if quality["engineering_pass"] else "cached_rejected",
+            "cache_reused": True, "cached_run_id": job["cached_run_id"],
+            "path_hourly": str(hourly) if hourly is not None else "",
+            "hourly_sha256": sha(hourly) if hourly is not None else "",
+            "qa_path": str(qa_path), "qa_sha256": sha(qa_path), "physical_input_sha256": sha(source)}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repository-root", type=Path, required=True)
@@ -140,6 +182,8 @@ def main():
     parser.add_argument("--runtime-root", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--expected-designs", type=int, default=144)
+    parser.add_argument("--kind", choices=("annual", "event"), default="annual")
     args = parser.parse_args()
     repository, plan, runtime, output = [p.resolve() for p in
                                         (args.repository_root, args.plan_root, args.runtime_root, args.output_root)]
@@ -148,19 +192,25 @@ def main():
     frozen = json.loads((models / "MODEL_CONTEXTS.json").read_text())
     if sha(runtime / "energyplus.exe") != "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27":
         raise ValueError("Runtime differs from frozen EnergyPlus22.1")
-    unique = pd.read_csv(plan / "PHYSICAL_RUN_PLAN.csv", keep_default_na=False)
-    logical = pd.read_csv(plan / "ANNUAL_RUN_PLAN.csv", keep_default_na=False)
-    if len(logical) != 144 or unique.run_id.duplicated().any():
-        raise ValueError("The bounded plan must contain 144 logical annual inputs and unique physical IDs")
+    logical_name = "ANNUAL_RUN_PLAN.csv" if args.kind == "annual" else "EVENT_RUN_PLAN.csv"
+    physical_name = "PHYSICAL_RUN_PLAN.csv" if args.kind == "annual" else "PHYSICAL_EVENT_PLAN.csv"
+    manifest_name = "ANNUAL_RUN_MANIFEST.csv" if args.kind == "annual" else "EVENT_RUN_MANIFEST.csv"
+    unique = pd.read_csv(plan / physical_name, keep_default_na=False)
+    logical = pd.read_csv(plan / logical_name, keep_default_na=False)
+    if len(logical) != args.expected_designs or unique.run_id.duplicated().any():
+        raise ValueError(f"The declared plan must contain {args.expected_designs} logical {args.kind} inputs and unique physical IDs")
     output.mkdir(parents=True, exist_ok=True)
     (output / "engineering").mkdir(exist_ok=True)
+    for name in ("PROFILE_ASSIGNMENTS.csv.gz", "BASELINE_DECISION_CONTRACT.csv", "FIXED_TAIL_MEMBERSHIPS.csv"):
+        if (plan / name).is_file():
+            shutil.copyfile(plan / name, output / "engineering" / name)
     before = {f"{city}/{name}": sha(models / city / name) for city in frozen for name in ["baseline.idf", "weather.epw"]}
-    protocol = {"logical_annual_inputs": len(logical), "unique_physical_inputs": len(unique),
+    protocol = {f"logical_{args.kind}_inputs": len(logical), "unique_physical_inputs": len(unique),
                 "workers": args.workers, "runtime_sha256": sha(runtime / "energyplus.exe"),
-                "physical_plan_sha256": sha(plan / "PHYSICAL_RUN_PLAN.csv"),
-                "logical_plan_sha256": sha(plan / "ANNUAL_RUN_PLAN.csv"),
+                "physical_plan_sha256": sha(plan / physical_name),
+                "logical_plan_sha256": sha(plan / logical_name),
                 "script_sha256": sha(__file__), "frozen_input_sha256_before_runs": before,
-                "scope": "Three external-population draws, four unchanged building-weather contexts, three controls, four candidates; native-zone permissions and random placement only. Cached identity is separate from new physical execution."}
+                "scope": "Three population draws on unchanged building-weather contexts; exact declared layouts, permissions, controls and variants are retained in the hash-locked logical plan. Cached decisions are separate from new physical execution."}
     save(output / "EXECUTION_PROTOCOL_BEFORE_RUNS.json", protocol)
     results_path = output / "RUN_RESULTS.json"
     results = json.loads(results_path.read_text()) if results_path.exists() else {}
@@ -183,21 +233,7 @@ def main():
                 raise ValueError("Previously completed hourly output changed")
             return old
         if job["execution_status"] == "exact_retained_cache":
-            cached = models / "current_run_gates" / job["cached_run_id"]
-            qa_path = cached / "ENGINEERING_QA.json"
-            quality = json.loads(qa_path.read_text())
-            if signature((cached / "input.idf").read_text()) != job["normalized_idf_sha256"]:
-                raise ValueError("Cached model is not identical to the generated model")
-            hourly = Path(job["cached_hourly_path"])
-            if not hourly.is_absolute():
-                hourly = repository / hourly
-            with np.load(hourly, allow_pickle=False) as saved:
-                if saved["temperatures"].shape[0] != 8760:
-                    raise ValueError("Cached trajectory is incomplete")
-            return {"run_id": rid, "context": city, "engineering_status": "cached_qualified" if quality["engineering_pass"] else "cached_rejected",
-                    "cache_reused": True, "cached_run_id": job["cached_run_id"],
-                    "path_hourly": str(hourly), "hourly_sha256": sha(hourly),
-                    "qa_path": str(qa_path), "qa_sha256": sha(qa_path), "physical_input_sha256": sha(source)}
+            return retained_result(job, repository, models, source)
         folder = output / "runs" / rid
         folder.mkdir(parents=True, exist_ok=False)
         (folder / "input.idf").write_bytes(source.read_bytes())
@@ -238,14 +274,15 @@ def main():
             print(json.dumps({k: item.get(k) for k in ["run_id", "context", "engineering_status", "cache_reused", "elapsed_seconds"]}), flush=True)
     for key in ["engineering_status", "path_hourly", "hourly_sha256", "qa_path", "qa_sha256"]:
         logical[key] = logical.run_id.map(lambda rid: results[rid].get(key, ""))
-    logical["permission_alias"] = ""
+    if "permission_alias" not in logical:
+        logical["permission_alias"] = ""
     logical["engineering_pass"] = logical.engineering_status.isin(["cached_qualified", "new_qualified"])
-    logical.to_csv(output / "engineering/ANNUAL_RUN_MANIFEST.csv", index=False)
+    logical.to_csv(output / "engineering" / manifest_name, index=False)
     after = {key: sha(models / key) for key in before}
     if after != before:
         raise ValueError("A frozen input changed during execution")
     status = pd.DataFrame(results.values()).groupby(["context", "engineering_status"]).size().to_dict()
-    summary = {"logical_annual_inputs": len(logical), "unique_inputs": len(unique),
+    summary = {f"logical_{args.kind}_inputs": len(logical), "unique_inputs": len(unique),
                "new_physical_runs": sum(not r["cache_reused"] for r in results.values()),
                "exact_cache_reuses": sum(r["cache_reused"] for r in results.values()),
                "unique_status_by_context": [{"context": key[0], "status": key[1], "count": int(n)} for key, n in status.items()],
