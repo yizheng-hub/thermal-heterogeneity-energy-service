@@ -197,6 +197,11 @@ def build_figure_1(panel_root: Path | str) -> Figure:
         "sydney": (-4, 7),
     }
     anchor_labels = {"honolulu": "Honolulu", "midland": "UK", "bangalore": "Bengaluru", "sydney": "Sydney"}
+    supported_frames = pd.concat([b, c], ignore_index=True)
+    supported_frames = supported_frames.loc[
+        supported_frames["supported"].astype(str).str.lower().eq("true")
+    ]
+    marker_unit_max = float(supported_frames["analysis_units"].max())
     for panel_axis, frame, letter, title in [
         (ax[1], b, "b", "Warm-season observations"),
         (ax[2], c, "c", "Cold-season observations"),
@@ -214,7 +219,7 @@ def build_figure_1(panel_root: Path | str) -> Figure:
             zorder=2,
         )
         shown = frame.loc[is_supported].copy()
-        sizes = 18 + 110 * np.sqrt(shown["analysis_units"].astype(float) / shown["analysis_units"].max())
+        sizes = 18 + 110 * np.sqrt(shown["analysis_units"].astype(float) / marker_unit_max)
         panel_axis.scatter(
             shown["longitude"],
             shown["latitude"],
