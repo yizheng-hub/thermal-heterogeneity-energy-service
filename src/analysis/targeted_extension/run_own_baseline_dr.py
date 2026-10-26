@@ -65,8 +65,12 @@ def run(args: argparse.Namespace) -> None:
         if not baseline_idf.exists():
             raise FileNotFoundError(baseline_idf)
         source = baseline_idf.read_text(encoding="utf-8")
+        if signature(source) != str(baseline.normalized_idf_sha256):
+            raise ValueError("Annual baseline IDF differs from its manifest identity")
         zones = contexts[context]["zones"]
         weather = model_root / model["weather"]
+        if not weather.is_file() or sha256(weather) != model["weather_sha256"]:
+            raise ValueError("Weather file differs from the frozen model contract")
         for amplitude in (0.5, 1.0):
             zero = dict.fromkeys(zones, 0.0)
             event = dict.fromkeys(zones, amplitude)

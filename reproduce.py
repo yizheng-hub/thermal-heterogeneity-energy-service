@@ -85,6 +85,8 @@ def plan(root: Path, args: argparse.Namespace, environment: dict[str, str]) -> d
                 "src/analysis/targeted_extension/reviewer_sensitivity.py",
                 "src/analysis/targeted_extension/replay_final_analysis.py",
                 "src/analysis/targeted_extension/assemble_final_evidence.py",
+                "src/analysis/targeted_extension/final_scope_audit.py",
+                "src/analysis/targeted_extension/long_recovery_audit.py",
                 "src/analysis/energy_service/run_costs.py",
             )
         )
@@ -255,6 +257,36 @@ def reproduce_analysis(
             str(root / "src/analysis/targeted_extension/assemble_final_evidence.py"),
             "--results-root",
             str(final_replay_root),
+            "--output",
+            str(evidence),
+        ],
+        root=root,
+        environment=environment,
+    )
+    run(
+        [
+            sys.executable,
+            str(root / "src/analysis/targeted_extension/final_scope_audit.py"),
+            "--evidence",
+            str(evidence),
+            "--output",
+            str(evidence),
+        ],
+        root=root,
+        environment=environment,
+    )
+    run(
+        [
+            sys.executable,
+            str(root / "src/analysis/targeted_extension/long_recovery_audit.py"),
+            "--selections",
+            str(evidence / "FINAL_OWN_BASELINE_DR.csv"),
+            "--trajectories",
+            str(final_analysis_root),
+            "--anchor-manifest",
+            str(args.data_root / "energy_service/engineering/ANNUAL_RUN_MANIFEST.csv"),
+            "--factors",
+            str(args.data_root / "energy_service/factors/regional_factors.csv"),
             "--output",
             str(evidence),
         ],

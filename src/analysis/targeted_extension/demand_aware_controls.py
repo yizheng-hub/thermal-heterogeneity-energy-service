@@ -65,10 +65,15 @@ def profile_interval_curves(
 
 
 def choose_grid_value(grid: np.ndarray, loss: np.ndarray) -> float:
-    """Choose the midpoint of the minimum-loss grid interval."""
+    """Choose a deterministic minimizer, centring only a contiguous plateau."""
     minimum = float(np.min(loss))
     eligible = np.flatnonzero(loss <= minimum + 1e-12)
-    return float((grid[eligible[0]] + grid[eligible[-1]]) / 2.0)
+    if eligible.size == 0:
+        raise ValueError("The objective has no finite minimum")
+    contiguous = np.all(np.diff(eligible) == 1)
+    if contiguous:
+        return float((grid[eligible[0]] + grid[eligible[-1]]) / 2.0)
+    return float(grid[eligible[0]])
 
 
 def _binding_objectives(
@@ -262,7 +267,7 @@ def main() -> None:
         "offsets_c": list(OFFSETS_C),
         "personal_center_objective": "population_mean_absolute_mismatch",
         "personal_range_objective": "population_mean_distance_outside_interval",
-        "minimum_loss_tie_break": "midpoint_of_minimum_loss_grid_interval",
+        "minimum_loss_tie_break": "midpoint_of_contiguous_minimum_plateau_else_lowest_minimizer",
         "common_25_candidate_present": False,
     }
     (args.output_root / "GENERATION_QA.json").write_text(

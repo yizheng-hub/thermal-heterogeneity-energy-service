@@ -149,7 +149,10 @@ def headline_summary(
             "annual_energy_decreased": int((permission["delta_annual_site_kwh"] < -tol).sum()),
         }
     if common_dr is not None:
-        common = common_dr[common_dr["quality_scope"] == "primary"]
+        common = common_dr[
+            (common_dr["quality_scope"] == "primary")
+            & common_dr["layout"].isin(COMMON_LAYOUTS)
+        ]
         info: dict[str, object] = {}
         for level, group in common.groupby("information_level"):
             info[str(level)] = {
@@ -173,10 +176,16 @@ def headline_summary(
         }
         summary["common_baseline_response"] = info
     if own_dr is not None and own_comparisons is not None:
-        own = own_dr[own_dr["quality_scope"] == "primary"].copy()
+        own = own_dr[
+            (own_dr["quality_scope"] == "primary")
+            & own_dr["layout"].isin(COMMON_LAYOUTS)
+        ].copy()
         qualified = own["qualified_positive_response"].astype(str).str.lower().eq("true")
         own["qualified_positive"] = qualified
-        paired = own_comparisons[own_comparisons["quality_scope"] == "primary"].copy()
+        paired = own_comparisons[
+            (own_comparisons["quality_scope"] == "primary")
+            & own_comparisons["layout"].isin(COMMON_LAYOUTS)
+        ].copy()
         uniform_selected = paired["uniform_status"] == "selected"
         demand_selected = paired["demand_guided_status"] == "selected"
         both = paired[uniform_selected & demand_selected]

@@ -35,7 +35,7 @@ def test_scientific_entry_plan_works_without_manuscripts_or_templates():
     assert plan["data_files"] == 877 and plan["figures"] == 27
     assert plan["figure_counts"] == {"main": 6, "supplementary": 21, "total": 27}
     assert plan["typical_day_data_files"] == 44 and plan["typical_day_manifest_files"] == 1
-    assert len(plan["steps"]) == 24
+    assert len(plan["steps"]) == 26
     assert "src/analysis/targeted_extension/replay_ctcd_external.py" in plan["steps"]
     assert "144 commands" in plan["external_office_composition"]
     assert plan["ctcd_data_files"] == 230 and plan["ctcd_manifest_files"] == 1
@@ -43,6 +43,8 @@ def test_scientific_entry_plan_works_without_manuscripts_or_templates():
     assert "src/analysis/targeted_extension/reviewer_sensitivity.py" in plan["steps"]
     assert "src/analysis/targeted_extension/replay_final_analysis.py" in plan["steps"]
     assert "src/analysis/targeted_extension/assemble_final_evidence.py" in plan["steps"]
+    assert "src/analysis/targeted_extension/final_scope_audit.py" in plan["steps"]
+    assert "src/analysis/targeted_extension/long_recovery_audit.py" in plan["steps"]
     assert "src/analysis/energy_service/run_costs.py" in plan["steps"]
     assert (
         "src/analysis/experiments/decision_value/summarize_information_hierarchy.py"

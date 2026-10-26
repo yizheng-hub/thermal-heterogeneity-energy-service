@@ -40,3 +40,11 @@ def test_grid_ties_use_neutral_midpoint():
     grid = np.array([20.0, 20.1, 20.2, 20.3, 20.4])
     loss = np.array([2.0, 1.0, 1.0, 1.0, 2.0])
     assert np.isclose(choose_grid_value(grid, loss), 20.2)
+
+
+def test_disjoint_grid_ties_choose_an_actual_minimizer():
+    grid = np.array([20.0, 21.0, 22.0])
+    loss = np.array([0.0, 1.0, 0.0])
+    chosen = choose_grid_value(grid, loss)
+    assert chosen == 20.0
+    assert loss[np.flatnonzero(grid == chosen)[0]] == loss.min()

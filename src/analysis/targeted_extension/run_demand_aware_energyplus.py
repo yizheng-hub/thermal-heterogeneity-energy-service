@@ -27,6 +27,17 @@ NUMERICAL_WARNING_TOKENS = (
 )
 
 
+def set_maximum_hvac_iterations(text: str, maximum: int | None) -> str:
+    """Return the IDF with only the HVAC iteration limit changed."""
+    if maximum is None:
+        return text
+    pattern = re.compile(r"(?is)(ConvergenceLimits\s*,\s*[^,;]+\s*,\s*)\d+(\s*;)")
+    updated, count = pattern.subn(rf"\g<1>{maximum}\g<2>", text)
+    if count != 1:
+        raise ValueError(f"Expected one ConvergenceLimits object, found {count}")
+    return updated
+
+
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -224,9 +235,11 @@ def run_experiment(args: argparse.Namespace) -> None:
         text = annual_input(source, command["targets_c"], control["half_deadband_c"])
         if physical_hash(text) != physical_hash(source):
             raise ValueError("Non-control building physics changed")
+        text = set_maximum_hvac_iterations(text, args.maximum_hvac_iterations)
         normalized = signature(text)
         run_id = hashlib.sha256((normalized + model["weather_sha256"] + runtime_hash).encode()).hexdigest()[:32]
-        logical.append(command | {"run_id": run_id, "normalized_idf_sha256": normalized})
+        logical.append(command | {"source_run_id": command.get("run_id", ""),
+                                  "run_id": run_id, "normalized_idf_sha256": normalized})
         jobs.setdefault(run_id, {"run_id": run_id, "context": context, "text": text,
                                  "weather": str(weather), "zones": control["zones"],
                                  "probe_path": str(input_root / control["probes"]),
@@ -236,6 +249,8 @@ def run_experiment(args: argparse.Namespace) -> None:
         "runtime_sha256": runtime_hash, "runtime_version": "22.1.0-ed759b17ee",
         "logical_designs": len(logical), "unique_physical_inputs": len(jobs),
         "common_25_candidate_present": False, "building_parameters_changed": False,
+        "maximum_hvac_iterations": args.maximum_hvac_iterations,
+        "solver_iteration_limit_changed": args.maximum_hvac_iterations is not None,
     })
 
     def execute(job: dict) -> dict:
@@ -325,6 +340,7 @@ def main() -> None:
     parser.add_argument("--runtime", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=3)
+    parser.add_argument("--maximum-hvac-iterations", type=int)
     parser.add_argument("--retain-raw", action="store_true")
     run_experiment(parser.parse_args())
 

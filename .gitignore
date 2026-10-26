@@ -375,6 +375,10 @@
 # Final repaired analysis and verification
 !/src/analysis/targeted_extension/assemble_final_evidence.py
 !/tests/targeted_extension/test_assemble_final_evidence.py
+!/src/analysis/targeted_extension/final_scope_audit.py
+!/src/analysis/targeted_extension/long_recovery_audit.py
+!/src/analysis/targeted_extension/engineering_iteration_stability.py
+!/tests/targeted_extension/test_engineering_iteration_audit.py
 !/src/analysis/validation/
 !/src/analysis/validation/personal_range_validation.py
 !/src/analysis/targeted_extension/replay_final_analysis.py
