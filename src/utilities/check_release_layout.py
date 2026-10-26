@@ -9,7 +9,7 @@ from pathlib import Path, PurePosixPath
 
 
 ALLOWLIST_PATH = "src/provenance/PUBLIC_FILE_ALLOWLIST.txt"
-LOCAL_GENERATED_TOP_LEVEL = {"output", "results", "intermediate_files"}
+LOCAL_GENERATED_TOP_LEVEL = {"output", "results"}
 LOCAL_ASSET_DIRECTORIES = {
     "data/inputs", "data/typical_days", "data/upstream", "data/engineering_qa",
     "plot/main", "plot/supplementary",

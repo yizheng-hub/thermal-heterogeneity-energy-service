@@ -60,7 +60,7 @@ def test_scientific_entry_plan_works_without_manuscripts_or_templates():
 def test_local_inputs_and_products_stay_outside_public_source_but_plot_notebook_remains():
     layout = load_module(ROOT / "src/utilities/check_release_layout.py", "source_layout")
     for directory in ["data/inputs", "data/typical_days", "data/upstream", "data/engineering_qa",
-                      "output", "results", "intermediate_files", "plot/main", "plot/supplementary"]:
+                      "output", "results", "plot/main", "plot/supplementary"]:
         assert layout._is_ignored_local(Path(directory) / "product.csv")
         assert not layout._is_ignored_local(Path(directory) / "README.md")
     for source in ["plot/Plot.ipynb", "data/metadata/source_manifest.csv", "src/analysis/reproduce_energy_service_publication.py"]:

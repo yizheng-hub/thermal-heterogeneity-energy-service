@@ -26,7 +26,6 @@ data/metadata/TRANSFORM_PROVENANCE.csv
 data/metadata/typical_day_dr_bundle_manifest.csv
 data/metadata/typical_day_dr_bundle_source.json
 DATA_AND_SOFTWARE_LICENSES.md
-intermediate_files/.gitkeep
 LICENSE
 LICENSE-DOCS-DATA
 output/.gitkeep

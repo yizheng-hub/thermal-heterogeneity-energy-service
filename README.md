@@ -75,11 +75,10 @@ results/final_submission/costs/
 | --- | --- |
 | `src/` | Analysis methods, control construction, simulation interfaces and release checks |
 | `data/` | Local external inputs plus tracked checksum metadata |
-| `output/` | Recomputed analyses, logs and run manifests |
+| `output/` | Recomputed analyses, logs, run manifests and temporary intermediate products |
 | `results/` | Figure-ready numerical tables and source-data indexes |
 | `plot/` | `Plot.ipynb`, command-line renderer and generated figures |
 | `tests/` | Numerical, contract, packaging and synthetic smoke tests |
-| `intermediate_files/` | Local temporary products excluded from Git |
 
 The final figures are written to `plot/main/` and `plot/supplementary/`. The sibling `../manuscript/` directory contains the working Word files; it is neither read nor written by the reproduction entry point.
 
