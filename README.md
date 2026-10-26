@@ -1,172 +1,143 @@
 # Human thermal heterogeneity: computational source
 
-Numerical methods, control generation, scientific comparisons, figure renderers, source-data exports and tests for **Human thermal heterogeneity reshapes building energy, carbon and flexibility**. Manuscript and supplementary prose, Word templates, completed documents, data archives, building/weather assets and private identifier crosswalks are excluded.
+This repository contains the analysis and figure code for **Human thermal heterogeneity reshapes building energy, carbon and flexibility**. It compares three controls under fixed building physics, weather, equipment and physical occupancy loads:
 
-The figures name the controls **Uniform average**, **Personal centre** and **Personal range**. Personal range uses model-generated individual temperature ranges. The stable machine identifiers remain `uniform_average`, `personal_center` and `ltpref_interval`, respectively, so existing data and result identities are preserved.
+- **Uniform average** uses one population-average temperature target at the permitted command scale.
+- **Personal centre** minimizes person-hour-weighted absolute temperature mismatch.
+- **Personal range** minimizes distance outside model-generated personal temperature ranges.
 
-## Complete scientific replay
+The common 25 °C operation is an external service reference. It is not an internal fallback candidate for the three controls. Annual controller candidates use five declared offsets: −1, −0.5, 0, +0.5 and +1 °C.
 
-Use Python **3.11.15** with the frozen environment:
+The repository is source-only. Manuscripts, Word-generation code, licensed building and weather assets, participant-level source archives, retained simulation trajectories and generated outputs are outside Git.
+
+## Reproduction modes
+
+Use Python 3.11.15 and the frozen environment:
 
 ```console
 uv sync --frozen --extra test --extra notebook
 uv run --frozen python reproduce.py --plan
-uv run --frozen python reproduce.py
 ```
 
-`data/inputs` contains the separately supplied 877-file computational package: `legacy_analysis` (46 files), `source_building` (425), and `energy_service` (406). Its checksums are in `data/metadata/paper_bundle_source.json` and `data/metadata/paper_bundle_manifest.csv`. Data are excluded from Git. To unpack a supplied archive in a fresh checkout:
+The root entry point has three modes:
 
 ```console
-uv run --frozen python src/utilities/unpack_paper_data.py --bundle ../paper_data_energy_service_20261023.tar.zst --dest data/inputs
+# Numerical analyses, final evidence tables and cost scenarios
+uv run --frozen python reproduce.py --mode analysis
+
+# Six main figures and 21 supplementary figures from existing result tables
+uv run --frozen python reproduce.py --mode figures
+
+# Analysis followed by all figures
+uv run --frozen python reproduce.py --mode full
 ```
 
-The final temporal extension also requires the separately supplied normalized typical-day supplement. Its 44 declared files contain 32 retained full-year event trajectories, four source calendars and eight locked protocol/verification records, with a separate manifest file. The 19.6-MB ZIP and all building/weather assets stay outside Git. Verify and unpack it with:
-
-```console
-uv run --frozen python src/utilities/unpack_typical_day_dr_data.py --bundle ../typical_day_dr_supplement_v1.zip --dest data/typical_days
-```
-
-Choose a new output directory. The complete replay verifies the inputs, recomputes the human and three-control analyses, regenerates the original 1,296 and parallel 864 annual control vectors, evaluates annual/event service, energy, carbon, synchronized portfolios and cost scenarios, and produces **six main and 25 supplementary figures**. The main comparison combines six fixed compositions on the two shared layouts. Source labels identify provenance rather than a comparison between countries or datasets. It writes all result tables, traceable source-data CSVs and their index, the figure-to-source map, logs and `SCIENTIFIC_REPLAY_RUN.json`. It also rebuilds the common-25 leave-one-candidate check, response/recovery horizon audit and the two separately scoped demand-information summaries used in the final text. Monthly and four-season service, heating/cooling carriers and carbon are recomputed from all 8,760 annual hours. Typical-day response analyses recompute the original peak-day comparison and two additional July date classes from the retained physical outputs; this replay does not regenerate those 32 EnergyPlus trajectories. No manuscript or Word template is read. No Word document is built.
-
-Times New Roman normal and bold fonts must be installed locally to render the figures. Fonts are not redistributed. Missing fonts stop rendering. On Windows, short external data/output paths avoid legacy path-length limits.
-
-## Organization
-
-| Directory | Purpose |
-| --- | --- |
-| `src/` | Analysis, reusable methods, frozen settings and input-verification utilities |
-| `data/` | Local inputs and upstream assets; tracked metadata is in `data/metadata` |
-| `output/` | Recomputed scientific tables, logs and run reports |
-| `results/` | Final, checksum-indexed inputs read by the figure cells |
-| `plot/` | Editable `Plot.ipynb`, six main figures and 25 supplementary figures |
-| `tests/` | Numerical, contract, regression, packaging and synthetic smoke tests |
-| `intermediate_files/` | Local caches, temporary outputs and verification evidence |
-
-The two reference Word documents are in the sibling `../manuscript/` directory. They are not tracked or generated by this repository. Small aggregate support tables in `src/analysis/support` remain part of the calculations.
-
-## Redraw all figures
-
-After a successful replay, redraw all 31 figures and refresh source-data exports without rerunning the numerical analyses:
-
-```console
-uv run --frozen python plot/reproduce.py
-uv run --frozen python plot/reproduce.py --figure 3 S11
-uv run --frozen jupyter lab plot/Plot.ipynb
-```
-
-Run the setup cell once, then any of the 31 individual figure cells. Each cell contains its actual data reading and plotting code. Generated images are saved in `plot/main` and `plot/supplementary`. Historical input-panel names and the `_word.png` suffix identify frozen inputs and the 300-dpi image variant. They do not require Word.
-
-## Reproduction boundaries
-
-The main replay starts from retained operative temperatures, occupancy, calendars, thermostat commands and purchased energy carriers. It recalculates outcomes from these frozen inputs. It does **not** run EnergyPlus or recalibrate building physics. Demand profiles are references, not confirmed prototype occupants; physical gains remain unchanged. Service describes reconstructed temperature mismatch and model-derived interval coverage, not measured satisfaction. The joint 144-office inventory is a declared aggregation scenario, not real city stock. The original 108-office inventory remains a source-layout sensitivity.
-
-The current model-input generator reconstructs 489 normalized annual/event inputs when four externally supplied models and weather files satisfy `data/metadata/energy_service_model_contract.json`:
-
-```console
-uv run --frozen python src/analysis/energy_service/generate_model_inputs.py --input-root data/inputs/energy_service --model-root ../local_models --commands output/replay/energy_service/controls/CONTROL_COMMANDS.json --output-root output/model_inputs
-```
-
-Running those models additionally requires the specified EnergyPlus 22.1 build and assets supplied under their original terms. The optional frozen execution manifest contains 412 runs (346 annual and 66 event), using 384 distinct IDFs and four weather assets. Thirty-three annual baselines are reused. The original older supporting-library generator snapshot is unavailable; its distinct recorded and later hashes remain in `src/settings/energyplus_level2_contract.json`. Frozen-asset execution does not recover that generator.
-
-The optional upstream tool reconstructs human-demand numbers from two external checksum-matched database files and the included numeric-only scene specification:
-
-```console
-uv run --frozen python src/utilities/generate_demand_inputs.py --measurements ../external_inputs/measurements.csv --metadata ../external_inputs/metadata.csv --numeric-scenes data/metadata/numeric_scene_spec_v1.json --output-root output/upstream_numeric
-```
-
-The measurement, metadata and numeric-scene SHA-256 hashes are enforced. The included 19-scene specification contains only numerical model parameters and existing scene identifiers; question text, responses, conversations and identities are excluded. This interface reproduced all 21,418 demand records and all executable-interval flags, with a largest numerical difference of 1.42e-14 from the retained outputs. The database inputs must be obtained from their original public provider. The tool is separate from the complete replay and does not recreate private crosswalks or original release identifiers.
-
-An optional building-identity audit uses the checksum-matched measurements and metadata without requiring the scene pool:
-
-```console
-uv run --frozen python src/utilities/audit_building_identity.py --measurements ../external_inputs/measurements.csv --metadata ../external_inputs/metadata.csv --public-profiles data/inputs/legacy_analysis/human/human_profiles_minimized.csv.gz --source-inventory data/inputs/source_building/SOURCE_BUILDING_INVENTORY.csv --output-root output/building_identity
-```
-
-The metadata distinguishes 150 original-source building identifiers from 37 inferred groups in the office cohort. Building identity establishes neither room membership nor simultaneous presence. The audit recomputes 36 variance decompositions and reports identity origins using only release labels. It changes no frozen simulation input. The ten supporting source-group pools include three original and seven inferred identifiers.
-
-## Strict service and engineering screening
-
-The scientific replay also exports three `Strict_service` CSVs: all 1,620 condition records, 45 summaries and 180 context summaries for the five demand definitions under three candidate supports. These reuse retained scores and assess native-zone commands; they do not add physical simulations or assess floor-bound uncertainty. The complete current table inventory and checksums are written to `results/SOURCE_DATA_INDEX.csv`, including the bounded checks and the separate Chinese-demand comparison.
-
-A separate engineering-QA supplement preserves the 407 main annual decisions (298 qualified, 109 excluded) and 153 excluded supporting sensitivity attempts as separate scopes, with anonymized QA and original hashes. Verify it with `python src/utilities/engineering_qa_supplement.py verify --root <QA-folder>`. The main 877-file data bundle is unchanged.
-
-## Tests and CI
-
-After a complete local replay, run all applicable tests with actual panel fixtures:
+On Windows, the equivalent wrapper is:
 
 ```powershell
-$env:THERMAL_HETEROGENEITY_PANEL_DATA = (Resolve-Path 'output/replay/supporting_evidence/panel_data').Path
-uv run pytest -q
+.\reproduce.ps1 --mode full
 ```
 
-For POSIX, set `export THERMAL_HETEROGENEITY_PANEL_DATA="$PWD/output/replay/supporting_evidence/panel_data"` before the same test command. Figure tests require these inputs and installed fonts.
+To redraw selected figures without rerunning analysis:
 
-GitHub CI runs source/privacy checks, numerical/package contracts and the synthetic analysis smoke test on Windows and Linux. The source-only CI test command explicitly excludes three rendering test files that require local fonts and external panel inputs. It does not silently assume that the separate data archive or licensed fonts exist on a hosted runner. The complete local test and scientific replay remain separate checks.
+```console
+uv run --frozen python reproduce.py --mode figures --figure 2 5 S8 S17
+```
+
+`plot/Plot.ipynb` contains one executable cell for each publication figure. Run its setup cell once, edit the relevant figure cell, and run that cell to change one figure. The command-line renderer executes the same cells without storing notebook outputs.
+
+## Required local inputs
+
+The analysis mode expects three separately supplied, checksum-indexed computational inputs:
+
+1. `data/inputs/` contains the harmonized demand inputs and retained annual/event calculations used by the base replay, including the aligned ASHRAE and CTCD cohorts.
+2. `data/typical_days/` contains the retained response and recovery trajectories.
+3. `data/inputs/final_analysis/Reviewer_repair/` contains the final retained annual and event trajectories and their primary and strict analysis tables. A different location can be passed with `--final-analysis-root`.
+
+In the complete local project, the third package may already be present at `results/Reviewer_repair/`; the entry point detects that location automatically. The source-only release expects it under `data/inputs/final_analysis/Reviewer_repair/` after the separately distributed data package is unpacked.
+
+These computational inputs are excluded from Git. The public ASHRAE Database II and CTCD archive are the upstream observational sources. The upstream rebuild tools verify their declared files and regenerate the aligned numerical demand inputs. Regenerating building trajectories additionally requires the declared EnergyPlus 22.1 runtime, prototype models and weather files under their original terms.
+
+Final figure rendering expects Times New Roman to be installed on the host system; this affects typography only, not the numerical tables.
+
+The complete analysis produces the final tables in:
+
+```text
+results/final_submission/evidence/
+results/final_submission/costs/
+```
+
+`FINAL_EVIDENCE_QA.json` records the denominators, headline counts and SHA-256 hashes of every table used in the final evidence assembly.
+
+## Output structure
+
+| Directory | Contents |
+| --- | --- |
+| `src/` | Analysis methods, control construction, simulation interfaces and release checks |
+| `data/` | Local external inputs plus tracked checksum metadata |
+| `output/` | Recomputed analyses, logs and run manifests |
+| `results/` | Figure-ready numerical tables and source-data indexes |
+| `plot/` | `Plot.ipynb`, command-line renderer and generated figures |
+| `tests/` | Numerical, contract, packaging and synthetic smoke tests |
+| `intermediate_files/` | Local temporary products excluded from Git |
+
+The final figures are written to `plot/main/` and `plot/supplementary/`. The sibling `../manuscript/` directory contains the working Word files; it is neither read nor written by the reproduction entry point.
+
+## Final analysis design
+
+The shared annual design uses three controls, four representative office-weather contexts, common random-mixing and demand-ordered layouts, and building, floor and native-zone command permissions. Primary engineering qualification includes isolated HVAC iteration warnings when the physical and accounting checks pass; the strict sensitivity excludes those warnings.
+
+Two annual comparisons answer different questions:
+
+- **Direct operation** measures how service and resources change together when each controller runs its own selected target.
+- **Same-service selection** compares resource use when every controller meets the same annual population and fixed-tail service limits.
+
+Seasonal tables retain spring, summer, autumn and winter changes before annual aggregation. Spatial tables separate occupant placement from command permission.
+
+The response analysis has two declared baselines:
+
+- **Common baseline:** all demand representations select from the same physical response library built from a common 25 °C operation. Building-mean, zone-mean and full-distribution information are reviewed against the same event and 48-hour recovery service limits.
+- **Own baseline:** each control begins from its direct annual native-zone operation. The same 0.5 and 1 °C response actions are evaluated in February and July through the 48-hour recovery period.
+
+Implementation tables combine signed electricity and gas changes with declared price and management-resource scenarios. They do not assign an unobserved demand-response revenue.
+
+## Upstream and simulation rebuilds
+
+The upstream demand tools accept the original public archive files supplied separately:
+
+```console
+uv run --frozen python src/utilities/generate_demand_inputs.py --help
+uv run --frozen python src/analysis/targeted_extension/ctcd_alignment.py --help
+```
+
+EnergyPlus regeneration is optional for users who have the licensed/local assets:
+
+```console
+uv run --frozen python src/analysis/targeted_extension/run_demand_aware_energyplus.py --help
+uv run --frozen python src/analysis/targeted_extension/common_baseline_dr.py --help
+uv run --frozen python src/analysis/targeted_extension/run_own_baseline_dr.py --help
+```
+
+The final evidence assembler performs no simulation and changes no qualification rule:
+
+```console
+uv run --frozen python src/analysis/targeted_extension/assemble_final_evidence.py \
+  --results-root data/inputs/final_analysis/Reviewer_repair \
+  --output results/final_submission/evidence
+```
+
+## Verification
+
+Run the source and numerical checks before release:
 
 ```console
 uv run ruff check .
+uv run pytest -q
+uv run python reproduce.py --mode full --plan
 uv run python src/utilities/check_release_layout.py --root .
 uv run python src/utilities/release_scan.py --root . --mode licence-privacy
 uv run python src/utilities/release_scan.py --root . --mode paths-identifiers
 uv run python src/utilities/release_scan.py --root . --mode portability
 ```
 
-The exact Git allowlist denies manuscript files, generated products, external assets and credentials. This source-only repository starts with new Git history. Original software is BSD-3-Clause; author-created documentation and eligible derived outputs are CC BY 4.0. Third-party materials retain their terms. See `DATA_AND_SOFTWARE_LICENSES.md` and `THIRD_PARTY_NOTICES.md`.
-
-## Bounded energy-service extension
-
-The complete entry point also reruns four checks from retained physical trajectories: common-service selection and observed Pareto frontiers, placement/permission effects with one fixed tail and absolute contract, event/baseline/recovery accounting with single-floor aliases removed, and the existing Personal range method/definition sensitivities. It adds no physical simulation and changes no frozen building parameters. The protocol is `src/analysis/targeted_extension/PROTOCOL.json`. To run only these checks on an existing replay:
-
-```console
-uv run python src/analysis/targeted_extension/run_extension.py --replay-root output/replay --output-root output/replay/targeted_extension
-uv run python src/utilities/prepare_plot_data.py --replay output/replay
-uv run python plot/reproduce.py --figure 3 4 5 S25
-```
-
-The extension retains the published Li et al. elicitation framework as the demand-method assumption. Personal ranges remain model-generated inputs. Approximate service matching uses a declared 0.05 C window on both population and fixed-tail mismatch, with 0.02/0.10 C sensitivities. This is a comparison resolution, not measured comfort or model accuracy. Outputs and figure inputs are in `output/replay/targeted_extension` and `results/Targeted_extension`, respectively.
-
-The complete replay also derives the final reviewer sensitivities from frozen results. These checks add no EnergyPlus run and do not change building physics:
-
-```console
-uv run python src/analysis/targeted_extension/reviewer_sensitivity.py --repository-root . --output-root output/replay/reviewer_sensitivity
-uv run python src/analysis/experiments/decision_value/summarize_information_hierarchy.py --phase-map output/replay/supporting_evidence/analysis/tables/result6_phase_map.csv --control-comparisons results/Joint_main/annual/CONTROL_COMPARISONS.csv --output-root output/replay/information_hierarchy
-```
-
-The building-mean/zone-mean direct-control contrast and the zone-mean/full-profile fixed-library review use different populations, action supports and denominators. Their outputs remain separate and are not treated as one causal attrition sequence.
-
-## Aligned demand compositions
-
-The complete replay also requires the separately supplied `data/inputs/ctcd_external` supplement. It contains the overlap-screened executable office profiles, declared allocations, controller commands, engineering records and compressed hourly trajectories. Its manifest is locked by `data/metadata/ctcd_bundle_manifest.csv`. It stays outside Git along with the original data. The [Scientific Data article](https://doi.org/10.1038/s41597-023-02568-3) and [official OSF deposit](https://osf.io/d465n/) identify the three upstream files; original files and derived computational supplements retain their applicable access terms.
-
-The same Griffiths calculation and locked 19-scene numerical Li et al. method produce the reconstructed centres and Personal ranges. Office type, metabolic rate, sensation, operative temperature and survey operation are normalized explicitly; source overlap and duplicate observed rows are screened before sampling. Three declared 267-profile draws generate 144 annual commands on the four frozen office contexts, using random placement and existing zone permissions. The retained physical experiment comprises 89 new unique annual inputs and 19 exactly matching qualified cached inputs. Numerical exclusions remain distinct from service exclusions.
-
-The main replay regenerates these commands and recomputes service, energy and carbon from the retained results. It does not rerun the engine. The optional raw-data/model check below additionally reconstructs the executable pool and every normalized annual model input:
-
-```console
-uv run python src/analysis/targeted_extension/replay_ctcd_external.py --input-root data/inputs/ctcd_external --main-input-root data/inputs/energy_service --raw-root data/upstream/chinese_thermal_comfort --ashrae-root data/upstream/ashrae_db_ii --numeric-scenes data/metadata/numeric_scene_spec_v1.json --model-root data/upstream/frozen_buildings --output-root output/ctcd_raw_replay
-```
-
-Outputs are separate in `output/replay/ctcd_external`; final plotting inputs are in `results/CTCD_external`. These are source-composition scenarios, not matched local residents. The current physical models are offices. Residential records are not represented as residential energy simulations.
-
-The final main experiment additionally requires `data/inputs/ctcd_parallel`, containing 1,007 declared files and its manifest. The tracked specification is `data/metadata/ctcd_parallel_bundle_manifest.csv`, with scope and manifest checksum in `ctcd_parallel_bundle_source.json`. This 395-MB local computational supplement is excluded from Git. It contains the executable pool, exact commands, complete prepared inputs, hourly outcomes and final engineering decisions for 864 annual and 432 event candidates, with the original random/zone subset retained as provenance. Annual candidates comprise 302 unique physical inputs, including 235 that passed engineering checks and 67 exclusions. All 22 unique event inputs passed. Exclusions are retained and never promoted to usable service outcomes.
-
-To replay only the final joint analyses after the primary replay is available:
-
-```console
-uv run python src/analysis/targeted_extension/replay_parallel_main.py --primary-replay-root output/replay --output-root output/parallel_replay
-```
-
-This entry verifies the portable supplement, regenerates all 864 commands, then recomputes annual, common-service, placement/permission, four-season, own-baseline response/recovery, 72-office component and joint 144-office portfolio, and implementation-cost results. The two common layouts are random mixing and demand ordering. The three original compositions and three aligned CTCD compositions retain their declared draws. Shared input pools, occupants and weather are not re-sampled for presentation. Joint plotting tables are copied into `results/Joint_main` by `prepare_plot_data.py`, and each figure cell reads those numerical inputs. The original source-structured layout remains a supporting sensitivity because CTCD does not supply verified building or room membership.
-
-## Model foundations
-
-The original materials, geometry, heat storage, interzone surfaces, infiltration, equipment and native gains can be compared with the supplied official prototype sources:
-
-```console
-uv run python src/utilities/audit_frozen_model_foundation.py --help
-uv run python src/utilities/audit_ventilation_adaptation.py --repository-root . --output-root output/model_foundation
-```
-
-Nominal heating/cooling deadbands are inherited from each prototype. Translating both setpoints around a demand target is the study controller mapping; the deadband is not a personal acceptable range. The medium-office preparation also disabled three maximum-outdoor-air overrides while retaining the native ventilation procedure and requirements. Four separately retained annual probes quantify that operating-control adaptation. Optional regeneration uses the specified EnergyPlus runtime, unchanged weather and complete upstream models; engineering checks do not constitute field calibration.
-
-Retained raw engineering-QA records can contain historical source-folder labels. Executable hourly-data and QA references in the CTCD supplement use contained relative paths; no historical label is used to locate an input.
+`src/provenance/PUBLIC_FILE_ALLOWLIST.txt` defines the exact Git contents. The deny-by-default `.gitignore` and release checks exclude manuscripts, generated figures, output tables, external datasets, EnergyPlus assets, archives and credentials. Source code is BSD-3-Clause. Author-created documentation and eligible derived source-data products are CC BY 4.0; third-party materials retain their own terms.

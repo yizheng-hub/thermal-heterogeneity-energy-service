@@ -46,6 +46,7 @@ addopts = "--strict-markers --strict-config"
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+extend-exclude = ["plot/Plot.ipynb"]
 
 [tool.ruff.lint]
 # CI focuses on correctness-bearing static errors. Formatting is applied only to
