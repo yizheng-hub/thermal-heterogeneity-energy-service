@@ -1,0 +1,30 @@
+{
+  "title": "Derived electricity carbon factors for the global climate matrix",
+  "publisher": "Ember",
+  "dataset": "Yearly Electricity Data",
+  "source_url": "https://files.ember-energy.org/public-downloads/yearly_full_release_long_format.csv",
+  "landing_page": "https://ember-energy.org/data/yearly-electricity-data/",
+  "license": "CC BY 4.0",
+  "retrieved_date": "2026-10-27",
+  "source_file_sha256": "259e1095ee8ffeaf0aff37ad557916ae1823a2da13312da50ba4cec6b4574c3b",
+  "source_file_bytes": 49079981,
+  "source_rows": 370784,
+  "filter": {
+    "Year": 2025,
+    "Category": "Power sector emissions",
+    "Subcategory": "CO2 intensity",
+    "Variable": "CO2 intensity",
+    "Unit": "gCO2/kWh",
+    "Area type": "Country or economy"
+  },
+  "conversion": "electricity_co2_kg_kwh = Value / 1000",
+  "common_factor_sensitivity": {
+    "basis": "Ember World CO2 intensity, 2025",
+    "electricity_co2_g_kwh": 458.49,
+    "electricity_co2_kg_kwh": 0.45849,
+    "application": "Apply the same factor to every site to separate climate/building physics from grid-mix differences."
+  },
+  "derived_csv": "global_electricity_carbon_factors_ember_2025.csv",
+  "derived_csv_sha256": "9bd9ef1b9e6a8d1602b9373f50bba76b4df3545f9b97376ab6c94316e8ebaf4c",
+  "notes": "National annual generation-average factors. They are appropriate for annual operational-carbon comparison, not marginal or hourly demand-response emissions."
+}

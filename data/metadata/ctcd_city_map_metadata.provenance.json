@@ -1,0 +1,72 @@
+{
+  "metadata_version": "1.0.0",
+  "title": "CTCD city display coordinates and mapped sample counts",
+  "purpose": "Display metadata for the global observational-evidence map. Coordinates locate city markers only and are not analytical variables or inputs to thermal-demand reconstruction, control selection, building simulation or statistical inference.",
+  "coordinate_system": "WGS 84 latitude and longitude",
+  "coordinate_source": {
+    "publisher": "GeoNames",
+    "landing_page": "https://www.geonames.org/export/",
+    "license": "Creative Commons Attribution (CC BY)",
+    "retrieved_date": "2026-10-27",
+    "record_key": "geonames_id",
+    "record_urls": "Stored row by row in ctcd_city_map_metadata.csv",
+    "role": "Display city centres"
+  },
+  "count_sources": {
+    "overlap_screened_office_records": {
+      "definition": "Overlap-screened CTCD office observations retained after the declared office, activity, validity and overlap filters.",
+      "file": "data/inputs/ctcd_external/controller/CTCD_ALIGNED_OFFICE_RECORDS.csv.gz",
+      "sha256": "3e835021d58de10752abe69f2f294863fa8baf10e87e7a3ad5c0a62d07d31e80"
+    },
+    "active_conditioning_records": {
+      "definition": "Rows in CTCD_ALIGNED_OFFICE_RECORDS.csv.gz with the declared active-conditioning operation flag.",
+      "file": "data/inputs/ctcd_external/controller/CTCD_ALIGNED_OFFICE_RECORDS.csv.gz",
+      "sha256": "3e835021d58de10752abe69f2f294863fa8baf10e87e7a3ad5c0a62d07d31e80"
+    },
+    "executable_profiles": {
+      "definition": "Active-conditioning records with an executable demand profile under the locked reconstruction pipeline.",
+      "file": "data/inputs/ctcd_external/controller/CTCD_EXECUTABLE_PROFILES.csv.gz",
+      "sha256": "e541d797782fc082dc5554a4cc42df911423a0d1a1c720a467e15bd728a8d2db"
+    },
+    "quality_assurance": {
+      "file": "data/inputs/ctcd_external/protocol/CTCD_ALIGNMENT_QA.json",
+      "sha256": "a6242080e2c6e4065530c2f15f6fff87f35a4ff6c9e9cb914bd85f36688e4917"
+    }
+  },
+  "scope_totals": {
+    "overlap_screened_office_records": 14725,
+    "overlap_screened_office_cities": 11,
+    "active_conditioning_records": 12427,
+    "active_conditioning_cities": 10,
+    "executable_profiles": 12404,
+    "executable_profile_cities": 10
+  },
+  "map_use": {
+    "recommended_main_manuscript_layer": "Filter active_conditioning_records > 0 and size markers with active_conditioning_records. This gives the 10 cities and 12,427 observations described in the main manuscript.",
+    "broader_observational_archive_layer": "Use overlap_screened_office_records. This retains every city represented in the broader overlap-screened office archive, including one Yantai observation.",
+    "controller_input_layer": "Filter executable_profiles > 0 and size markers with executable_profiles.",
+    "warning": "Do not label all 14,725 mapped observations as active-conditioning controller inputs; the corresponding controller-input total is 12,404."
+  },
+  "dataset_citation": {
+    "preferred_name": "The Chinese thermal comfort dataset",
+    "short_name": "CTCD",
+    "authors": "Yang, L.; Zhao, S.; Zhai, Y.; Gao, S.; Wang, F.; Lian, Z.; et al.",
+    "journal": "Scientific Data",
+    "volume": 10,
+    "article_number": 662,
+    "year": 2023,
+    "doi": "10.1038/s41597-023-02568-3",
+    "publisher_record": "https://www.nature.com/articles/s41597-023-02568-3",
+    "official_repository_doi": "10.17605/OSF.IO/D465N",
+    "official_repository": "https://osf.io/d465n/"
+  },
+  "terminology": {
+    "required_short_name": "CTCD",
+    "required_long_name": "The Chinese thermal comfort dataset",
+    "deprecated_or_incorrect_names": [
+      "CGCD",
+      "CTCB",
+      "Chinese thermal comfort database"
+    ]
+  }
+}

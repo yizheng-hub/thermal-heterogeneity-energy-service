@@ -1,0 +1,10 @@
+site,country,iso3,data_year,electricity_co2_g_kwh,electricity_co2_kg_kwh,common_world_2025_electricity_co2_kg_kwh,source_dataset,source_variable,source_unit
+Miami,United States of America,USA,2025,384.40000,0.38440,0.45849,Ember Yearly Electricity Data,CO2 intensity,gCO2/kWh
+Singapore,Singapore,SGP,2025,497.09000,0.49709,0.45849,Ember Yearly Electricity Data,CO2 intensity,gCO2/kWh
+Delhi,India,IND,2025,670.55000,0.67055,0.45849,Ember Yearly Electricity Data,CO2 intensity,gCO2/kWh
+Beijing,China,CHN,2025,526.19000,0.52619,0.45849,Ember Yearly Electricity Data,CO2 intensity,gCO2/kWh
+Montreal,Canada,CAN,2025,190.73000,0.19073,0.45849,Ember Yearly Electricity Data,CO2 intensity,gCO2/kWh
+Malmo,Sweden,SWE,2025,35.35000,0.03535,0.45849,Ember Yearly Electricity Data,CO2 intensity,gCO2/kWh
+Tunis,Tunisia,TUN,2025,560.29000,0.56029,0.45849,Ember Yearly Electricity Data,CO2 intensity,gCO2/kWh
+Sydney,Australia,AUS,2025,524.59000,0.52459,0.45849,Ember Yearly Electricity Data,CO2 intensity,gCO2/kWh
+Brasilia,Brazil,BRA,2025,109.95000,0.10995,0.45849,Ember Yearly Electricity Data,CO2 intensity,gCO2/kWh

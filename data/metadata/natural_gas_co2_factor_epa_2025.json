@@ -1,0 +1,15 @@
+{
+  "title": "Natural-gas stationary-combustion carbon factor",
+  "publisher": "United States Environmental Protection Agency",
+  "source": "Emission Factors for Greenhouse Gas Inventories, Table 1: Stationary Combustion",
+  "source_url": "https://www.epa.gov/system/files/documents/2025-01/ghg-emission-factors-hub-2025.pdf",
+  "source_last_modified": "2025-01-15",
+  "retrieved_date": "2026-10-27",
+  "fuel": "Natural Gas",
+  "basis": "higher heating value",
+  "source_factor_kg_co2_per_mmbtu": 53.06,
+  "conversion_kwh_per_mmbtu": 293.0710701722222,
+  "derived_factor_kg_co2_per_kwh_hhv": 0.1810482350537686,
+  "conversion": "53.06 kg CO2 per mmBtu / 293.0710701722222 kWh per mmBtu",
+  "scope": "Direct stationary-combustion CO2 only; upstream emissions are excluded."
+}

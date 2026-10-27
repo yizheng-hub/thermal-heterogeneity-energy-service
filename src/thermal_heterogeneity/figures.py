@@ -219,6 +219,10 @@ def apply_figure_style() -> dict[str, str]:
             "ytick.major.pad": 1.0,
             "legend.fontsize": BASE_FONT_PT,
             "legend.title_fontsize": BASE_FONT_PT,
+            "legend.frameon": False,
+            "legend.facecolor": "none",
+            "legend.edgecolor": "none",
+            "legend.framealpha": 0.0,
             "axes.linewidth": 0.65,
             "axes.edgecolor": "#333333",
             "axes.facecolor": "white",
@@ -482,7 +486,10 @@ def _display_bbox(values: mpl.transforms.Bbox) -> list[float]:
     return [round(float(value), 3) for value in values.bounds]
 
 
-def _panel_roots(figure: Figure) -> dict[str, Axes]:
+def _panel_roots(
+    figure: Figure,
+    required_letters: str = "abcdefgh",
+) -> dict[str, Axes]:
     roots: dict[str, Axes] = {}
     for axis in figure.axes:
         for artist in axis.findobj(mpl.text.Text):
@@ -497,9 +504,10 @@ def _panel_roots(figure: Figure) -> dict[str, Axes]:
             if letter in roots and roots[letter] is not axis:
                 raise FigureContractError(f"multiple top-level axes claim panel {letter}")
             roots[letter] = axis
-    if set(roots) != set("abcdefgh"):
+    if set(roots) != set(required_letters):
         raise FigureContractError(
-            "cross-axis audit requires exactly one title-labelled root for panels a-h"
+            "cross-axis audit requires exactly one title-labelled root for panels "
+            f"{required_letters}"
         )
     return dict(sorted(roots.items()))
 
@@ -528,6 +536,7 @@ def _subplot_slot(axis: Axes, figure: Figure) -> mpl.transforms.Bbox:
 def _panel_safe_regions(
     figure: Figure,
     roots: dict[str, Axes],
+    panel_letters: str = "abcdefgh",
 ) -> dict[str, mpl.transforms.Bbox]:
     """Return each panel's allowed text envelope in display coordinates.
 
@@ -540,23 +549,30 @@ def _panel_safe_regions(
     slots = {letter: _subplot_slot(axis, figure) for letter, axis in roots.items()}
     canvas_width, canvas_height = figure.canvas.get_width_height()
     regions: dict[str, mpl.transforms.Bbox] = {}
-    for index, letter in enumerate("abcdefgh"):
+    panel_rows = int(np.ceil(len(panel_letters) / PANEL_COLUMNS))
+    for index, letter in enumerate(panel_letters):
         row, column = divmod(index, PANEL_COLUMNS)
         if column == 0:
             x0 = 0.0
-            x1 = slots[chr(ord(letter) + 1)].x0
+            right_index = index + 1
+            x1 = (
+                slots[panel_letters[right_index]].x0
+                if right_index < len(panel_letters)
+                else float(canvas_width)
+            )
         else:
-            x0 = slots[chr(ord(letter) - 1)].x1
+            x0 = slots[panel_letters[index - 1]].x1
             x1 = float(canvas_width)
         if row == 0:
             y1 = float(canvas_height)
         else:
-            upper = chr(ord(letter) - PANEL_COLUMNS)
+            upper = panel_letters[index - PANEL_COLUMNS]
             y1 = slots[upper].y0
-        if row == PANEL_ROWS - 1:
+        lower_index = index + PANEL_COLUMNS
+        if row == panel_rows - 1 or lower_index >= len(panel_letters):
             y0 = 0.0
         else:
-            lower = chr(ord(letter) + PANEL_COLUMNS)
+            lower = panel_letters[lower_index]
             y0 = slots[lower].y1
         regions[letter] = mpl.transforms.Bbox.from_extents(x0, y0, x1, y1)
     return regions
@@ -581,6 +597,9 @@ def _axis_panel_assignments(
     renderer = figure.canvas.get_renderer()
     for axis in all_axes:
         if axis in assignments:
+            continue
+        if axis.get_gid() == "thermal-heterogeneity-global-legend-axis":
+            assignments[axis] = "__legend__"
             continue
         bounds = axis.get_window_extent(renderer)
         center = ((bounds.x0 + bounds.x1) / 2, (bounds.y0 + bounds.y1) / 2)
@@ -620,6 +639,8 @@ def _visible_text_records(
             pass
         owner = text_axes.get(artist, artist.axes)
         if owner is not None and not owner.get_visible():
+            continue
+        if owner is not None and owner.get_gid() == "thermal-heterogeneity-global-legend-axis":
             continue
         bounds = artist.get_window_extent(renderer)
         if bounds.width <= 0 or bounds.height <= 0:
@@ -675,6 +696,7 @@ def audit_cross_axis_text_collisions(
     figure: Figure,
     *,
     raise_on_error: bool = True,
+    panel_letters: str = "abcdefgh",
 ) -> dict[str, Any]:
     """Audit rendered text collisions across axes and top-level panel cells.
 
@@ -685,9 +707,9 @@ def audit_cross_axis_text_collisions(
     """
 
     figure.canvas.draw()
-    roots = _panel_roots(figure)
+    roots = _panel_roots(figure, panel_letters)
     all_axes = _all_axes(figure)
-    safe_regions = _panel_safe_regions(figure, roots)
+    safe_regions = _panel_safe_regions(figure, roots, panel_letters)
     axis_panels = _axis_panel_assignments(figure, all_axes, roots, safe_regions)
     records, unassigned = _visible_text_records(
         figure, all_axes, axis_panels, safe_regions
@@ -759,7 +781,7 @@ def audit_cross_axis_text_collisions(
 
     report = {
         "status": "PASS" if not collisions else "FAIL",
-        "top_level_panels": 8,
+        "top_level_panels": len(panel_letters),
         "axes_checked": len(all_axes),
         "visible_text_artists": len(records) + len(unassigned),
         "cross_axis_pairs_checked": pairs_checked,
@@ -838,23 +860,38 @@ def audit_text_contract(figure: Figure) -> dict[str, Any]:
 
 
 def audit_data_safe_legends(figure: Figure) -> dict[str, int]:
-    """Verify helper-created legends do not overlap their axes data rectangle."""
+    """Verify all legends are transparent and reserved-band legends avoid data."""
 
     figure.canvas.draw()
     renderer = figure.canvas.get_renderer()
-    checked = 0
+    legends_checked = 0
+    data_safe_checked = 0
     for axis in figure.axes:
         legend = axis.get_legend()
-        if legend is None or legend.get_gid() != "thermal-heterogeneity-data-safe-legend":
+        if legend is None:
             continue
-        checked += 1
+        legends_checked += 1
+        if legend.get_frame().get_visible():
+            raise FigureContractError("legend frame/background must be disabled")
+        if legend.get_gid() != "thermal-heterogeneity-data-safe-legend":
+            continue
+        data_safe_checked += 1
         original_ymax = getattr(legend, "_thermal_original_ymax", None)
         if original_ymax is None:
             raise FigureContractError("data-safe legend lacks its reserved-band boundary")
         data_ceiling = axis.transData.transform((0, original_ymax))[1]
         if legend.get_window_extent(renderer).y0 < data_ceiling - 0.5:
             raise FigureContractError("data-safe legend extends below its reserved top band")
-    return {"data_safe_legends_checked": checked}
+    for legend in figure.findobj(Legend):
+        if legend.axes is not None:
+            continue
+        legends_checked += 1
+        if legend.get_frame().get_visible():
+            raise FigureContractError("legend frame/background must be disabled")
+    return {
+        "legends_checked": legends_checked,
+        "data_safe_legends_checked": data_safe_checked,
+    }
 
 
 def _save_atomic(figure: Figure, target: Path, **kwargs: Any) -> None:
@@ -1049,8 +1086,11 @@ def clarify_control_caption(text, *, uses_three_controls=False):
     text = text.replace("native-zone", "zone-level").replace("building-bound", "building-wide")
     text = text.replace("admitted", "engineering-checked").replace("Admitted", "Engineering-checked")
     if uses_three_controls or "Personal range" in text or "personal range" in text:
-        text = text.rstrip() + (" Personal range uses model-generated individual temperature ranges. "
-                               "All controls choose shared targets within the permitted spaces.")
+        text = text.rstrip() + (
+            " Personal ranges were estimated from recorded environmental conditions and "
+            "thermal responses using the published elicitation method. "
+            "All controls choose shared targets within the permitted spaces."
+        )
     if uses_three_controls and re.search(r"fixed[- ](?:annual[- ])?tail", text) and "worst served" not in text:
         text += " The fixed tail tracks the profiles worst served by common 25 °C operation."
     definitions = {

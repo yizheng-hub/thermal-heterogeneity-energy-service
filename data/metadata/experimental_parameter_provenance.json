@@ -1,0 +1,409 @@
+{
+  "metadata_version": "1.0.0",
+  "created_date": "2026-10-27",
+  "title": "Provenance and interpretation of annual, seasonal and demand-response experiment parameters",
+  "classification_definitions": {
+    "prototype_inherited": "A value read from or deliberately preserved from the declared DOE/PNNL reference building.",
+    "literature_supported_scenario": "A bounded experimental scenario within magnitudes or durations used in primary field studies or official research reports; it is not a universal standard.",
+    "study_defined_sensitivity": "A finite scenario grid declared by the study to test dependence on an assumption; it is not an externally prescribed value.",
+    "data_derived_sensitivity": "A perturbation estimated from the study observations and scaled through a declared sensitivity grid; it is not a measured longitudinal response of the same person.",
+    "pre_control_selection_rule": "A deterministic rule fixed from a reference trajectory before controller comparisons; it prevents controller-dependent date selection but is not a standard event calendar.",
+    "accounting_horizon": "A declared time horizon for tracking delayed effects; the end of the horizon is not, by itself, proof of full recovery."
+  },
+  "observed_audits": {
+    "target_domain_contact_2026_10_27": {
+      "input": "output/global_climate_matrix_fixed_v2_40iter/control_generation/controller_input/CONTROL_COMMANDS.json",
+      "scope": "Offset-zero commands only; 54 logical commands per controller and 15 occupied zones per command.",
+      "personal_centre": {
+        "commands_with_at_least_one_20_or_27_c_target": 37,
+        "commands_total": 54,
+        "zone_targets_at_20_or_27_c": 95,
+        "zone_targets_total": 810
+      },
+      "personal_range": {
+        "commands_with_at_least_one_20_or_27_c_target": 37,
+        "commands_total": 54,
+        "zone_targets_at_20_or_27_c": 103,
+        "zone_targets_total": 810
+      },
+      "uniform_average": {
+        "commands_with_at_least_one_20_or_27_c_target": 0,
+        "commands_total": 54,
+        "zone_targets_at_20_or_27_c": 0,
+        "zone_targets_total": 810
+      },
+      "interpretation": "Boundary contact is common for both demand-guided controllers, so domain robustness is not hypothetical. A central-domain score-only audit is required before headline interpretation; physical probe expansion is required if the headline result relies on a boundary optimum or does not persist in that audit."
+    },
+    "profile_centre_coverage_2026_10_27": {
+      "input": "output/global_climate_matrix_fixed_v2_40iter/GLOBAL_PROFILES.csv",
+      "profile_rows": 14418,
+      "centre_c": {
+        "minimum": 13.3,
+        "p05": 19.5,
+        "median": 24.4,
+        "p95": 28.7,
+        "maximum": 32.2,
+        "below_20_c": 1026,
+        "above_27_c": 2259
+      },
+      "interpretation": "The probe domain is an operational search domain and does not contain every reconstructed profile centre. This reinforces the need to keep domain wording conditional and to report the boundary audit."
+    },
+    "event_date_protocol_2026_10_27": {
+      "input": "results/global_extension/multi_event_dr_final/EVENT_PROTOCOL.csv",
+      "climates": 9,
+      "events_per_climate": 8,
+      "events_total": 72,
+      "load_levels": [
+        "typical",
+        "high"
+      ],
+      "season_blocks_per_climate": 4,
+      "interpretation": "The realized protocol matches the predeclared balanced seasonal selection rule. It supports conditional event comparisons, not annual event-availability probabilities."
+    },
+    "seasonal_contrast_2026_10_27": {
+      "input": "results/global_extension/seasonal_command/SEASONAL_SOURCE_CONTRASTS.csv",
+      "ashrae_warm_minus_cool_c": 0.39674692983345045,
+      "ctcd_warm_minus_cool_c": 3.118296929846446,
+      "interpretation": "Contrasts are estimated within place and kept source-specific. They parameterize a sensitivity construction; they are not longitudinal changes observed in the same people."
+    }
+  },
+  "sources": {
+    "doe_medium_office_2019": {
+      "type": "official_prototype",
+      "title": "ANSI/ASHRAE/IES Standard 90.1-2019 Medium Office prototype",
+      "url": "https://www.energycodes.gov/prototype-building-models",
+      "archive_url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_OfficeMedium_STD2019.zip",
+      "supported_use": "Reference-building geometry, HVAC system and occupied heating/cooling thermostat separation.",
+      "not_supported_as": "A human comfort or perceptual-temperature standard."
+    },
+    "de_chalendar_2023": {
+      "type": "primary_peer_reviewed_field_study",
+      "title": "Unlocking demand response in commercial buildings: Empirical response of commercial buildings to daily cooling set point adjustments",
+      "doi": "10.1016/j.enbuild.2022.112599",
+      "url": "https://doi.org/10.1016/j.enbuild.2022.112599",
+      "supported_use": "A 2 degree Fahrenheit (about 1.1 degree Celsius) cooling-setpoint increase was field-tested across 385 experiment-days in six commercial buildings.",
+      "not_supported_as": "Proof that every building or climate will respond similarly, or that 1 degree Celsius is an optimal action."
+    },
+    "lbl_commercial_dr_guide": {
+      "type": "official_research_report",
+      "title": "Introduction to Commercial Building Control Strategies and Techniques for Demand Response",
+      "url": "https://eta-publications.lbl.gov/sites/default/files/59975.pdf",
+      "supported_use": "Global temperature adjustment and pre-cooling followed by setpoint relaxation are established commercial-building demand-response strategies; rebound depends on the building, climate and schedule.",
+      "not_supported_as": "A prescription of one event duration, preconditioning duration or temperature increment."
+    },
+    "lbl_openadr_small_commercial": {
+      "type": "official_field_report",
+      "title": "Open Automated Demand Response for Small Commercial Buildings",
+      "url": "https://eta-publications.lbl.gov/sites/default/files/lbnl-2195e.pdf",
+      "supported_use": "Commercial field tests used two-hour events, setpoint adjustments of 2 to 4 degrees Fahrenheit, and pre-cooling periods of one to four hours; the report found one hour too short at the tested sites.",
+      "not_supported_as": "A universal requirement for two hours of preconditioning or a transferable performance guarantee."
+    },
+    "iea_ebc_annex_67": {
+      "type": "official_international_research_report",
+      "title": "Characterization of Energy Flexibility in Buildings, IEA EBC Annex 67",
+      "url": "https://www.iea-ebc.org/Data/publications/EBC_Annex_67_Characterization_of_Energy_Flexibility_in_Buildings_December_2019.pdf",
+      "supported_use": "Flexibility characterization depends on initial state, user needs, climate and rebound or discharge after activation.",
+      "not_supported_as": "A requirement that recovery must be measured for exactly 48 hours or that recovery is complete at 48 hours."
+    }
+  },
+  "parameters": {
+    "common_reference_anchor": {
+      "values": {
+        "target_c": 25.0,
+        "role": "external service and event-selection reference"
+      },
+      "classification": "study_defined_sensitivity",
+      "code": [
+        "src/analysis/global_extension/analyse_global_results.py",
+        "src/analysis/global_extension/multi_event_dr_extension.py::prepare_reference_manifest"
+      ],
+      "basis": "A single declared comparator is held outside the demand-guided controller candidate libraries. It supplies common service limits, fixed-tail identities and controller-independent event dates.",
+      "permitted_interpretation": "A reproducible common reference that makes service and event comparisons use the same anchor.",
+      "prohibited_overstatement": "Do not call 25 degrees Celsius a universally optimal or policy-mandated indoor temperature.",
+      "recommended_placement": "Methods.",
+      "additional_experiment_trigger": "Use alternative anchors as a sensitivity only if a headline conclusion changes materially with the anchor; do not add anchors merely to imply a standard."
+    },
+    "annual_probe_target_domain": {
+      "values": {
+        "minimum_c": 20.0,
+        "maximum_c": 27.0,
+        "physical_probe_count": 31,
+        "interpolated_search_step_c": 0.1,
+        "central_domain_sensitivity_c": [
+          21.0,
+          26.0
+        ]
+      },
+      "classification": "study_defined_sensitivity",
+      "code": [
+        "src/analysis/global_extension/global_matrix.py::PROBE_TARGETS_C",
+        "src/analysis/targeted_extension/demand_aware_controls.py::generate_controls",
+        "src/analysis/global_extension/target_domain_sensitivity.py"
+      ],
+      "basis": "A declared computational domain around the inherited occupied thermostat levels, with dense probes around the main operating region. The personal-profile values themselves extend beyond this domain, so the range is not a claim about all human demand.",
+      "permitted_interpretation": "Controller optima and candidate comparisons are conditional on the simulated 20 to 27 degree Celsius target domain, with a 21 to 26 degree Celsius retained-candidate sensitivity audit.",
+      "prohibited_overstatement": "Do not call 20 to 27 degrees Celsius a comfort standard, a globally acceptable range, or an exhaustive optimization domain.",
+      "recommended_placement": "Methods, with boundary-contact and central-domain checks in Supplementary Information.",
+      "additional_experiment_trigger": "Expand physical probes only if a headline result depends materially on offset-zero optima at 20 or 27 degrees Celsius and does not persist in the central-domain audit."
+    },
+    "annual_candidate_offsets": {
+      "values_c": [
+        -1.0,
+        -0.5,
+        0.0,
+        0.5,
+        1.0
+      ],
+      "classification": "study_defined_sensitivity",
+      "code": [
+        "src/analysis/global_extension/global_matrix.py::OFFSETS_C",
+        "src/analysis/targeted_extension/demand_aware_controls.py::OFFSETS_C"
+      ],
+      "basis": "A symmetric finite candidate library around each controller optimum. Field evidence supports temperature perturbations near 1 degree Celsius as operationally plausible, but does not make these five offsets an exhaustive or optimal library.",
+      "source_ids": [
+        "de_chalendar_2023"
+      ],
+      "permitted_interpretation": "A bounded service-energy sensitivity over five predeclared offsets.",
+      "prohibited_overstatement": "Do not describe the library as a continuous Pareto frontier or as all feasible controls.",
+      "recommended_placement": "Methods; candidate-depth limitations and matched-service robustness in Supplementary Information.",
+      "additional_experiment_trigger": "A denser candidate grid is needed only for a claim of optimality or a smooth Pareto frontier, not for the current bounded comparison."
+    },
+    "occupied_thermostat_deadband": {
+      "values": {
+        "heating_setpoint_c": 21.0,
+        "cooling_setpoint_c": 24.0,
+        "separation_c": 3.0,
+        "experimental_half_deadband_c": 1.5
+      },
+      "classification": "prototype_inherited",
+      "code": [
+        "data/metadata/global_fixed_reference_inputs.provenance.json::prototype.thermostat_deadband_evidence"
+      ],
+      "source_ids": [
+        "doe_medium_office_2019"
+      ],
+      "basis": "The experiment translates the midpoint of the official prototype occupied heating and cooling schedules while preserving their 3 degree Celsius separation.",
+      "permitted_interpretation": "An HVAC equipment-control deadband inherited from the fixed reference building.",
+      "prohibited_overstatement": "Do not interpret plus or minus 1.5 degrees Celsius as a human perceptual threshold or personal acceptable range.",
+      "recommended_placement": "Methods.",
+      "additional_experiment_trigger": "None for provenance. A deadband sensitivity would answer a different controls question."
+    },
+    "dr_temperature_actions": {
+      "values": {
+        "uniform_event_shift_c": [
+          0.5,
+          1.0
+        ],
+        "preconditioning_shift_c": 0.5,
+        "protected_event_shift_c": 1.0
+      },
+      "classification": "literature_supported_scenario",
+      "code": [
+        "src/analysis/global_extension/multi_event_dr_extension.py::action_variants"
+      ],
+      "source_ids": [
+        "de_chalendar_2023",
+        "lbl_commercial_dr_guide",
+        "lbl_openadr_small_commercial"
+      ],
+      "basis": "The tested increments are modest relative to published commercial-building field actions near 1.1 degrees Celsius and fall within the range of setpoint-reset experiments. The exact two-value grid remains a study choice.",
+      "permitted_interpretation": "A bounded test of modest thermostat actions, not a search for each building's optimal action.",
+      "prohibited_overstatement": "Do not call 0.5 or 1.0 degrees Celsius universal comfort-safe actions or standards.",
+      "recommended_placement": "Methods.",
+      "additional_experiment_trigger": "None for the bounded action comparison. More amplitudes are required only for a response curve or optimal-action claim."
+    },
+    "dr_preconditioning_and_event_duration": {
+      "values": {
+        "preconditioning_hours": 2,
+        "event_hours": 2
+      },
+      "classification": "literature_supported_scenario",
+      "code": [
+        "src/analysis/targeted_extension/multi_event_protocol.py::select_multi_event_protocol"
+      ],
+      "source_ids": [
+        "lbl_commercial_dr_guide",
+        "lbl_openadr_small_commercial"
+      ],
+      "basis": "Two-hour commercial events are documented, and commercial pre-cooling has been tested over one to several hours. The paired two-hour durations provide one representative scenario rather than a standard.",
+      "permitted_interpretation": "Performance of the declared two-hour preconditioning and two-hour event protocol.",
+      "prohibited_overstatement": "Do not generalize the result to other event durations or call two hours universally optimal.",
+      "recommended_placement": "Methods; duration dependence noted when interpreting flexibility.",
+      "additional_experiment_trigger": "A duration grid is needed only if duration-independent flexibility is claimed."
+    },
+    "dr_recovery_horizon": {
+      "values": {
+        "hours": 48,
+        "terminal_audit": "final recovery hour plus available post-horizon hours"
+      },
+      "classification": "accounting_horizon",
+      "code": [
+        "src/analysis/targeted_extension/multi_event_protocol.py::select_multi_event_protocol",
+        "src/analysis/global_extension/multi_event_dr_extension.py::score_event",
+        "src/analysis/global_extension/audit_event_terminal_recovery.py"
+      ],
+      "source_ids": [
+        "iea_ebc_annex_67",
+        "lbl_commercial_dr_guide"
+      ],
+      "basis": "Flexibility accounting should include rebound and delayed energy. Forty-eight hours is a conservative declared window spanning two diurnal cycles, not a standard recovery time.",
+      "permitted_interpretation": "Net energy and service effects within the event and following 48 hours, supplemented by a threshold-free terminal-residual audit.",
+      "prohibited_overstatement": "Do not state that every trajectory fully recovered by 48 hours solely because the accounting window ended.",
+      "recommended_placement": "Methods; terminal residuals in Supplementary Information.",
+      "additional_experiment_trigger": "Extend the horizon only if terminal residuals remain material and a full-recovery claim is necessary."
+    },
+    "dr_event_service_limit_factors": {
+      "values": [
+        1.0,
+        1.05,
+        1.1,
+        1.15,
+        1.2
+      ],
+      "non_event_factor": 1.0,
+      "classification": "study_defined_sensitivity",
+      "code": [
+        "src/analysis/global_extension/multi_event_dr_extension.py::DEFAULT_LIMIT_FACTORS",
+        "src/analysis/global_extension/multi_event_dr_extension.py::score_event"
+      ],
+      "basis": "A predeclared relative sensitivity grid applied only during the two-hour event. Preconditioning and recovery retain the strict factor of 1.0.",
+      "permitted_interpretation": "Factor 1.0 is the strict common-service result; 1.05 to 1.20 show how event qualification changes under progressively relaxed modeled-service budgets.",
+      "prohibited_overstatement": "Do not label 5 to 20 percent as an ASHRAE, IEA or physiological allowance.",
+      "recommended_placement": "Strict factor in the main result; relaxed factors as Supplementary Information sensitivity unless the full curve is itself the result.",
+      "additional_experiment_trigger": "No EnergyPlus rerun is required. If relaxed-factor findings become headline claims, add a score-only absolute-temperature allowance sensitivity because multiplicative factors depend on the reference mismatch magnitude."
+    },
+    "fixed_tail_service_fraction": {
+      "values": {
+        "fraction": 0.1,
+        "profiles_in_267_profile_composition": 27
+      },
+      "classification": "study_defined_sensitivity",
+      "code": [
+        "src/analysis/global_extension/analyse_global_results.py::fixed_tail_from_anchor",
+        "src/analysis/global_extension/seasonal_command_extension.py::fixed_tail_for_seasonal_demand",
+        "src/analysis/global_extension/multi_event_dr_extension.py::fixed_tail_profile_ids"
+      ],
+      "basis": "A predeclared distributional endpoint tracks the tenth of profiles least served by the common reference, with membership fixed before comparing controls.",
+      "permitted_interpretation": "Performance for a fixed worst-served tenth under the declared reference.",
+      "prohibited_overstatement": "Do not present 10 percent as a clinical vulnerability threshold or an externally prescribed equity standard.",
+      "recommended_placement": "Methods; tail-fraction sensitivity in Supplementary Information if the tail result is a headline independent of the population-mean result.",
+      "additional_experiment_trigger": "No EnergyPlus rerun is needed for alternative tail shares. Add a score-only 5 and 20 percent sensitivity if a central claim is supported by the 10 percent endpoint but not by the population mean."
+    },
+    "dr_protected_zone_fraction": {
+      "values": {
+        "fraction": 0.2,
+        "zones_protected_in_15_zone_prototype": 3
+      },
+      "classification": "study_defined_sensitivity",
+      "code": [
+        "src/analysis/global_extension/multi_event_dr_extension.py::directional_protected_zones",
+        "src/analysis/global_extension/multi_event_dr_extension.py::action_variants"
+      ],
+      "basis": "A predeclared proof-of-concept allocation that withholds the event action from the 20 percent of zones ranked most vulnerable in the event direction.",
+      "permitted_interpretation": "One targeted-shedding scenario showing the consequence of protecting three of fifteen zones.",
+      "prohibited_overstatement": "Do not claim that 20 percent is an externally validated vulnerable-zone share or the optimal allocation.",
+      "recommended_placement": "Supplementary Information or a clearly labeled mechanism test, not a universal policy recommendation.",
+      "additional_experiment_trigger": "If zone protection is a headline mechanism, add a small score-and-run sensitivity over at least one lower and one higher protected-zone count; otherwise no additional experiment is required."
+    },
+    "dr_minimum_preconditioning_deadband": {
+      "values": {
+        "minimum_c": 1.0
+      },
+      "classification": "study_defined_sensitivity",
+      "code": [
+        "src/analysis/global_extension/multi_event_dr_extension.py::MINIMUM_EVENT_DEADBAND_C"
+      ],
+      "basis": "An engineering guard that prevents preconditioning commands from collapsing the translated dual-setpoint separation below 1 degree Celsius.",
+      "permitted_interpretation": "A conservative validity constraint for this action library.",
+      "prohibited_overstatement": "Do not call 1 degree Celsius a code requirement or a comfort threshold.",
+      "recommended_placement": "Supplementary Methods.",
+      "additional_experiment_trigger": "None unless results are sensitive to rejected actions."
+    },
+    "seasonal_demand_shift": {
+      "values": {
+        "contrast_fractions": [
+          0.5,
+          1.0
+        ],
+        "summer_shift": "+0.5 * source warm-minus-cool contrast * fraction",
+        "winter_shift": "-0.5 * source warm-minus-cool contrast * fraction",
+        "spring_autumn_shift_c": 0.0
+      },
+      "classification": "data_derived_sensitivity",
+      "code": [
+        "src/analysis/global_extension/seasonal_command_extension.py::derive_source_contrasts",
+        "src/analysis/global_extension/seasonal_command_extension.py::demand_shift",
+        "src/analysis/global_extension/seasonal_command_extension.py::build_plan"
+      ],
+      "basis": "Warm-minus-cool contrasts are estimated separately within place for the multinational and China observation sources. Symmetric plus/minus half-shifts preserve the annual midpoint while making the summer-to-winter separation equal to the estimated contrast at fraction 1.0; fraction 0.5 is a smaller sensitivity case.",
+      "permitted_interpretation": "A source-level sensitivity to observed warm-versus-cool demand contrasts across an annual simulation.",
+      "prohibited_overstatement": "Do not call the shift a measured within-person seasonal adaptation trajectory or a universal adaptive-comfort law.",
+      "recommended_placement": "Methods and Supplementary Information sensitivity.",
+      "additional_experiment_trigger": "None for source-level seasonal sensitivity. A within-person adaptation claim would require longitudinal evidence and a different experiment."
+    },
+    "spatial_layouts_and_command_permissions": {
+      "values": {
+        "layouts": [
+          "random mixing",
+          "demand ordered in native zone order",
+          "demand ordered in reverse zone order",
+          "demand ordered with a five-zone cyclic shift"
+        ],
+        "command_permissions": {
+          "building": 1,
+          "floor": 3,
+          "native_zone": 15
+        },
+        "logical_designs": 540,
+        "distinct_physical_runs": 516
+      },
+      "classification": "study_defined_sensitivity",
+      "code": [
+        "src/analysis/global_extension/global_spatial_extension.py::build_logical_plan",
+        "src/analysis/global_extension/global_spatial_extension.py::score_spatial_design"
+      ],
+      "basis": "The layouts keep the same 267 demand profiles and zone-slot counts while changing who shares a zone. The permission levels retain the same building and distinguish one building command, three floor commands and fifteen occupied-zone commands.",
+      "permitted_interpretation": "Controlled mechanism tests that separate spatial grouping from the ability to issue independent commands.",
+      "prohibited_overstatement": "Do not call the ordered layouts globally optimal assignments or the three permission levels a complete representation of building-management systems.",
+      "recommended_placement": "Methods, with layout-order and permission sensitivities in Supplementary Information.",
+      "additional_experiment_trigger": "None for the current mechanism claims. A deployment-optimization claim would require local constraints and a different allocation study."
+    },
+    "dr_event_date_selection": {
+      "values": {
+        "meteorological_blocks": [
+          "DJF",
+          "MAM",
+          "JJA",
+          "SON"
+        ],
+        "events_per_block": 2,
+        "facility_electricity_quantiles": [
+          0.5,
+          0.9
+        ],
+        "events_per_climate": 8,
+        "selection_reference": "qualified common 25 degree Celsius reference trajectory",
+        "selection_constraints": [
+          "occupied consecutive event hours",
+          "event contained within one local day",
+          "room for declared preconditioning",
+          "non-overlap of preconditioning, event and recovery windows"
+        ]
+      },
+      "classification": "pre_control_selection_rule",
+      "code": [
+        "src/analysis/targeted_extension/multi_event_protocol.py::select_multi_event_protocol",
+        "src/analysis/global_extension/multi_event_dr_extension.py::select_protocols"
+      ],
+      "source_ids": [
+        "iea_ebc_annex_67",
+        "de_chalendar_2023"
+      ],
+      "basis": "A deterministic pre-control rule samples typical and high-load occupied conditions in every meteorological season. Published flexibility work shows strong dependence on weather, initial state and repeated operating conditions, but does not prescribe these exact quantiles.",
+      "permitted_interpretation": "A balanced seasonal protocol that avoids selecting dates separately for each controller and brackets median and high-load conditions.",
+      "prohibited_overstatement": "Do not call the selected dates annual grid emergencies, nationally representative event calendars or a standard test protocol.",
+      "recommended_placement": "Methods, with all selected timestamps in Supplementary Information or machine-readable outputs.",
+      "additional_experiment_trigger": "None for conditional event comparisons. More dates or random-year weather are required only for probabilistic annual availability claims."
+    }
+  }
+}

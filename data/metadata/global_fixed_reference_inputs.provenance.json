@@ -1,0 +1,132 @@
+{
+  "metadata_version": "1.1.0",
+  "created_date": "2026-10-27",
+  "title": "Provenance audit for the nine-climate fixed-reference experiment",
+  "scope": {
+    "weather_files": 9,
+    "building_reference": "DOE/PNNL ASHRAE 90.1-2019 Medium Office prototype",
+    "simulation_change": "This record documents the already-used fixed-reference inputs. The control interface was applied consistently to every run, including release of three source-model maximum-outdoor-air EMS overrides; geometry, envelope, internal loads, nominal outdoor-air requirements and HVAC topology were retained."
+  },
+  "existing_source_manifest_crosswalk": {
+    "S06": "DOE/PNNL ASHRAE 90.1-2019 Medium Office prototype archive",
+    "S08A": "Miami TMY3 EPW",
+    "S08D": "New Delhi ISHRAE EPW",
+    "coverage_added_here": "The remaining seven weather files and the extracted/fixed IDF hashes are recorded in this provenance record without modifying the locked source manifest."
+  },
+  "weather_metadata": {
+    "csv": "global_fixed_reference_weather_sources.csv",
+    "csv_sha256": "c08bdaf12c4bf4aebb729d49098d51537fe149bcd42d227e53c7d9701543ba0c",
+    "local_directory": "data/upstream/global_climate_matrix/weather",
+    "header_interpretation": "City, source, station identifier, latitude, longitude, time zone and elevation were read from each EPW LOCATION record according to the EnergyPlus EPW data dictionary.",
+    "epw_dictionary": "https://bigladdersoftware.com/epx/docs/22-1/auxiliary-programs/energyplus-weather-file-epw-data-dictionary.html",
+    "source_format_documentation": "https://bigladdersoftware.com/epx/docs/22-1/auxiliary-programs/source-weather-data-formats.html",
+    "climate_zone_reference": "ANSI/ASHRAE Standard 169-2020 addendum a, station tables A-3, A-5 and A-6",
+    "climate_zone_reference_url": "https://www.ashrae.org/file%20library/technical%20resources/standards%20and%20guidelines/standards%20addenda/169_2020_a_20211029.pdf",
+    "corrected_project_labels": {
+      "Malmo": {
+        "before": "5C",
+        "after": "5A",
+        "basis": "MALMO WMO 026350 and MALMO AP WMO 026360 are both 5A in Standard 169."
+      },
+      "Tunis": {
+        "before": "3B",
+        "after": "2A",
+        "basis": "TUNIS CARTHAGE WMO 607150 is 2A in Standard 169."
+      },
+      "Sydney": {
+        "before": "3C",
+        "after": "3A",
+        "basis": "SYDNEY AP WMO 947670 is 3A in Standard 169."
+      }
+    },
+    "download_verification": {
+      "official_upstream_hash_matches": [
+        "Beijing",
+        "Brasilia",
+        "Delhi",
+        "Miami",
+        "Montreal",
+        "Singapore",
+        "Sydney",
+        "Tunis"
+      ],
+      "malmo": "The local PVGIS 5.2 ERA5 EPW header and filename identify the 2005-2020 acquisition, and its fixed local SHA256 is recorded. The API output is dynamically served, so reproducibility is anchored to the recorded input hash.",
+      "raw_file_policy": "Raw EPW files are local inputs and are not tracked in the code repository. The CSV records reacquisition URLs, attributions and immutable local hashes."
+    },
+    "pvgis": {
+      "method_url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/pvgis-5-tools/pvgis-typical-meteorological-year-tmy-generator_en",
+      "api_url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/api-non-interactive-service_en",
+      "usage_conditions_url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en"
+    }
+  },
+  "prototype": {
+    "official_landing_page": "https://www.energycodes.gov/prototype-building-models",
+    "official_archive_url": "https://www.energycodes.gov/sites/default/files/2023-10/ASHRAE901_OfficeMedium_STD2019.zip",
+    "official_archive_sha256": "8431a33c3c27c0c34b1efc31be5f558b2b17e29a8850accc1bbce5f4f0dc5f7c",
+    "official_archive_rights_note": "Public review and use are stated by DOE; an explicit redistribution licence for the archive was not located. The repository records the URL and hash rather than redistributing the archive.",
+    "official_extracted_idf": "data/upstream/global_climate_matrix/prototypes_22_1/Miami.idf",
+    "official_extracted_idf_sha256": "96cce0363333ef67b5b277d0ddc2526938e8fe4e05c146f484c8c7ec8bcba04e",
+    "fixed_reference_idf": "data/upstream/frozen_buildings/Miami/baseline.idf",
+    "fixed_reference_idf_sha256": "c0740b1ed872b2a5a0550be6d205a44013752219a4eb05359e4cc4ac0cccf516",
+    "energyplus_version": "22.1",
+    "building_name": "OfficeMedium",
+    "floor_area_m2": 4982.19,
+    "floors": 3,
+    "zone_count_total": 18,
+    "occupied_area_zone_count": 15,
+    "plenum_zone_count": 3,
+    "air_loop_count": 3,
+    "air_loop_names": [
+      "PACU_VAV_bot",
+      "PACU_VAV_mid",
+      "PACU_VAV_top"
+    ],
+    "fan_variable_volume_count": 3,
+    "dx_two_speed_cooling_coil_count": 3,
+    "central_natural_gas_heating_coil_count": 3,
+    "vav_terminal_with_electric_reheat_count": 15,
+    "floor_area_evidence": "An EnergyPlus 22.1 eplusout.eio generated from the fixed reference reports 18 zones. The 15 zones marked Part of Total Building Area=Yes sum to 4982.19 m2; three plenum zones are excluded.",
+    "official_description_url": "https://www.energycodes.gov/sites/default/files/2024-06/Commercial_Prototypes_ASHRAE901-2019AppGPRM.pdf",
+    "official_description": "The DOE/PNNL scorecard describes the medium office as 53,628 ft2 with packaged variable-air-volume HVAC and electric terminal reheat.",
+    "thermostat_deadband_evidence": {
+      "experimental_half_deadband_c": 1.5,
+      "official_occupied_heating_setpoint_c": 21.0,
+      "official_occupied_cooling_setpoint_c": 24.0,
+      "basis": "The experiment preserves the 3.0 C occupied heating-to-cooling separation in the official Medium Office IDF while translating its midpoint to each tested control target.",
+      "interpretation": "This is an equipment-control deadband inherited from the prototype schedule, not a claimed human perceptual or acceptable-temperature band."
+    },
+    "comparison_with_official_idf": {
+      "geometry_and_hvac_object_counts_match": true,
+      "matching_counts": {
+        "zones": 18,
+        "building_surfaces": 79,
+        "fenestration_surfaces": 24,
+        "air_loops": 3,
+        "variable_volume_fans": 3,
+        "dx_two_speed_cooling_coils": 3,
+        "central_fuel_heating_coils": 3,
+        "vav_reheat_terminals": 15,
+        "electric_terminal_reheat_coils": 15
+      },
+      "byte_identical": false,
+      "declared_difference": "The fixed reference retains the DOE geometry and HVAC system but is not the untouched DOE file. It adds 30 zone-level setpoint schedules and actuators, output requests and SQLite reporting, and changes the occupied thermostat schedules used by the experiment's control interface.",
+      "ventilation_control_adaptation": {
+        "source_programs_released": 3,
+        "change": "Three DOE maximum-outdoor-air EMS override actuators were released with NULL in every climate and controller while the native DesignSpecification:OutdoorAir objects and nominal ventilation requirements were retained.",
+        "basis": "The common adaptation is documented and checked by src/utilities/audit_ventilation_adaptation.py against the declared ventilation-delivery and hourly outdoor-air/supply-flow gates.",
+        "interpretation": "This is a shared pre-control implementation choice, not a controller-specific treatment or a ventilation standard."
+      },
+      "additional_object_counts": {
+        "schedule_compact": 30,
+        "energy_management_system_actuator": 30,
+        "output_meter": 9,
+        "output_variable": 12,
+        "output_sqlite": 1
+      }
+    },
+    "active_run_manifest": "output/global_climate_matrix_fixed_v2_40iter/models/MODEL_MANIFEST.json",
+    "active_run_manifest_sha256": "bcd94c8674b268ac6fadc07c86aac7ad2345361e6b48d161ab72359b99ad8493",
+    "active_run_check": "All nine records in the final run manifest identify prototype_mode=fixed_reference and the same fixed-reference SHA256.",
+    "legacy_configuration_note": "The prototype_variant strings retained in src/analysis/global_extension/GLOBAL_CLIMATES.json are historical labels and are ignored by the final fixed-reference preparation path. The MODEL_MANIFEST above is authoritative for the building actually simulated."
+  }
+}

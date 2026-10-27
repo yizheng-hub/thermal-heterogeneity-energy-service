@@ -1,0 +1,12 @@
+metadata_version,city_normalized,display_name,latitude,longitude,geonames_id,overlap_screened_office_records,active_conditioning_records,executable_profiles,coordinate_role,coordinate_source
+1.0.0,beijing,Beijing,39.907500,116.397230,1816670,404,404,404,display city centre,https://www.geonames.org/1816670/beijing.html
+1.0.0,changsha,Changsha,28.198740,112.970867,1815577,2195,653,653,display city centre,https://www.geonames.org/1815577/changsha.html
+1.0.0,dalian,Dalian,38.912220,121.602220,1814087,1771,1621,1619,display city centre,https://www.geonames.org/1814087/dalian.html
+1.0.0,guangzhou,Guangzhou,23.116667,113.250000,1809858,3625,3625,3622,display city centre,https://www.geonames.org/1809858/guangzhou.html
+1.0.0,harbin,Harbin,45.750000,126.650000,2037013,1174,899,899,display city centre,https://www.geonames.org/2037013/harbin.html
+1.0.0,luoyang,Luoyang,34.673450,112.436840,1801792,66,66,66,display city centre,https://www.geonames.org/1801792/luoyang.html
+1.0.0,shanghai,Shanghai,31.222222,121.458056,1796236,1716,1607,1607,display city centre,https://www.geonames.org/1796236/shanghai.html
+1.0.0,tianjin,Tianjin,39.142222,117.176667,1792947,946,735,735,display city centre,https://www.geonames.org/1792947/tianjin.html
+1.0.0,xian,Xi'an,34.258333,108.928611,1790630,2644,2644,2626,display city centre,https://www.geonames.org/1790630/xi-an.html
+1.0.0,yantai,Yantai,37.476493,121.440811,1787093,1,0,0,display city centre,https://www.geonames.org/1787093/yantai.html
+1.0.0,zhengzhou,Zhengzhou,34.757778,113.648611,1784658,183,173,173,display city centre,https://www.geonames.org/1784658/zhengzhou.html

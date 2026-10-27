@@ -32,28 +32,20 @@ def test_scientific_entry_plan_works_without_manuscripts_or_templates():
                             text=True, encoding="utf-8", capture_output=True, check=True)
     plan = json.loads(result.stdout)
     assert plan["manuscripts_required"] is False
-    assert plan["data_files"] == 877 and plan["figures"] == 27
+    assert plan["figures"] == 27
     assert plan["figure_counts"] == {"main": 6, "supplementary": 21, "total": 27}
-    assert plan["typical_day_data_files"] == 44 and plan["typical_day_manifest_files"] == 1
-    assert len(plan["steps"]) == 26
-    assert "src/analysis/targeted_extension/replay_ctcd_external.py" in plan["steps"]
-    assert "144 commands" in plan["external_office_composition"]
-    assert plan["ctcd_data_files"] == 230 and plan["ctcd_manifest_files"] == 1
-    assert "src/analysis/targeted_extension/replay_parallel_main.py" in plan["steps"]
-    assert "src/analysis/targeted_extension/reviewer_sensitivity.py" in plan["steps"]
-    assert "src/analysis/targeted_extension/replay_final_analysis.py" in plan["steps"]
-    assert "src/analysis/targeted_extension/assemble_final_evidence.py" in plan["steps"]
-    assert "src/analysis/targeted_extension/final_scope_audit.py" in plan["steps"]
-    assert "src/analysis/targeted_extension/long_recovery_audit.py" in plan["steps"]
-    assert "src/analysis/energy_service/run_costs.py" in plan["steps"]
-    assert (
-        "src/analysis/experiments/decision_value/summarize_information_hierarchy.py"
-        in plan["steps"]
-    )
-    assert plan["parallel_ctcd_data_files"] == 1007 and plan["parallel_ctcd_manifest_files"] == 1
-    assert plan["main_demand_compositions"] == 6 and plan["common_main_layouts"] == 2
-    assert plan["joint_portfolio_offices"] == 144
-    assert all((ROOT / path).is_file() for path in plan["steps"])
+    global_plan = plan["global_extension"]
+    assert global_plan["mode"] == "verify"
+    assert global_plan["implemented_modes"] == ["verify", "reassemble"]
+    assert global_plan["analysis_mode_available"] is False
+    assert global_plan["denominator_gates"]["annual_candidates"] == 810
+    assert global_plan["denominator_gates"]["event_score_rows"] == 32400
+    assert "src/analysis/global_extension/analyse_global_results.py" in global_plan[
+        "full_analysis_dag"
+    ]
+    serialized = json.dumps(plan)
+    assert "Reviewer_repair" not in serialized
+    assert "replay_final_analysis.py" not in serialized
     assert not any("document" in path or "compile_references" in path for path in plan["steps"])
 
 
@@ -103,6 +95,23 @@ def test_notebook_path_scan_reads_decoded_source(tmp_path, monkeypatch, source, 
     scanner = load_module(ROOT / "src/utilities/release_scan.py", "decoded_notebook_scanner")
     errors = scanner._scan_common(tmp_path)
     assert any("machine-specific absolute path" in item for item in errors) == expected
+
+
+def test_identifier_scan_allows_only_declared_public_city_and_weather_coordinates(
+        tmp_path, monkeypatch):
+    allowed = tmp_path / "data/metadata/ctcd_city_map_metadata.csv"
+    allowed.parent.mkdir(parents=True)
+    allowed.write_text("city,latitude,longitude\nBeijing,39.9,116.4\n", encoding="utf-8")
+    prohibited = tmp_path / "data/metadata/person_locations.csv"
+    prohibited.write_text("person,latitude,longitude\nA,39.9,116.4\n", encoding="utf-8")
+    monkeypatch.syspath_prepend(str(ROOT / "src/utilities"))
+    scanner = load_module(ROOT / "src/utilities/release_scan.py", "geo_metadata_scanner")
+
+    report = scanner.scan_paths_identifiers(tmp_path)
+
+    assert report["status"] == "FAIL"
+    assert not any("ctcd_city_map_metadata.csv" in item for item in report["errors"])
+    assert any("person_locations.csv" in item for item in report["errors"])
 
 
 @pytest.mark.parametrize("name,needle", [

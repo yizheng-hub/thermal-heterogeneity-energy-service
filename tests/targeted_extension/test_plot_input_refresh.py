@@ -58,19 +58,114 @@ def test_source_map_index_follows_added_panels_without_rehashing_science(tmp_pat
     assert rows[1]["sha256"] == "locked"
 
 
-def test_figure_two_requires_information_hierarchy_source(tmp_path):
+def _write_final_story_bundle(root: Path) -> Path:
+    story = root / "results/global_extension/final_story"
+    story.mkdir(parents=True)
+    outputs = {
+        "FINAL_STORY_SUMMARY.json": json.dumps(
+            {"design": {"climates": 9, "candidates": 810}}
+        ),
+        "FINAL_INFORMATION_DIAGNOSTIC.csv": "climate,value\nBeijing,1\n",
+        "FINAL_DIRECT_COMPARISONS.csv": "climate,value\nBeijing,1\n",
+    }
+    for name, content in outputs.items():
+        (story / name).write_text(content, encoding="utf-8")
+    hashes = {
+        name: hashlib.sha256((story / name).read_bytes()).hexdigest()
+        for name in outputs
+    }
+    (story / "FINAL_STORY_HASHES.json").write_text(
+        json.dumps({"status": "PASS", "outputs": hashes}), encoding="utf-8"
+    )
+    return story
+
+
+def test_figure_two_requires_hashed_global_story_sources(tmp_path):
     runner = load_module("plot_reproduce_required_inputs", ROOT / "plot/reproduce.py")
-    with pytest.raises(FileNotFoundError, match="INFORMATION_HIERARCHY_SUMMARY.csv"):
+    with pytest.raises(FileNotFoundError, match="FINAL_STORY_SUMMARY.json"):
         runner.validate_figure_inputs(tmp_path, {"Figure_02"})
-    source = tmp_path / "results/decision_value/INFORMATION_HIERARCHY_SUMMARY.csv"
-    source.parent.mkdir(parents=True)
-    source.write_text("metric,count\nzone_mean_safe_cells,275\n", encoding="utf-8")
+    story = _write_final_story_bundle(tmp_path)
+    for relative in runner.REQUIRED_FIGURE_INPUTS["Figure_02"]:
+        path = tmp_path / relative
+        if not path.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("value\n1\n", encoding="utf-8")
     runner.validate_figure_inputs(tmp_path, {"Figure_02"})
+    (story / "FINAL_INFORMATION_DIAGNOSTIC.csv").write_text(
+        "climate,value\nBeijing,2\n", encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="changed after assembly"):
+        runner.validate_figure_inputs(tmp_path, {"Figure_02"})
+
+
+def test_legacy_four_context_figure_source_is_rejected():
+    runner = load_module("plot_reproduce_stale_source", ROOT / "plot/reproduce.py")
+    notebook = {
+        "cells": [{
+            "cell_type": "code",
+            "metadata": {"figure": "Figure_03"},
+            "source": [
+                "pd.read_csv(RESULTS / 'final_submission/evidence/old.csv')\n"
+            ],
+        }]
+    }
+    with pytest.raises(RuntimeError, match="superseded four-context analysis"):
+        runner.validate_notebook_sources(notebook, {"Figure_03"})
+
+
+def test_publication_legends_must_be_frameless():
+    runner = load_module("plot_reproduce_legend_style", ROOT / "plot/reproduce.py")
+    notebook = {
+        "cells": [{
+            "cell_type": "code",
+            "metadata": {"figure": "Figure_02"},
+            "source": ["axis.legend(loc='upper right')\n"],
+        }]
+    }
+    with pytest.raises(ValueError, match="frameon=False"):
+        runner.validate_legend_styles(notebook, {"Figure_02"})
+    notebook["cells"][0]["source"] = [
+        "axis.legend(loc='upper right', frameon=False, "
+        "facecolor='none', edgecolor='none')\n"
+    ]
+    runner.validate_legend_styles(notebook, {"Figure_02"})
+
+
+def test_figure_four_building_to_zone_counts_match_final_spatial_evidence():
+    source = ROOT / "results/global_extension/final_story/FINAL_SPATIAL_EFFECTS.csv"
+    with source.open(encoding="utf-8", newline="") as stream:
+        rows = [
+            row for row in csv.DictReader(stream)
+            if row["axis"] == "permission"
+            and row["reference"] == "building"
+            and row["alternative"] == "native_zone"
+        ]
+
+    metrics = (
+        ("delta_mean_reference_mismatch_c", lambda value: value < 0),
+        ("delta_fixed_tail_reference_mismatch_c", lambda value: value < 0),
+        ("delta_modeled_interval_person_hour_coverage", lambda value: value > 0),
+        ("delta_facility_purchased_pct", lambda value: value > 0),
+    )
+    expected = {
+        "personal_center": [54, 46, 46, 50],
+        "personal_range": [50, 53, 37, 52],
+    }
+    for control, expected_counts in expected.items():
+        selected = [row for row in rows if row["control"] == control]
+        assert len(selected) == 54
+        observed = [
+            sum(predicate(float(row[column])) for row in selected)
+            for column, predicate in metrics
+        ]
+        assert observed == expected_counts
 
 
 @pytest.mark.parametrize("selection", [None, "3"])
 def test_plot_cli_refreshes_after_all_or_single_figure(tmp_path, monkeypatch, selection):
     runner = load_module("plot_reproduce_refresh", ROOT / "plot/reproduce.py")
+    runner.REQUIRED_FIGURE_INPUTS = {}
+    runner.validate_final_story_hashes = lambda root, labels: None
     monkeypatch.syspath_prepend(str(ROOT / "src"))
     plot = tmp_path / "plot"
     plot.mkdir()

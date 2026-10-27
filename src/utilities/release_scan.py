@@ -44,6 +44,11 @@ PROHIBITED_PAYLOAD_FIELDS = {
     "lat",
     "lon",
 }
+PUBLIC_AGGREGATE_GEO_METADATA = {
+    "data/metadata/ctcd_city_map_metadata.csv",
+    "data/metadata/global_fixed_reference_weather_sources.csv",
+}
+PUBLIC_GEO_FIELDS = {"latitude", "longitude", "lat", "lon"}
 RELEASE_IDENTIFIER = re.compile(r"^[a-z]{2}_[a-z2-7]{24}$")
 def _ignored_local_path(path: Path, root: Path) -> bool:
     relative = path.relative_to(root)
@@ -124,12 +129,15 @@ def scan_paths_identifiers(root: Path) -> dict[str, object]:
             reader = csv.DictReader(handle)
             fields = reader.fieldnames or []
             prohibited = sorted(set(fields) & PROHIBITED_PAYLOAD_FIELDS)
-            aggregate = path.relative_to(root).as_posix() in {
+            relative = path.relative_to(root).as_posix()
+            aggregate = relative in {
                 "src/analysis/support/science_audit/demographic_city_season_gender_summary.csv",
                 "src/analysis/support/science_audit/demographic_city_season_age_summary.csv",
             }
             if aggregate:
                 prohibited = [field for field in prohibited if field != "gender"]
+            if relative in PUBLIC_AGGREGATE_GEO_METADATA:
+                prohibited = [field for field in prohibited if field not in PUBLIC_GEO_FIELDS]
             if prohibited:
                 errors.append(f"prohibited fields in {path.relative_to(root).as_posix()}: {prohibited}")
             release_fields = [

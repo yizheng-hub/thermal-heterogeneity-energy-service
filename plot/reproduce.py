@@ -1,13 +1,187 @@
 """Execute actual figure cells in Plot.ipynb without storing notebook outputs."""
 from pathlib import Path
 import argparse
+import ast
+import hashlib
 import json
 import os
 
 
+FINAL_STORY_ROOT = "results/global_extension/final_story"
 REQUIRED_FIGURE_INPUTS = {
-    "Figure_02": ("results/decision_value/INFORMATION_HIERARCHY_SUMMARY.csv",),
+    "Figure_02": (
+        f"{FINAL_STORY_ROOT}/FINAL_STORY_SUMMARY.json",
+        f"{FINAL_STORY_ROOT}/FINAL_INFORMATION_DIAGNOSTIC.csv",
+        f"{FINAL_STORY_ROOT}/FINAL_DIRECT_COMPARISONS.csv",
+        "results/global_extension/tail_fraction_sensitivity/"
+        "TAIL_FRACTION_INFORMATION_DIAGNOSTIC.csv",
+        "results/global_extension/reference_anchor_sensitivity/"
+        "REFERENCE_ANCHOR_HEADLINE.csv",
+        "results/global_extension/target_domain_final/"
+        "TARGET_DOMAIN_INFORMATION_DIAGNOSTIC.csv",
+        "results/global_extension/target_domain_20_26/"
+        "TARGET_DOMAIN_INFORMATION_DIAGNOSTIC.csv",
+        "results/global_extension/target_domain_21_27/"
+        "TARGET_DOMAIN_INFORMATION_DIAGNOSTIC.csv",
+        "results/global_extension/target_domain_21_26/"
+        "TARGET_DOMAIN_INFORMATION_DIAGNOSTIC.csv",
+    ),
+    "Figure_03": (
+        f"{FINAL_STORY_ROOT}/FINAL_STORY_SUMMARY.json",
+        f"{FINAL_STORY_ROOT}/FINAL_DIRECT_COMPARISONS.csv",
+        f"{FINAL_STORY_ROOT}/FINAL_MATCHED_SERVICE.csv",
+        f"{FINAL_STORY_ROOT}/FINAL_SEASONAL_REALLOCATION.csv",
+    ),
+    "Figure_04": (
+        f"{FINAL_STORY_ROOT}/FINAL_STORY_SUMMARY.json",
+        f"{FINAL_STORY_ROOT}/FINAL_SPATIAL_EFFECTS.csv",
+    ),
+    "Figure_05": (
+        f"{FINAL_STORY_ROOT}/FINAL_EVENT_RESPONSE.csv",
+        "results/global_extension/multi_event_dr_final/summary/"
+        "EVENT_RESPONSE_GROUP_SUMMARY.csv",
+        "results/global_extension/multi_event_dr_final/summary/"
+        "EVENT_RESPONSE_PAIRED_CONTROL_SUMMARY.csv",
+        "results/global_extension/multi_event_dr_final/summary/"
+        "EVENT_TERMINAL_RECOVERY_GROUP_SUMMARY.csv",
+        "results/global_extension/multi_event_dr_final/summary/"
+        "EVENT_RESPONSE_SUMMARY.json",
+    ),
+    "Figure_06": (
+        "results/global_extension/implementation_value_final/"
+        "GLOBAL_SERVICE_RESOURCE_VALUE_BOUNDARIES.csv",
+        "results/global_extension/implementation_value_final/"
+        "GLOBAL_SPATIAL_IMPLEMENTATION_BOUNDARIES.csv",
+        "results/global_extension/implementation_value_final/"
+        "IMPLEMENTATION_RESOURCE_SCENARIOS.csv",
+        "results/global_extension/implementation_value_final/"
+        "IMPLEMENTATION_RESOURCE_CATALOG.csv",
+        "results/global_extension/implementation_value_final/"
+        "COMMAND_SCOPE_REQUIREMENTS.csv",
+        "results/global_extension/implementation_value_final/"
+        "INFORMATION_BURDEN_SUMMARY.csv",
+        "results/global_extension/implementation_value_final/"
+        "IMPLEMENTATION_VALUE_AUDIT.json",
+    ),
 }
+
+LEGACY_FINAL_SOURCE_TOKENS = (
+    "final_submission/evidence/",
+    "final_submission/costs/",
+    "Reviewer_repair/",
+    "PortAngeles_small2019",
+    "Seattle_small2019",
+    "606 resolvable",
+    "402 unresolved",
+    "606 settings",
+    "Selected conditions / 144",
+    "Conditions / 192",
+    "conditions / 288",
+    "69 matched direct",
+    "69 comparisons",
+    "February and July",
+    "51 lower; 2 higher",
+    "Median recovery/event = 61.8%",
+    "34 increased\\n35 decreased",
+)
+
+
+def validate_notebook_sources(notebook, active_labels):
+    stale = []
+    for cell in notebook["cells"]:
+        if cell.get("cell_type") != "code":
+            continue
+        label = cell.get("metadata", {}).get("figure")
+        if label not in active_labels or label == "Figure_01":
+            continue
+        source = "".join(cell.get("source", []))
+        found = sorted(token for token in LEGACY_FINAL_SOURCE_TOKENS if token in source)
+        if found:
+            stale.append((label, found))
+    if stale:
+        detail = "; ".join(
+            f"{label}: {', '.join(tokens)}" for label, tokens in stale
+        )
+        raise RuntimeError(
+            "Figure cells still reference the superseded four-context analysis. "
+            f"Replace those sources with audited global outputs before rendering: {detail}"
+        )
+
+
+def validate_legend_styles(notebook, active_labels):
+    violations = []
+    for cell in notebook["cells"]:
+        if cell.get("cell_type") != "code":
+            continue
+        label = cell.get("metadata", {}).get("figure")
+        if label not in active_labels:
+            continue
+        source = "".join(cell.get("source", []))
+        tree = ast.parse(source, filename=f"Plot.ipynb:{label}")
+        for node in ast.walk(tree):
+            if not (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Attribute)
+                and node.func.attr == "legend"
+            ):
+                continue
+            frameon = next(
+                (keyword.value for keyword in node.keywords if keyword.arg == "frameon"),
+                None,
+            )
+            if not (isinstance(frameon, ast.Constant) and frameon.value is False):
+                violations.append(f"{label}: line {node.lineno}")
+                continue
+            if label and label.startswith("Figure_0"):
+                for keyword_name in ("facecolor", "edgecolor"):
+                    value = next(
+                        (keyword.value for keyword in node.keywords
+                         if keyword.arg == keyword_name),
+                        None,
+                    )
+                    if not (
+                        isinstance(value, ast.Constant)
+                        and isinstance(value.value, str)
+                        and value.value.lower() == "none"
+                    ):
+                        violations.append(
+                            f"{label}: line {node.lineno} missing {keyword_name}='none'"
+                        )
+    if violations:
+        raise ValueError(
+            "Publication legends must be frameless and transparent; add frameon=False, "
+            "facecolor='none' and edgecolor='none': "
+            + ", ".join(violations)
+        )
+
+
+def validate_final_story_hashes(root, active_labels):
+    if not active_labels.intersection(
+        {"Figure_02", "Figure_03", "Figure_04", "Figure_05"}
+    ):
+        return
+    story_root = root / FINAL_STORY_ROOT
+    manifest_path = story_root / "FINAL_STORY_HASHES.json"
+    if not manifest_path.is_file():
+        raise FileNotFoundError(
+            f"Final-story hash manifest is missing: {manifest_path}"
+        )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("status") != "PASS" or not isinstance(manifest.get("outputs"), dict):
+        raise ValueError("Final-story hash manifest is not a passing output manifest")
+    for name, declared in manifest["outputs"].items():
+        path = story_root / name
+        if not path.is_file():
+            raise FileNotFoundError(f"Manifested final-story output is missing: {path}")
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        if actual != declared:
+            raise ValueError(f"Final-story output changed after assembly: {path}")
+    summary = json.loads(
+        (story_root / "FINAL_STORY_SUMMARY.json").read_text(encoding="utf-8")
+    )
+    design = summary.get("design", {})
+    if design.get("climates") != 9 or design.get("candidates") != 810:
+        raise ValueError("Final-story summary is not the complete nine-climate design")
 
 
 def validate_figure_inputs(root, active_labels):
@@ -19,6 +193,7 @@ def validate_figure_inputs(root, active_labels):
     if missing:
         detail = ", ".join(f"{label}: {relative}" for label, relative in missing)
         raise FileNotFoundError(f"Required figure input is missing: {detail}")
+    validate_final_story_hashes(root, active_labels)
 
 
 def main():
@@ -40,6 +215,8 @@ def main():
     if selected is not None and selected - labels:
         parser.error(f"Unknown figure IDs: {sorted(selected - labels)}")
     active_labels = (labels - {"Setup", None}) if selected is None else selected
+    validate_legend_styles(notebook, active_labels)
+    validate_notebook_sources(notebook, active_labels)
     validate_figure_inputs(root, active_labels)
     previous = Path.cwd()
     try:

@@ -1,0 +1,60 @@
+{
+  "version": "2026-10-27",
+  "purpose": "Parameterize the annual implementation resources that accompany the final nine-climate service, energy, carbon and flexibility results.",
+  "monetary_scope": "illustrative United States dollar sensitivity",
+  "costs_are": "Analyst-declared sensitivity inputs, not observed deployment costs and not estimates for the nine simulated climates.",
+  "currency": "USD",
+  "wage_region": "United States national illustration",
+  "wage_year": 2025,
+  "wage_profiles": {
+    "median": {
+      "facility_usd_per_hour": 51.28,
+      "respondent_usd_per_hour": 24.51
+    },
+    "mean": {
+      "facility_usd_per_hour": 56.20,
+      "respondent_usd_per_hour": 33.54
+    }
+  },
+  "wages_include": "Wages only; employer benefits, overhead, taxes and local price conversion are not added.",
+  "lifetime_years": 5,
+  "discount_rate": 0.03,
+  "common_cost_rule": "Only explicitly declared incremental resources enter the sensitivity. Existing building equipment and upstream archived observations are not repriced.",
+  "population_rule": "Feedback counts are additional responses per building-year. They are scenario inputs and are not inferred from the 267 simulated profiles.",
+  "hardware_rule": "The primary boundary adds no hardware. The optional interface input does not represent physical rezoning and has no attributed energy or service benefit.",
+  "break_even_rule": "For local electricity price p_e and gas price p_g, the minimum combined annual service and response value is max(0, annual implementation cost + delta electricity times p_e + delta gas times p_g).",
+  "grid": {
+    "setup_hours": [0, 8, 40],
+    "annual_maintenance_hours": [0, 4, 12],
+    "feedback": [[0, 0], [1000, 15], [1000, 60]],
+    "annual_software_usd": [0, 500],
+    "added_interface_capital_usd": [0, 1000]
+  },
+  "named_packages": [],
+  "sources": [
+    {
+      "reference_id": "bls_facilities2025",
+      "title": "National employment and wage data by occupation, May 2025, Table 1",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "url": "https://www.bls.gov/news.release/ocwage.t01.htm",
+      "verified": "2026-10-27",
+      "supports": "Facilities managers mean and median hourly wages and all-occupation mean and median hourly wages used only in the illustrative United States sensitivity."
+    },
+    {
+      "reference_id": "doe_controls2024",
+      "title": "Building Controls Roundtable: Report for Emerging Technologies",
+      "publisher": "U.S. Department of Energy",
+      "url": "https://www.energy.gov/sites/default/files/2024-06/bto-building-controls-rt_report-for-et_june2024.pdf",
+      "verified": "2026-10-27",
+      "supports": "Integration, commissioning, operator training and ongoing operation are implementation tasks; the report does not set the analyst hours or dollar grid."
+    },
+    {
+      "reference_id": "iea_ebc_annex79_2024",
+      "title": "Occupant-Centric Building Design and Operation, Annex 79 final report",
+      "publisher": "IEA Energy in Buildings and Communities Programme",
+      "url": "https://annex.iea-ebc.org/projects/project?AnnexID=79",
+      "verified": "2026-10-27",
+      "supports": "Occupant data, sensing, occupant models, interfaces and their transfer into building design and operation are distinct implementation resources."
+    }
+  ]
+}

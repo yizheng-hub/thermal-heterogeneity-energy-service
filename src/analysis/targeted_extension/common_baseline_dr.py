@@ -32,8 +32,18 @@ sys.path.insert(0, str(HERE.parent))
 from run_demand_aware_energyplus import engineering_qa, export_hourly, sha256, write_json  # noqa: E402
 
 
-def split_action_block(fields: list[str], pre_delta: float, event_delta: float) -> list[str]:
-    """Split compact schedules at 12:00, 14:00 and 16:00 for one event day."""
+def split_action_block(
+    fields: list[str],
+    pre_delta: float,
+    event_delta: float,
+    *,
+    pre_start_minute: int = 720,
+    event_start_minute: int = 840,
+    event_end_minute: int = 960,
+) -> list[str]:
+    """Split compact schedules around one declared event and preconditioning window."""
+    if not 0 <= pre_start_minute <= event_start_minute < event_end_minute <= 1440:
+        raise ValueError("Event and preconditioning times must be ordered within one day")
     result: list[str] = []
     previous = 0
     eligible = False
@@ -51,12 +61,15 @@ def split_action_block(fields: list[str], pre_delta: float, event_delta: float) 
         hour, minute = map(int, token.split(":", 1)[1].strip().split(":"))
         end = hour * 60 + minute
         value = float(fields[index + 1])
-        cuts = sorted({previous, end} | {cut for cut in (720, 840, 960) if previous < cut < end})
+        cuts = sorted({previous, end} | {
+            cut for cut in (pre_start_minute, event_start_minute, event_end_minute)
+            if previous < cut < end
+        })
         for start, stop in zip(cuts[:-1], cuts[1:]):
             delta = 0.0
-            if eligible and start >= 720 and stop <= 840:
+            if eligible and start >= pre_start_minute and stop <= event_start_minute:
                 delta = pre_delta
-            elif eligible and start >= 840 and stop <= 960:
+            elif eligible and start >= event_start_minute and stop <= event_end_minute:
                 delta = event_delta
             result.extend([f"Until: {stop // 60:02d}:{stop % 60:02d}", str(value + delta)])
         previous = end
@@ -107,10 +120,16 @@ def event_action_input(
                 end = current - timedelta(days=1)
                 expanded += [f"Through: {end.month}/{end.day}"] + original
             sign = float(event["sign"])
+            event_start = int(event.get("start_minute", 840))
+            event_end = event_start + int(event.get("duration_hours", 2)) * 60
+            pre_start = event_start - int(event.get("precondition_hours", 2)) * 60
             expanded += [f"Through: {current.month}/{current.day}"] + split_action_block(
                 original,
                 pre_delta=-sign * pre_magnitude,
                 event_delta=sign * event_magnitude,
+                pre_start_minute=pre_start,
+                event_start_minute=event_start,
+                event_end_minute=event_end,
             )
             previous = current + timedelta(days=1)
         if previous <= date(2001, 12, 31):

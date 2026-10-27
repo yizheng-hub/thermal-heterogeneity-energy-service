@@ -1,0 +1,111 @@
+{
+  "climates": [
+    {
+      "climate": "Miami",
+      "country": "United States",
+      "continent": "North America",
+      "prototype_variant": "ASHRAE901_OfficeMedium_STD2019_Miami",
+      "weather": "Miami.epw",
+      "sentinel": false,
+      "latitude": 25.82,
+      "longitude": -80.30,
+      "climate_zone": "1A"
+    },
+    {
+      "climate": "Singapore",
+      "country": "Singapore",
+      "continent": "Asia",
+      "prototype_variant": "ASHRAE901_OfficeMedium_STD2019_HoChiMinh",
+      "weather": "Singapore.epw",
+      "sentinel": true,
+      "latitude": 1.37,
+      "longitude": 103.98,
+      "climate_zone": "0A"
+    },
+    {
+      "climate": "Delhi",
+      "country": "India",
+      "continent": "Asia",
+      "prototype_variant": "ASHRAE901_OfficeMedium_STD2019_NewDelhi",
+      "weather": "Delhi.epw",
+      "sentinel": false,
+      "latitude": 28.58,
+      "longitude": 77.20,
+      "climate_zone": "1B"
+    },
+    {
+      "climate": "Beijing",
+      "country": "China",
+      "continent": "Asia",
+      "prototype_variant": "ASHRAE901_OfficeMedium_STD2019_NewYork",
+      "weather": "Beijing.epw",
+      "sentinel": true,
+      "latitude": 39.80,
+      "longitude": 116.47,
+      "climate_zone": "4A"
+    },
+    {
+      "climate": "Montreal",
+      "country": "Canada",
+      "continent": "North America",
+      "prototype_variant": "ASHRAE901_OfficeMedium_STD2019_Rochester",
+      "weather": "Montreal.epw",
+      "sentinel": false,
+      "latitude": 45.47,
+      "longitude": -73.75,
+      "climate_zone": "6A"
+    },
+    {
+      "climate": "Malmo",
+      "country": "Sweden",
+      "continent": "Europe",
+      "prototype_variant": "ASHRAE901_OfficeMedium_STD2019_PortAngeles",
+      "weather": "Malmo_PVGIS_ERA5_2005_2020.epw",
+      "sentinel": false,
+      "latitude": 55.604981,
+      "longitude": 13.003822,
+      "climate_zone": "5A"
+    },
+    {
+      "climate": "Tunis",
+      "country": "Tunisia",
+      "continent": "Africa",
+      "prototype_variant": "ASHRAE901_OfficeMedium_STD2019_ElPaso",
+      "weather": "Tunis.epw",
+      "sentinel": false,
+      "latitude": 36.83,
+      "longitude": 10.23,
+      "climate_zone": "2A"
+    },
+    {
+      "climate": "Sydney",
+      "country": "Australia",
+      "continent": "Oceania",
+      "prototype_variant": "ASHRAE901_OfficeMedium_STD2019_SanDiego",
+      "weather": "Sydney.epw",
+      "sentinel": true,
+      "latitude": -33.95,
+      "longitude": 151.18,
+      "climate_zone": "3A"
+    },
+    {
+      "climate": "Brasilia",
+      "country": "Brazil",
+      "continent": "South America",
+      "prototype_variant": "ASHRAE901_OfficeMedium_STD2019_Tampa",
+      "weather": "Brasilia.epw",
+      "sentinel": false,
+      "latitude": -15.87,
+      "longitude": -47.93,
+      "climate_zone": "2A"
+    }
+  ],
+  "compositions": [
+    "Multinational A",
+    "Multinational B",
+    "Multinational C",
+    "China A",
+    "China B",
+    "China C"
+  ]
+}

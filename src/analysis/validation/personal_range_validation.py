@@ -15,13 +15,14 @@ from the ASHRAE development cohort.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import balanced_accuracy_score, f1_score, roc_auc_score
+from sklearn.metrics import f1_score, roc_auc_score
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -37,6 +38,11 @@ from src.utilities.generate_demand_inputs import (  # noqa: E402
 CENTRE_GRID = np.round(np.arange(16.0, 30.0 + 1e-9, 0.1), 1)
 WIDTH_GRID = np.arange(0.5, 4.0 + 1e-9, 0.25)
 FIXED_WIDTH_AUDIT = (1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0)
+
+
+def sha256(path: Path) -> str:
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
 def clean_text(series: pd.Series) -> pd.Series:
@@ -71,10 +77,13 @@ def metrics(frame: pd.DataFrame, prediction: str, outcome: str = "preference") -
     local = frame[frame[outcome].notna()].copy()
     truth = local[outcome].astype(int).to_numpy()
     predicted = local[prediction].astype(int).to_numpy()
+    balanced_accuracy = float(np.mean([
+        np.mean(predicted[truth == label] == label) for label in np.unique(truth)
+    ]))
     return {
         "records": len(local),
         "people": local.person.nunique(),
-        "balanced_accuracy": float(balanced_accuracy_score(truth, predicted)),
+        "balanced_accuracy": balanced_accuracy,
         "macro_f1": float(f1_score(truth, predicted, average="macro", zero_division=0)),
         "accuracy": float(np.mean(truth == predicted)),
         **{
@@ -179,6 +188,46 @@ def audit_virtual_widths(cohort: pd.DataFrame, widths: pd.DataFrame) -> tuple[pd
     return predictions, pd.DataFrame(summary)
 
 
+def compare_variable_with_fixed_widths(summary: pd.DataFrame) -> tuple[list[dict], bool]:
+    """Compare the variable-width rule with the best declared fixed band.
+
+    This audit is descriptive.  It prevents a completed analysis from being
+    labelled a validation pass when the variable-width rule does not exceed
+    the strongest fixed-width comparator on the held-out outcome.
+    """
+    required = {"outcome", "range_model", "balanced_accuracy", "roc_auc"}
+    missing = required - set(summary)
+    if missing:
+        raise ValueError(f"Width summary is missing columns: {sorted(missing)}")
+    rows: list[dict] = []
+    for outcome, group in summary.groupby("outcome", sort=True):
+        variable = group[group.range_model.eq("virtual_width")]
+        fixed = group[group.range_model.str.startswith("fixed_")]
+        if len(variable) != 1 or fixed.empty:
+            raise ValueError(f"{outcome}: expected one variable and fixed-width comparators")
+        best = fixed.sort_values(
+            ["balanced_accuracy", "roc_auc", "range_model"],
+            ascending=[False, False, True],
+        ).iloc[0]
+        variable_row = variable.iloc[0]
+        rows.append({
+            "outcome": str(outcome),
+            "variable_balanced_accuracy": float(variable_row.balanced_accuracy),
+            "best_fixed_model": str(best.range_model),
+            "best_fixed_balanced_accuracy": float(best.balanced_accuracy),
+            "balanced_accuracy_difference": float(
+                variable_row.balanced_accuracy - best.balanced_accuracy
+            ),
+            "variable_roc_auc": float(variable_row.roc_auc),
+            "best_fixed_roc_auc": float(best.roc_auc),
+            "roc_auc_difference": float(variable_row.roc_auc - best.roc_auc),
+            "variable_outperformed_best_fixed": bool(
+                variable_row.balanced_accuracy > best.balanced_accuracy
+            ),
+        })
+    return rows, bool(rows and all(row["variable_outperformed_best_fixed"] for row in rows))
+
+
 def develop_observed_range(cohort: pd.DataFrame) -> tuple[float, pd.DataFrame, pd.DataFrame]:
     cohort = cohort[cohort.preference.notna()].copy()
     splits = chronological_person_split(cohort)
@@ -275,13 +324,23 @@ def external_enth_validation(frame: pd.DataFrame, half_width: float) -> tuple[pd
         ("fixed_25C", "fixed_25_prediction"),
     ):
         pooled = metrics(predictions, column)
-        person_scores = []
+        person_accuracy = []
+        person_balanced = []
         for _, group in predictions.groupby("person"):
-            person_scores.append(balanced_accuracy_score(group.preference, group[column]))
+            person_accuracy.append(float(np.mean(group.preference == group[column])))
+            if group.preference.nunique() >= 2:
+                truth = group.preference.to_numpy(int)
+                predicted = group[column].to_numpy(int)
+                person_balanced.append(float(np.mean([
+                    np.mean(predicted[truth == label] == label)
+                    for label in np.unique(truth)
+                ])))
         summaries.append({
             "model": model,
             **pooled,
-            "person_equal_balanced_accuracy": float(np.mean(person_scores)),
+            "person_equal_accuracy": float(np.mean(person_accuracy)),
+            "person_equal_balanced_accuracy": float(np.mean(person_balanced)),
+            "people_with_multiple_observed_classes": len(person_balanced),
         })
     return predictions, pd.DataFrame(summaries)
 
@@ -297,6 +356,15 @@ def main() -> None:
     args = parser.parse_args()
     output = args.output_root.resolve()
     output.mkdir(parents=True, exist_ok=True)
+    input_paths = {
+        "measurements": args.measurements.resolve(),
+        "metadata": args.metadata.resolve(),
+        "scenes": args.scenes.resolve(),
+        "enth": args.enth.resolve(),
+    }
+    if args.width_cache and args.width_cache.is_file():
+        input_paths["width_cache"] = args.width_cache.resolve()
+    input_hashes = {name: sha256(path) for name, path in input_paths.items()}
 
     ashrae = load_ashrae(args.measurements.resolve(), args.metadata.resolve())
     if args.width_cache and args.width_cache.is_file():
@@ -304,27 +372,36 @@ def main() -> None:
     else:
         model_widths = compute_model_widths(ashrae, args.scenes.resolve())
     width_predictions, width_summary = audit_virtual_widths(ashrae, model_widths)
+    width_comparison, variable_width_supported = compare_variable_with_fixed_widths(
+        width_summary
+    )
     selected_width, development, development_predictions = develop_observed_range(ashrae)
     enth = load_enth(args.enth.resolve())
     external_predictions, external_summary = external_enth_validation(enth, selected_width)
 
-    model_widths.to_csv(output / "VIRTUAL_WIDTHS.csv.gz", index=False, compression="gzip")
+    deterministic_gzip = {"method": "gzip", "mtime": 0}
+    model_widths.to_csv(
+        output / "VIRTUAL_WIDTHS.csv.gz", index=False, compression=deterministic_gzip
+    )
     width_predictions.to_csv(output / "VIRTUAL_WIDTH_HELDOUT_PREDICTIONS.csv.gz", index=False,
-                             compression="gzip")
+                             compression=deterministic_gzip)
     width_summary.to_csv(output / "VIRTUAL_WIDTH_HELDOUT_SUMMARY.csv", index=False)
     development.to_csv(output / "OBSERVED_RANGE_DEVELOPMENT.csv", index=False)
     development_predictions.to_csv(output / "OBSERVED_RANGE_DEVELOPMENT_PREDICTIONS.csv.gz",
-                                   index=False, compression="gzip")
+                                   index=False, compression=deterministic_gzip)
     external_predictions.to_csv(output / "ENTH_EXTERNAL_PREDICTIONS.csv", index=False)
     external_summary.to_csv(output / "ENTH_EXTERNAL_SUMMARY.csv", index=False)
+    produced = sorted(output.glob("*.csv")) + sorted(output.glob("*.csv.gz"))
     report = {
-        "status": "PASS",
+        "status": "AUDIT_COMPLETE",
         "selected_fixed_half_width_c": selected_width,
         "selection_rule": "highest ASHRAE chronological held-out balanced accuracy; narrower tie",
         "enth_opened_after_width_selection": True,
+        "variable_width_outperformed_best_fixed_all_outcomes": variable_width_supported,
+        "heldout_width_comparison": width_comparison,
         "virtual_width_interpretation": (
-            "The variable virtual width is retained only if it outperforms fixed-width bands; "
-            "this audit does not treat simulated posterior recovery as empirical validation."
+            "The held-out comparison tests predictive discrimination against declared fixed "
+            "bands. It does not convert a published elicitation range into measured satisfaction."
         ),
         "records": {
             "ashrae_named_office_records": len(ashrae),
@@ -333,7 +410,9 @@ def main() -> None:
             "enth_external_predictions": len(external_predictions),
             "enth_people": external_predictions.person.nunique(),
         },
-        "outputs": sorted(path.name for path in output.iterdir()),
+        "input_sha256": input_hashes,
+        "output_sha256": {path.name: sha256(path) for path in produced},
+        "outputs": [path.name for path in produced],
     }
     (output / "PERSONAL_RANGE_VALIDATION.json").write_text(
         json.dumps(report, indent=2) + "\n", encoding="utf-8"

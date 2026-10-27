@@ -67,6 +67,41 @@ def test_locked_canvas_titles_and_data_safe_legend():
         plt.close(figure)
 
 
+def test_global_legend_contract_is_frameless_and_transparent():
+    try:
+        figures.apply_figure_style()
+    except figures.FigureFontError:
+        pytest.skip("Times New Roman is not installed on this platform")
+    assert plt.rcParams["legend.frameon"] is False
+    assert plt.rcParams["legend.facecolor"] == "none"
+    assert plt.rcParams["legend.edgecolor"] == "none"
+    assert plt.rcParams["legend.framealpha"] == 0.0
+
+    figure = Figure()
+    FigureCanvasAgg(figure)
+    axis = figure.subplots()
+    try:
+        axis.plot([0, 1], [0, 1], label="Series")
+        axis.legend()
+        report = figures.audit_data_safe_legends(figure)
+        assert report["legends_checked"] == 1
+    finally:
+        plt.close(figure)
+
+
+def test_legend_contract_rejects_visible_frame():
+    figure = Figure()
+    FigureCanvasAgg(figure)
+    axis = figure.subplots()
+    try:
+        axis.plot([0, 1], [0, 1], label="Series")
+        axis.legend(frameon=True)
+        with pytest.raises(figures.FigureContractError, match="frame/background"):
+            figures.audit_data_safe_legends(figure)
+    finally:
+        plt.close(figure)
+
+
 def test_complete_export_bundle(tmp_path):
     try:
         figures.require_times_new_roman()
