@@ -8,7 +8,19 @@ import os
 
 
 FINAL_STORY_ROOT = "results/global_extension/final_story"
+RAW_FIGURE_ONE_INPUTS = (
+    "results/observation_figures/CITY_MAP_POINTS.csv",
+    "results/observation_figures/DEMAND_COMPOSITION_PROFILES.csv",
+    "results/observation_figures/LEAVE_ONE_SOURCE_VARIANCE.csv",
+    "results/observation_figures/POLICY_RANGE_POSITIONS.csv",
+    "results/observations/ASHRAE_NESTED_VARIANCE.csv",
+    "results/shared_room/SHARED_ROOM_SUMMARY.csv",
+)
 REQUIRED_FIGURE_INPUTS = {
+    "Figure_01": (
+        "data/metadata/ctcd_city_map_metadata.csv",
+        "src/analysis/global_extension/GLOBAL_CLIMATES.json",
+    ),
     "Figure_02": (
         f"{FINAL_STORY_ROOT}/FINAL_STORY_SUMMARY.json",
         f"{FINAL_STORY_ROOT}/FINAL_INFORMATION_DIAGNOSTIC.csv",
@@ -184,7 +196,7 @@ def validate_final_story_hashes(root, active_labels):
         raise ValueError("Final-story summary is not the complete nine-climate design")
 
 
-def validate_figure_inputs(root, active_labels):
+def validate_figure_inputs(root, active_labels, raw_run_root=None):
     missing = []
     for label in active_labels:
         for relative in REQUIRED_FIGURE_INPUTS.get(label, ()):
@@ -193,14 +205,23 @@ def validate_figure_inputs(root, active_labels):
     if missing:
         detail = ", ".join(f"{label}: {relative}" for label, relative in missing)
         raise FileNotFoundError(f"Required figure input is missing: {detail}")
+    if "Figure_01" in active_labels:
+        raw = raw_run_root or root / "output/from_raw"
+        for relative in RAW_FIGURE_ONE_INPUTS:
+            if not (raw / relative).is_file():
+                raise FileNotFoundError(f"Run the raw demand and observations stages first: {raw / relative}")
     validate_final_story_hashes(root, active_labels)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--figure", nargs="+", help="Figure IDs: 1 ... 6 or S1 ... S21; default is all")
+    parser.add_argument("--raw-run-root", type=Path, help="Contained raw-run directory for regenerated observation figure sources")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
+    raw = (args.raw_run_root or root / "output/from_raw").resolve()
+    if not raw.is_relative_to(root):
+        raise ValueError("Figure sources must be generated inside this project")
     notebook = json.loads((root / "plot/Plot.ipynb").read_text(encoding="utf-8"))
     selected = None if args.figure is None else {
         f"Figure_S{int(value[1:]):02d}" if value.upper().startswith("S")
@@ -217,18 +238,32 @@ def main():
     active_labels = (labels - {"Setup", None}) if selected is None else selected
     validate_legend_styles(notebook, active_labels)
     validate_notebook_sources(notebook, active_labels)
-    validate_figure_inputs(root, active_labels)
+    validate_figure_inputs(root, active_labels, raw)
     previous = Path.cwd()
     try:
         os.chdir(root)
-        namespace = {"__name__":"notebook_figures", "__file__":str(root / "plot/Plot.ipynb")}
+        namespace = {"__name__":"notebook_figures", "__file__":str(root / "plot/Plot.ipynb"),
+                     "RAW_RUN_ROOT": raw}
         for cell in notebook["cells"]:
             if cell["cell_type"] != "code":
                 continue
             label = cell.get("metadata", {}).get("figure")
             if label == "Setup" or label in active_labels:
                 exec(compile("".join(cell["source"]), f"Plot.ipynb:{label}", "exec"), namespace)
-        namespace["refresh_plot_inputs"](root / "results")
+        if active_labels != {"Figure_01"}:
+            namespace["refresh_plot_inputs"](root / "results")
+        if "Figure_01" in active_labels:
+            inputs = [raw / relative for relative in RAW_FIGURE_ONE_INPUTS]
+            inputs += [root / relative for relative in REQUIRED_FIGURE_INPUTS["Figure_01"]]
+            inputs += [root / "plot/Plot.ipynb", root / "plot/reproduce.py",
+                       root / "src/thermal_heterogeneity/figures.py",
+                       root / "src/thermal_heterogeneity/assets/ne_110m_observed_countries.json",
+                       root / "src/thermal_heterogeneity/assets/ne_110m_land.geojson"]
+            report = {"status": "generated_from_contained_raw_run",
+                "input_sha256": {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                                 for p in inputs},
+                "visual_qa": "Recorded separately from data and source provenance."}
+            (root / "plot/main/Figure_01_PROVENANCE.json").write_text(json.dumps(report, indent=2) + "\n")
     finally:
         os.chdir(previous)
 

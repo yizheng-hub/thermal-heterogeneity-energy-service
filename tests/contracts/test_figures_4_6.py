@@ -1,3 +1,5 @@
+"""Contracts for the retained legacy eight-panel renderers, not Plot.ipynb."""
+
 from __future__ import annotations
 
 import json
@@ -31,16 +33,10 @@ def _panel_data() -> Path:
         if not candidate.is_dir():
             pytest.fail("Explicit panel-data directory is missing")
         return candidate
-    candidate = (
-        Path(__file__).resolve().parents[4]
-        / "results"
-        / "final_nature_pipeline_20261021"
-        / "stage4"
-        / "panel_data_v2"
-    )
-    if not candidate.exists():
-        pytest.skip("approved panel-data v2 is not present in this checkout")
-    return candidate
+    candidate = Path(__file__).resolve().parents[2] / "results" / "panel_data"
+    if candidate.is_dir():
+        return candidate
+    pytest.skip("retained legacy eight-panel inputs are not included in this checkout")
 
 
 @pytest.mark.parametrize("number", [4, 5, 6])

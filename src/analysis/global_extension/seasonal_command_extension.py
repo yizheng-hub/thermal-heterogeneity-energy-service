@@ -500,6 +500,7 @@ def execute_plan(
     runtime: Path,
     *,
     workers: int = 8,
+    solver_stability_manifest: Path | None = None,
 ) -> pd.DataFrame:
     """Run seasonal-command cases with baseline-relative engineering QA."""
     references = probe_manifest[np.isclose(
@@ -547,7 +548,7 @@ def execute_plan(
         qa = run_energyplus(
             input_path, weather_path, runtime,
             folder, compact,
-            json.loads(row["targets_json"])["DJF"].keys(),
+            list(json.loads(row["targets_json"])["DJF"]),
             cleanup_raw=True,
         )
         reference_id = str(references.loc[row["climate"], "run_id"])
@@ -578,6 +579,37 @@ def execute_plan(
         pending = [pool.submit(execute, row) for row in runs.to_dict("records")]
         for future in as_completed(pending):
             completed.append(future.result())
+    stability, stability_hash = read_seasonal_solver_stability_evidence(solver_stability_manifest)
+    used = set()
+    for row in completed:
+        run_id = str(row["run_id"])
+        folder = output_root / "runs" / run_id
+        qa_path = folder / "RUN_QA.json"
+        qa = json.loads(qa_path.read_text(encoding="utf-8"))
+        input_path = Path(row["input_idf_path"])
+        compact = Path(row["hourly_path"])
+        if qa["input_idf_sha256"] != sha256(input_path) or qa["hourly_sha256"] != sha256(compact):
+            raise ValueError(f"Seasonal primary evidence changed: {run_id}")
+        reference_id = str(references.loc[row["climate"], "run_id"])
+        relative = relative_engineering_qa(
+            qa, warning_profile(folder / "eplusout.err"),
+            warning_profile(probe_run_root / "runs" / reference_id / "eplusout.err"),
+        )
+        passed, audit = apply_seasonal_solver_stability_evidence(
+            relative, qa, stability.get(run_id),
+            current_maximum_hvac_iterations=int(solver_configuration(input_path.read_text())["maximum_hvac_iterations"]),
+            active_input_sha256=sha256(input_path), active_hourly_sha256=sha256(compact),
+            active_error_sha256=sha256(folder / "eplusout.err"),
+        )
+        if audit["seasonal_solver_stability_exception_applied"]:
+            used.add(run_id)
+        qa.update(audit)
+        qa["relative_engineering_pass"] = passed
+        qa["seasonal_solver_stability_evidence_sha256"] = stability_hash if run_id in used else None
+        qa_path.write_text(json.dumps(qa, indent=2) + "\n", encoding="utf-8")
+        row.update(qa)
+    if set(stability) != used:
+        raise ValueError("Seasonal stability evidence includes stale or unused runs")
     result = pd.DataFrame(completed).sort_values(
         ["climate", "composition_id", "control", "seasonal_contrast_fraction"]
     )

@@ -1,9 +1,9 @@
 # Human thermal heterogeneity: computational source
 
-This repository contains the analysis and figure code for **Human thermal heterogeneity reshapes building energy, carbon and flexibility**. It compares three controls under fixed building physics, weather, equipment and physical occupancy loads:
+This repository contains the analysis and figure code for **Human thermal demand heterogeneity reshapes building energy and flexibility assessments**. It compares three controls under fixed building physics, weather, equipment and physical occupancy loads:
 
 - **Uniform average** uses one population-average temperature target at the permitted command scale.
-- **Personal centre** minimizes person-hour-weighted absolute temperature mismatch.
+- **Personal center** minimizes person-hour-weighted absolute temperature mismatch.
 - **Personal range** minimizes distance outside personal ranges estimated with the published elicitation method used by the study.
 
 The common 25 °C operation is an external service reference. It is not an internal fallback candidate for the three controls. Annual controller candidates use five declared offsets: −1, −0.5, 0, +0.5 and +1 °C.
@@ -14,9 +14,80 @@ Controller targets are optimized only within the declared 20–27 °C probe doma
 uv run --frozen python src/analysis/global_extension/target_domain_sensitivity.py --help
 ```
 
-The repository is source-only. Manuscripts, Word-generation code, licensed building and weather assets, participant-level source archives, retained simulation trajectories and generated outputs are outside Git.
+The repository is source-only. Manuscript text, Word templates, licensed building and weather assets, participant-level source archives, retained simulation trajectories and generated outputs are outside Git.
+
+## Current publication release
+
+The strengthened analysis adds individual-response validation, paired demand
+uncertainty, an 8,586-operation library with mean/median baselines, constrained
+placement, paired HVAC comparisons and one-action response under shared budgets.
+The original five-offset experiment remains a separately identified comparison.
+
+For the six main figures, sixteen SI figures and nine SI tables, use
+[`publication/README.md`](publication/README.md). `plot/Plot.ipynb` reads only
+`Result/`, with one complete figure per cell. Supplementary Data 1 supplies these
+minimized plotting inputs and supporting analysis tables; Supplementary Code 1
+supplies the exact source revision. Author manuscripts and templates remain local.
 
 ## Reproduction modes
+
+For the complete local Windows package, start with
+[`REPRODUCTION_FROM_RAW.md`](REPRODUCTION_FROM_RAW.md) and `run.ps1`. This
+launcher uses the runtimes, raw inputs and fonts contained in that directory.
+The `uv` commands below also document the source-only developer workflow.
+
+The raw-input entry point is `reproduce_from_raw.py`. It reconstructs the
+numerical demand pools and seeded assignments, runs new EnergyPlus probes and
+annual candidates, and then constructs and scores spatial and response runs.
+It reads the raw archives under `data/upstream/`, the numeric scene specification,
+the physical IDF, EPWs and the declared runtime. Historical result folders and
+previous assignment tables are not inputs.
+
+```console
+uv run --frozen python reproduce_from_raw.py --output-root output/from_raw --plan
+uv run --frozen python reproduce_from_raw.py --output-root output/from_raw --workers 4
+```
+
+Use a new output directory for the demand rebuild. To resume later stages, use
+`--stages matrix annual spatial response`. Each stage records its command,
+source hash, log and completion state in the output directory. The default
+runtime location is `tools/EnergyPlus-22.1.0/energyplus.exe`; `--energyplus`
+accepts another contained installation of the same checksum-verified version. Runtime
+and local datasets remain outside Git. Linked assignment tables retain the
+available source, building, subject and record keys for reproducibility; share
+them according to the upstream terms rather than discarding the linkage.
+
+The default sequence also runs the seasonal sensitivity and frozen strengthening protocol:
+independent demand validation, uniform candidate refinement, constrained
+placement, mean/median and uniform-command benchmarks, HVAC contrasts, paired
+demand uncertainty, and response comparisons with common service and normal
+energy budgets. The strengthening output is under the selected run directory.
+An individual phase can be resumed without reading historical results:
+
+```console
+uv run --frozen python reproduce_strengthening.py --raw-run-root output/from_raw --phases validation
+```
+
+`provenance/INPUT_SOURCE_RUNTIME_LOCK_*.json` records raw-input, source and
+complete simulator-file hashes and the actual Python/package versions. Each
+resume keeps a separate lock and log. Phase execution status and scientific
+quality status are separate: completed execution can retain infeasible or
+engineering-failed conditions in its result reports.
+
+The relocated raw-demand and validation checks have been run. The complete
+fresh simulation sequence is still being verified; the older plotting entry
+below continues to require its declared figure-ready inputs. It must not be
+used as evidence that all raw-to-figure stages have already passed.
+
+The self-contained Windows bundle also contains Python and its locked packages
+under `tools/python/`. Its `run.ps1` uses that contained interpreter with isolated,
+relative import paths. The reproduction entry points reject raw runs, simulator
+locations and output directories outside the project. After moving the folder,
+start a fresh reproduction under a new local output directory; retained evidence
+and logs are not substitutes for raw inputs.
+
+The commands below are reporting modes for retained results. Their `full`
+mode means reassembly plus figures, and does not invoke the raw-input entry.
 
 Use Python 3.11.15 and the frozen environment:
 
@@ -79,7 +150,9 @@ rather than silently replaying the older four-context workflow.
 
 These computational inputs are excluded from Git. The public ASHRAE Database II and CTCD archive are the upstream observational sources. The upstream rebuild tools verify their declared files and regenerate the aligned numerical demand inputs. Regenerating building trajectories additionally requires the declared EnergyPlus 22.1 runtime, prototype models and weather files under their original terms.
 
-Final figure rendering expects Times New Roman to be installed on the host system; this affects typography only, not the numerical tables.
+Final figure rendering uses the contained Times New Roman files in
+`tools/fonts` when present; the source-only developer workflow can use a host
+installation of that font.
 
 Reassembly produces the final publication tables in:
 

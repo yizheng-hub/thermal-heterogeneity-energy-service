@@ -406,9 +406,28 @@ def test_cached_run_requires_matching_input_weather_runtime_and_hourly_hashes(
         "hourly_sha256": sha256(compact),
     }
     (run_folder / "RUN_QA.json").write_text(json.dumps(qa), encoding="utf-8")
-    assert _cached_run(job, "runtime") == qa
+    cached = _cached_run(job, "runtime")
+    assert all(cached[key] == value for key, value in qa.items())
+    assert cached["cached_artifact_runtime_backend"] == "historical_executable"
+    assert cached["compact_output"] == str(compact.resolve())
     with pytest.raises(ValueError, match="provenance mismatch"):
         _cached_run(job | {"weather_sha256": "different"}, "runtime")
+    metadata = run_folder / "simulation_metadata.sql"
+    metadata.write_bytes(b"retained metadata")
+    qa.update(sql_metadata_path=str(tmp_path / "old_location/run/simulation_metadata.sql"),
+              sql_metadata_sha256=sha256(metadata),
+              runtime_backend="official_python_c_api_subprocess", runtime_api_sha256="api",
+              runtime_package_manifest_sha256="package")
+    (run_folder / "RUN_QA.json").write_text(json.dumps(qa), encoding="utf-8")
+    runtime_info = {"runtime_api_sha256": "api", "runtime_package_manifest_sha256": "package"}
+    cached = _cached_run(job, "runtime", runtime_info)
+    assert cached["sql_metadata_path"] == str(metadata)
+    assert cached["cached_artifact_runtime_backend"] == "official_python_c_api_subprocess"
+    with pytest.raises(ValueError, match="API runtime fingerprint"):
+        _cached_run(job, "runtime", runtime_info | {"runtime_api_sha256": "different"})
+    metadata.write_bytes(b"corrupted metadata")
+    with pytest.raises(ValueError, match="metadata is missing or changed"):
+        _cached_run(job, "runtime", runtime_info)
 
 
 def test_solver_limit_patch_preserves_other_convergence_fields():

@@ -1,0 +1,6 @@
+{
+  "date": "2026-10-31",
+  "technical_correction": "Three temporal calibration units include records with imputed clothing. Recompute missing-clothing calibration widths with medians fitted solely to development participants; apply the same rule to undated acceptability. Observed clothing and all frozen splits,model grids,endpoints and thresholds remain unchanged.",
+  "no_final_response_fitting": true,
+  "physical_control_commands": "unchanged; correction affects only independent validation covariate preprocessing"
+}

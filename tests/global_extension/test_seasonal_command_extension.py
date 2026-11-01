@@ -22,6 +22,23 @@ from analysis.global_extension.seasonal_command_extension import (
 from analysis.global_extension.global_matrix import sha256
 
 
+def test_fresh_seasonal_execution_passes_an_explicit_string_zone_axis(tmp_path, monkeypatch):
+    import analysis.global_extension.seasonal_command_extension as module
+    runtime = tmp_path / "energyplus.exe"
+    runtime.write_bytes(b"test runtime")
+    def inspect_zones(_idf, _weather, _runtime, _folder, _compact, zones, **kwargs):
+        values = np.asarray(zones)
+        assert values.ndim == 1 and values.dtype.kind == "U"
+        assert values.tolist() == ["Zone B", "Zone A"]
+        raise RuntimeError("zone interface verified before simulation")
+    monkeypatch.setattr(module, "run_energyplus", inspect_zones)
+    runs = pd.DataFrame([{"run_id": "test", "climate": "c", "input_idf_path": str(tmp_path / "in.idf"),
+        "weather_path": str(tmp_path / "weather.epw"), "targets_json": json.dumps({"DJF": {"Zone B": 25., "Zone A": 24.}})}])
+    probes = pd.DataFrame([{"run_id": "probe", "climate": "c", "target_c": 25.}])
+    with pytest.raises(RuntimeError, match="zone interface verified"):
+        module.execute_plan(runs, probes, tmp_path / "probes", tmp_path / "output", runtime, workers=1)
+
+
 def test_recover_existing_plan_extracts_completed_raw_runs(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
 ):

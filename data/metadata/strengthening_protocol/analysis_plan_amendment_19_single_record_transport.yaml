@@ -1,0 +1,17 @@
+date: 2026-10-31
+timing: Frozen after the single-record validation summary and before any single-record temporal transport outcomes.
+reason: The one-record calibration arm is closer to the observation support of sampled simulation profiles than the existing multiple-record calibration arm.
+inputs: Development participants only from single_record/timed/CONTINUOUS_PROXY_ERRORS.csv, raw_center rows; no final-test proxy shifts or responses enter the transport pool.
+purpose: Supplement the existing temporal-variation stress with the observed single-record-to-later proxy variation. This does not identify latent estimation error or calibrate a posterior for each simulated person.
+scope: ASHRAE-derived compositions only; original and CTCD scenarios remain unchanged.
+draws: 256
+fractions: [0.5, 1.0]
+structure: Existing source-block empirical transport with identity-keyed within-source residual sampling; same person's shift persists across operations, climates and paired25C reference.
+comparisons:
+  annual: Fixed-operation rescoring and pooled finite-library reselection, after candidate search and strong baselines finish.
+  placement: Rescore the frozen mixed and constrained arrangements; no new targets or arrangements.
+  response: Rescore frozen selected event actions and every assessed service window; no uncertainty-aware action selection is claimed.
+outputs: Separate annual and placement output directories, and explicitly named response scenarios.
+unchanged: Original fixed-tail membership, service budgets, physical trajectories, energy results, commands, hardware and held-out evaluation records.
+EnergyPlus_runs: 0
+success: Completed paired calculations and traceable inputs, regardless of gain, qualification or selection direction.

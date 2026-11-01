@@ -1,0 +1,29 @@
+amendment: 26
+date: 2026-11-01
+timing: After nominal cross-system placement results; before cross-system uncertainty outcomes
+scope: Fixed-command total placement-gain sensitivity across three completed HVAC conditions
+systems: [original_vav, independent_pthp, vav_coordinated_outdoor_reset]
+budgets_pct: [0, 25, 50, 100]
+design:
+  shared_error_scenarios: Amendment25 study/contributor-shared grid, replacing archive-shared noise
+  empirical_scenarios: Amendment19 single-record development-only temporal proxy shift fractions0.5and1.0; ASHRAE compositions only
+  draws_per_scenario: 256
+  planned_setting_operation_pairs: 1296
+  engineering_available_setting_operation_pairs: 1285
+  study_shared_setting_scenario_summaries: 11565
+  study_shared_draw_rows: 2960640
+rules:
+  - Use mixed and arranged engineering-qualified pair rows from every system; retain all planned denominators.
+  - Reuse person and source-group draws across systems, climates, layouts and commands.
+  - Keep original27fixed-tail identities and native person-hour population weights.
+  - Verify repeated mixed baselines before deduplication and compare complete calendar, native occupancy and zone identities.
+  - Reproduce all available nominal pair gains and fixed-operation energy changes before interpreting uncertainty.
+  - Match identical setting, scenario and draw indices before calculating architecture differences in gains.
+  - Retain original VAV-only outputs and write separate HVAC outputs with input hashes.
+  - Do not reinterpret fixed-trajectory rescoring as retuned controls or as uncertainty propagation of the intermediate-state decomposition.
+compute_budget:
+  additional_EnergyPlus_runs: 0
+  study_shared_draw_rows: 2960640
+  empirical_upper_bound_draw_rows: 331776
+  memory: Stream one climate-composition block at a time
+acceptance: All declared available pairs, nominal identities and same-draw cross-system pairing verified; no required benefit sign.

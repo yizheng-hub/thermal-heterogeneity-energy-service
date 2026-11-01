@@ -68,6 +68,8 @@ def _matched_sql(
     alternatives: dict[str, list[Path]],
 ) -> Path:
     primary = Path(str(row.run_folder)) / "eplusout.sql"
+    if not primary.is_file():
+        primary = Path(str(row.run_folder)) / "simulation_metadata.sql"
     candidates = ([primary.resolve()] if primary.is_file() else []) + alternatives.get(
         str(row.run_id), []
     )

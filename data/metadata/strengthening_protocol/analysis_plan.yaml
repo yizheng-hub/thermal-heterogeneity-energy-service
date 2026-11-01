@@ -1,0 +1,258 @@
+{
+  "protocol_id": "HEM_NC_strengthening_20261031_v1",
+  "frozen_at": "2026-10-31T06:04:09.381868+00:00",
+  "status": "frozen_before_new_results",
+  "original_files_read_only": true,
+  "primary_question": "How demand distributions, spatial assignment and HVAC conditions alter attainable thermal-service, energy and response combinations; when mean representation is adequate.",
+  "existing_results": "Replication targets, not acceptance criteria: 54 settings,810 logical annual candidates,23 qualifying-set changes,10 choice changes,6480 event-action evaluations. No outcome is required to reproduce after new interventions.",
+  "seeds": {
+    "split": 2026103101,
+    "bootstrap": 2026103102,
+    "demand_draws": 2026103103,
+    "placement": 2026103104
+  },
+  "holdout": {
+    "development_fraction": 0.7,
+    "partition_unit": "source-qualified participant grouped within building",
+    "minimum_records": 5,
+    "minimum_distinct_valid_timestamps": 3,
+    "early_fraction": 0.7,
+    "minimum_early_records": 3,
+    "strict_time_order": true,
+    "timestamp_missing_or_tied": "support audit only; never call chronological validation",
+    "final_test_response_uses": "endpoint evaluation only; no model, width or budget selection"
+  },
+  "models": {
+    "centers": [
+      "Griffiths early-record median",
+      "source-season hierarchical shrinkage of early center"
+    ],
+    "shrinkage_strengths": [
+      2,
+      5,
+      10,
+      20
+    ],
+    "fixed_half_widths_c": [
+      0.5,
+      1,
+      1.5,
+      2,
+      2.5,
+      3
+    ],
+    "ranges": [
+      "published Personal range",
+      "fixed width"
+    ],
+    "endpoints": [
+      "thermal acceptability",
+      "no-change temperature preference"
+    ],
+    "metrics": [
+      "balanced accuracy",
+      "AUROC",
+      "Brier",
+      "calibration by probability bin"
+    ],
+    "uncertainty": "participant bootstrap within source-building; 500 replicates; do not treat records as independent"
+  },
+  "paired_uncertainty": {
+    "draws": 256,
+    "primary": "paired source/building/participant empirical residual scenarios when identity links and temporal support permit",
+    "fallback": "explicit uncalibrated sensitivity scenarios if empirical linkage or support is missing; no claim of calibrated probability",
+    "source_common_shifts_c": [
+      0,
+      0.25,
+      0.5
+    ],
+    "person_error_sd_c": [
+      0,
+      0.25,
+      0.5
+    ],
+    "seasonal_source_shift": "same seasonal draw shared across operations and climate for each source",
+    "fixed_tail": "original membership retained; post-operation worst10% supplementary only",
+    "reference_rule": "same demand realization jointly rescoring candidate and25C reference",
+    "separate_fixed_limits": true,
+    "outputs": [
+      "excess probability conditional on scenario",
+      "excess magnitude",
+      "affected profiles and person-hours",
+      "choice frequency",
+      "extra energy",
+      "service loss"
+    ],
+    "operations": [
+      "A fixed-operation rescoring",
+      "B reselection from common library",
+      "C new commands require new simulation"
+    ]
+  },
+  "service_budgets": {
+    "reference_multipliers": [
+      0.5,
+      0.75,
+      0.9,
+      1,
+      1.05,
+      1.1
+    ],
+    "absolute_population_c": [
+      0.5,
+      1,
+      1.5,
+      2,
+      2.5
+    ],
+    "absolute_fixed_tail_c": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "interpretation": "model mismatch budgets; not comfort standards or regulatory limits",
+    "numeric_tolerance_c": 1e-09,
+    "energy_ties": "original deterministic lexicographic tie rule"
+  },
+  "candidate_refinement": {
+    "original_offsets_c": [
+      -1,
+      -0.5,
+      0,
+      0.5,
+      1
+    ],
+    "added_offsets_c": [
+      -0.75,
+      -0.25,
+      0.25,
+      0.75
+    ],
+    "pilot_weather_selection": "highest heating degree hours18C, highest cooling degree hours24C, and smallest combined degree hours among remaining; weather only",
+    "pilot_compositions": [
+      2026102001,
+      2026102501
+    ],
+    "pilot_logical_count": 72,
+    "full_logical_count_including_pilot": 648,
+    "target_domain_c": [
+      20,
+      27
+    ],
+    "equipment_deadband_c": 3,
+    "nested_permissions": [
+      "building subset floor subset zone"
+    ],
+    "strong_baselines": [
+      "building mean",
+      "building median",
+      "zone mean",
+      "zone median",
+      "minimum-energy within common service budgets"
+    ],
+    "further_refinement": "midpoints of each offset interval uniformly in all settings if adding0.25C grid changes feasible selected energy by >0.1% in any setting; at most one further level0.125C; otherwise stop",
+    "boundary_reporting": "all controls/settings, not selected subset"
+  },
+  "hvac": {
+    "pilot_climates": "same three weather-selected climates",
+    "pilot_compositions": [
+      2026102001,
+      2026102501
+    ],
+    "systems": [
+      "original VAV electric reheat",
+      "same VAV with coordinated supply-air temperature reset",
+      "independent packaged heat pumps if executable valid conversion supports same ventilation and fixed capacity"
+    ],
+    "capacity": "common25C design once per system-climate; then frozen across strategies",
+    "loads_ventilation": "same zone schedules and internal loads; audit demand and delivered outdoor air",
+    "ideal_loads": "thermal-load lower-bound only; not purchased-energy substitute",
+    "expansion": "all54 only after system sizing,energy closure,unmet loads and warnings pass pilot; otherwise report exact blockers"
+  },
+  "placement": {
+    "relocation_budgets": [
+      0,
+      0.25,
+      0.5,
+      1
+    ],
+    "constraints": [
+      "same floor",
+      "fixed zone capacity"
+    ],
+    "design_estimates": "training/frozen demand only",
+    "evaluation": "held-out where identity-linked; otherwise frozen-demand mechanism experiment",
+    "search": "deterministic capacity-preserving swaps minimizing within-zone L1 lower bound; fixed seed; no welfare or team-feasibility claim"
+  },
+  "dr": {
+    "existing": "retain opportunity accounting, baseline/action qualifications, common-qualified subsets and climate contributions",
+    "new_baseline_selection": "choose least-energy operation satisfying joint model-service budgets within library; freeze before action optimization",
+    "energy_budgets_relative_reference": [
+      0.95,
+      1,
+      1.05
+    ],
+    "event_choice": "one mutually exclusive action per event; infeasible explicitly retained",
+    "perfect_future": "oracle action maximum is conditional upper bound",
+    "service_windows": [
+      "occupied pre-event",
+      "event",
+      "recovery"
+    ],
+    "recovery_hours": 48,
+    "initial_state": "continuous simulation and matching operation history; no air-temperature-only initialization",
+    "outputs": [
+      "baseline kW",
+      "absolute event kW",
+      "reduction kW",
+      "preconditioning kWh",
+      "recovery kWh",
+      "whole-window net kWh",
+      "service excess probability"
+    ]
+  },
+  "numerics": {
+    "hvac_iterations": 40,
+    "retry_iterations": 100,
+    "retry_rule": "new critical warning or nonconvergence; never outcome sign",
+    "solver_comparison_tolerance": {
+      "maximum_occupied_zone_temperature_delta_c": 0.02,
+      "relative_annual_energy_delta": 0.001
+    },
+    "quality_gate": [
+      "complete8760rows",
+      "finite temperature,energy,people",
+      "correct thermostat command",
+      "no fatal or severe errors",
+      "declared warning review",
+      "frozen physical loads and capacity",
+      "energy closure and unmet-load reporting"
+    ],
+    "pilot_success": "data integrity, engineering completeness and score agreement; not positive savings or strategy ranking"
+  },
+  "compute_budget": {
+    "workers": 6,
+    "timeout_per_annual_seconds": 900,
+    "initial_estimate_seconds_per_physical_run": [
+      40,
+      120
+    ],
+    "candidate_max_physical_runs": 648,
+    "candidate_wall_hours_estimate": [
+      1.2,
+      3.6
+    ],
+    "baselines_max_physical_runs": 216,
+    "hvac_pilot_max_runs": 54,
+    "hvac_confirmation_max_runs": 486,
+    "placement_max_runs": 648,
+    "new_dr_max_runs": 810,
+    "additional_costs": "separate counts; cache exact physical operations; update after timing pilot",
+    "max_further_refinement_logical_runs": 1296,
+    "insufficient_compute": "mark pending; no results imputed"
+  },
+  "claim_policy": "Only completed and validated new evidence enters manuscript conclusions. All failure/infeasible cases retained. Existing checks clearly labeled existing rather than new.",
+  "authorship": "Compare main/SI and record discrepancies for author confirmation; never add/remove author automatically."
+}

@@ -572,19 +572,18 @@ def run_energyplus(
     timeout_seconds: int = 900,
 ) -> dict:
     """Run one annual case, extract its compact trajectory and write QA."""
+    from thermal_heterogeneity.energyplus_launcher import ROOT as project_root
+    if not all(path.resolve().is_relative_to(project_root) for path in (run_folder, compact_output)):
+        raise ValueError("Retained simulation outputs must remain inside this project")
     if run_folder.exists() and any(run_folder.iterdir()):
         raise FileExistsError(f"Run folder is not empty: {run_folder}")
     run_folder.mkdir(parents=True, exist_ok=True)
-    command = [
-        str(executable.resolve()), "-w", str(weather.resolve()),
-        "-d", str(run_folder.resolve()), "-r", str(input_idf.resolve()),
-    ]
+    from thermal_heterogeneity.energyplus_launcher import run_with_scratch, runtime_provenance
+    arguments = ["-w", str(weather.resolve()), "-d", str(run_folder.resolve()), "-r", str(input_idf.resolve())]
     started = time.monotonic()
     with (run_folder / "CONSOLE.log").open("wb") as log:
-        completed = subprocess.run(
-            command, stdout=log, stderr=subprocess.STDOUT, check=False,
-            timeout=timeout_seconds, cwd=run_folder,
-        )
+        completed = run_with_scratch(executable, arguments, run_folder, stdout=log,
+            timeout_seconds=timeout_seconds)
     error_path = run_folder / "eplusout.err"
     error = error_path.read_text(errors="replace") if error_path.is_file() else ""
     completion = re.findall(
@@ -602,6 +601,9 @@ def run_energyplus(
         "weather_sha256": sha256(weather),
         "runtime_sha256": sha256(executable),
         "compact_output": str(compact_output.resolve()),
+        **runtime_provenance(executable),
+        "execution_status": completed.execution_status,
+        "execution_audit_path": completed.execution_audit_path,
     }
     if qa["completed"]:
         qa.update(extract_hourly(run_folder, zones, compact_output))
@@ -611,11 +613,44 @@ def run_energyplus(
     qa_path.write_text(json.dumps(qa, indent=2) + "\n", encoding="utf-8")
 
     if cleanup_raw and qa["completed"]:
+        # Sizing and monthly gas tables remain inputs to later system and
+        # seasonal analyses after hourly arrays have been exported.
+        sql_path = run_folder / "eplusout.sql"
+        metadata_path = run_folder / "simulation_metadata.sql"
+        qa["source_sql_sha256"] = sha256(sql_path)
+        with sqlite3.connect(sql_path) as source, sqlite3.connect(metadata_path) as target:
+            tables = source.execute(
+                "select name, sql from sqlite_master where type='table' and name not like 'sqlite_%'"
+            ).fetchall()
+            counts = {}
+            for name, schema in tables:
+                quoted = '"' + name.replace('"', '""') + '"'
+                target.execute(schema)
+                if name == "ReportData":
+                    continue
+                cursor = source.execute("select * from " + quoted)
+                marks = ",".join("?" for _ in cursor.description)
+                count = 0
+                while values := cursor.fetchmany(10000):
+                    target.executemany("insert into " + quoted + " values(" + marks + ")", values)
+                    count += len(values)
+                cursor.close()
+                if target.execute("select count(*) from " + quoted).fetchone()[0] != count:
+                    raise ValueError(f"SQL metadata copy incomplete: {name}")
+                counts[name] = count
+            target.commit()
+        source.close()
+        target.close()
+        qa["sql_metadata_path"] = str(metadata_path.resolve())
+        qa["sql_metadata_sha256"] = sha256(metadata_path)
+        qa["sql_metadata_table_counts"] = counts
+        qa["sql_retention"] = "All metadata and tabular/sizing results; hourly ReportData values retained in compact NPZ for the declared analysis variables"
         retained = {
             (run_folder / name).resolve()
-            for name in ("CONSOLE.log", "RUN_QA.json", "eplusout.err", "eplusout.eio", "eplusout.audit")
+            for name in ("CONSOLE.log", "RUN_QA.json", "eplusout.err", "eplusout.eio", "eplusout.audit", "simulation_metadata.sql")
         }
         retained.add(compact_output.resolve())
+        retained.add(Path(completed.execution_audit_path).resolve())
         for path in run_folder.iterdir():
             if path.is_file() and path.resolve() not in retained:
                 for attempt in range(20):

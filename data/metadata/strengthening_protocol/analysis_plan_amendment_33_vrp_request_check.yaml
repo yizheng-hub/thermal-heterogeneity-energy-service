@@ -1,0 +1,19 @@
+amendment: 33
+date: 2026-11-01
+timing: Native direct-zone OA/Voz diagnostic completed; four sampled VAV controller checks known before this full check
+scope: Validate system intake against the actual multizone VRP controller request in the same retained mechanism inventory
+additional_EnergyPlus_runs: 0
+inventory: Retain420 case statuses;210 VAV cases are applicable and210 independent-PTHP cases have no central VRP controller
+variables:
+  actual: Air System Outdoor Air Mass Flow Rate
+  requested: Air System Outdoor Air Mechanical Ventilation Requested Mass Flow Rate
+units: Both hourly average kg/s with exactly matched airloop KeyValue; never compare zone Voz to system VRP request
+assessment: Original study occupied hours with positive native controller request, matching the complete SQL and NPZ month/day/hour/DST calendar
+endpoints: [minimum_actual_to_request_ratio, first_percentile_ratio, hours_below99percent_request, actual_and_requested_intake_mass, maximum_absolute_mass_flow_difference]
+interpretation: Native controller-request fulfillment, not direct outdoor-air allocation per zone, contaminant exposure or a certificate of subhourly compliance
+rules:
+  - Use read-only in-memory SQL with retained source hashes and no new indexes
+  - Retain inapplicable and unresolved statuses without zero-imputing an efficiency or fulfillment ratio
+  - Preserve existing engineering eligibility and all native-zone allocation results
+  - Do not introduce a new terminal direct-OA constraint or resize hardware in order to force ratios toward one
+acceptance: Complete all420 status records and match every available VAV airloop; no required favorable ratio

@@ -98,6 +98,28 @@ def test_figure_two_requires_hashed_global_story_sources(tmp_path):
         runner.validate_figure_inputs(tmp_path, {"Figure_02"})
 
 
+def test_figure_one_requires_raw_rebuilt_sources_instead_of_legacy_centers(tmp_path):
+    runner = load_module("plot_reproduce_figure_one_inputs", ROOT / "plot/reproduce.py")
+    for relative in runner.REQUIRED_FIGURE_INPUTS["Figure_01"]:
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("value\n1\n", encoding="utf-8")
+    with pytest.raises(FileNotFoundError, match="CITY_MAP_POINTS"):
+        runner.validate_figure_inputs(tmp_path, {"Figure_01"})
+    for relative in (
+        "observation_figures/CITY_MAP_POINTS.csv",
+        "observation_figures/DEMAND_COMPOSITION_PROFILES.csv",
+        "observation_figures/LEAVE_ONE_SOURCE_VARIANCE.csv",
+        "observation_figures/POLICY_RANGE_POSITIONS.csv",
+        "observations/ASHRAE_NESTED_VARIANCE.csv",
+        "shared_room/SHARED_ROOM_SUMMARY.csv",
+    ):
+        path = tmp_path / "output/from_raw/results" / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("value\n1\n", encoding="utf-8")
+    runner.validate_figure_inputs(tmp_path, {"Figure_01"})
+
+
 def test_legacy_four_context_figure_source_is_rejected():
     runner = load_module("plot_reproduce_stale_source", ROOT / "plot/reproduce.py")
     notebook = {
@@ -133,6 +155,8 @@ def test_publication_legends_must_be_frameless():
 
 def test_figure_four_building_to_zone_counts_match_final_spatial_evidence():
     source = ROOT / "results/global_extension/final_story/FINAL_SPATIAL_EFFECTS.csv"
+    if not source.is_file():
+        pytest.skip("Optional retained legacy spatial table is not in the source-only package")
     with source.open(encoding="utf-8", newline="") as stream:
         rows = [
             row for row in csv.DictReader(stream)

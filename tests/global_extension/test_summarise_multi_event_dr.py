@@ -102,6 +102,33 @@ def test_build_summary_validates_pairs_and_writes_hash_audited_outputs(
     assert center.alternative_only_event_qualified == 1
     assert center.uniform_only_event_qualified == 1
     assert center.alternative_minus_uniform_power_median_kw == -2.0
+    assert center.alternative_qualified_power_mean_kw == pytest.approx(4.0)
+    assert center.uniform_qualified_power_mean_kw == pytest.approx(5.0)
+    assert center.alternative_minus_uniform_qualified_power_mean_kw == pytest.approx(-1.0)
+    assert center.alternative_qualified_power_greater == 1
+    assert center.uniform_qualified_power_greater == 1
+    assert set(pairs.group_dimension) >= {
+        "climate", "composition_id", "leave_one_climate",
+        "leave_one_composition_id",
+    }
+    leave_warm = pairs[
+        pairs.alternative_control.eq("personal_center")
+        & pairs.group_dimension.eq("leave_one_climate")
+        & pairs.group_value.eq("Warm")
+    ].iloc[0]
+    assert leave_warm.pair_count == 1
+    assert leave_warm.alternative_minus_uniform_qualified_power_mean_kw == pytest.approx(-10.0)
+    grouped = pd.read_csv(
+        tmp_path / "summary" / "EVENT_RESPONSE_GROUP_SUMMARY.csv"
+    )
+    center_group = grouped[
+        grouped.event_service_limit_factor.eq(1.0)
+        & grouped.group_dimension.eq("control")
+        & grouped.group_value.eq("personal_center")
+    ].iloc[0]
+    assert center_group.raw_positive_event_power_mean_kw == pytest.approx(8.0)
+    assert center_group.service_qualified_event_power_mean_kw == pytest.approx(4.0)
+    assert set(grouped.group_dimension) >= {"climate", "composition_id"}
     recovery_summary = pd.read_csv(
         tmp_path / "summary" / "EVENT_TERMINAL_RECOVERY_GROUP_SUMMARY.csv"
     )
@@ -111,6 +138,7 @@ def test_build_summary_validates_pairs_and_writes_hash_audited_outputs(
     ].iloc[0]
     assert final.unique_event_count == 6
     assert final.facility_electricity_kw_abs_median == pytest.approx(0.1)
+    assert "equal weight" in report["paired_definition"]["mean_definition"]
     assert (tmp_path / "summary" / "EVENT_RESPONSE_SUMMARY.json").is_file()
 
 

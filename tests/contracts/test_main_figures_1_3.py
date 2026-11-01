@@ -1,3 +1,5 @@
+"""Contracts for the retained legacy eight-panel renderers, not Plot.ipynb."""
+
 from __future__ import annotations
 
 import hashlib
@@ -24,8 +26,10 @@ def _panel_root() -> Path | None:
     if explicit:
         return Path(explicit)
     repository = Path(__file__).resolve().parents[2]
-    candidate = repository.parent.parent / "results" / "final_nature_pipeline_20261021" / "stage4" / "panel_data_v2"
-    return candidate if candidate.is_dir() else None
+    candidate = repository / "results" / "panel_data"
+    if candidate.is_dir():
+        return candidate
+    return None
 
 
 @pytest.mark.parametrize("number", [1, 2, 3])

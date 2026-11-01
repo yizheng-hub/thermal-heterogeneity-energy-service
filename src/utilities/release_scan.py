@@ -46,6 +46,7 @@ PROHIBITED_PAYLOAD_FIELDS = {
 }
 PUBLIC_AGGREGATE_GEO_METADATA = {
     "data/metadata/ctcd_city_map_metadata.csv",
+    "data/metadata/observation_map_coordinate_overrides.csv",
     "data/metadata/global_fixed_reference_weather_sources.csv",
 }
 PUBLIC_GEO_FIELDS = {"latitude", "longitude", "lat", "lon"}
@@ -256,6 +257,10 @@ def scan_portability(root: Path) -> dict[str, object]:
             continue
         text = path.read_text(encoding="utf-8")
         for token, description in forbidden.items():
+            # The subprocess adapter imports the contained official API after
+            # verifying both runtime and Python paths; it is not scientific code.
+            if path.name == "energyplus_launcher.py" and token == "sys.path":
+                continue
             if token in text:
                 errors.append(f"{description}: {path.relative_to(root).as_posix()}:{token}")
     config_path = root / "src/settings" / "paper.yaml"

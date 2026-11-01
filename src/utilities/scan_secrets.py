@@ -53,6 +53,9 @@ def scan(root: Path, gitleaks: Path) -> dict[str, object]:
     tracked_bytes = _git(root, "ls-files", "-z").stdout
     tracked = [item.decode("utf-8") for item in tracked_bytes.split(b"\0") if item]
     base = [str(gitleaks), "--no-banner", "--no-color", "--redact=100"]
+    configuration = root / ".gitleaks.toml"
+    if configuration.is_file():
+        base += ["--config", str(configuration)]
     scans: dict[str, str] = {}
 
     with tempfile.TemporaryDirectory(prefix="tracked-index-") as temporary:

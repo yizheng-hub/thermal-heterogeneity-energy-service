@@ -1,0 +1,37 @@
+amendment: 28
+date: 2026-11-01
+timing: After baseline and technical pilot quality checks; before final event scores or one-action-per-event outcomes were available
+scope: Descriptive accounting of the frozen common-budget response experiment
+additional_EnergyPlus_runs: 0
+changes_to_baselines_actions_service_limits_or_selection: none
+unit:
+  normal_operation: 54 climate-composition settings per library and annual energy budget
+  response: 432 distinct setting-events per library and annual energy budget
+  action_menu: Five mutually exclusive actions; never the averaging denominator
+status_mapping:
+  selected: Use the one selected service-preserving positive event-power reduction
+  infeasible_service_preserving_positive_response: Preserve status and set a separate available-response field to zero; no fallback action and no claim that building power is zero
+  infeasible_normal_energy_budget: Missing response availability; no eligible normal operation
+  infeasible_service_budget: Missing response availability; no eligible normal operation
+  unresolved_engineering_operation: Missing response availability; retain the unavailable denominator
+endpoints:
+  - Normal-operation eligibility, resolved engineering status and positive-action availability separately
+  - Available-response mean over all normal-eligible engineering-resolved events, including zero when no positive action meets service limits
+  - Conditional power intensity among events with a selected action
+  - Baseline and selected absolute event power, preconditioning and recovery electricity changes, and full-window net electricity separately
+  - Available event power from the selected maximum-power action among service-preserving positive-event actions that also retain strictly positive full-window net electricity
+  - Corresponding net electricity remains a separate kWh endpoint, not a maximum-net-electricity policy
+  - Signed space-heating gas changes retained separately from electricity
+pairing:
+  keys: [climate, composition, event, annual_energy_budget]
+  support: Both libraries have eligible normal operations and resolved engineering status
+  unilateral_no_response: Included as zero available power on that side
+  exclude_without_imputation: Baseline-infeasible or engineering-unresolved cells
+  reporting: Paired contrasts on common support; never subtract own-support means with different denominators
+summaries:
+  - Each annual budget is separate; identical operations under1.0and1.05are not independent observations
+  - Climate and composition summaries retain planned and available counts
+  - Leave-one-climate and leave-one-composition summaries are finite-design sensitivity checks, not global confidence intervals
+  - Empty supports have undefined means and ratios
+interpretation: Perfect-foresight finite-action-menu building-side response; not certified capacity, a price-optimal dispatch, or an independent building sample
+acceptance: Complete the frozen case inventory and verify status, carrier, matching and selected-action identities without requiring a ranking or positive advantage

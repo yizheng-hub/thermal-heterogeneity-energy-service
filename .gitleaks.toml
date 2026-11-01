@@ -1,0 +1,7 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Exact verified EnergyPlus library checksum, not a credential"
+regexTarget = "secret"
+regexes = ['^1e35a0904d1d3106ec8635f75b666a8a5afb1681c1ac1ccc6ebe8f4e2b44fd3e$']

@@ -1,0 +1,33 @@
+amendment: 23
+date: 2026-11-01
+scope: Preserve completed physics while repairing stale adjacent ReadVars controls
+timing: >-
+  This is a corrective execution record after eleven initial report-conversion
+  errors were observed. It is not a new preregistered scientific experiment.
+  A separate stale-control technical protocol was saved before the actual
+  moved-package annual check; that check has now passed.
+observed_issue: >-
+  Adjacent rvi/mvi files retained output paths from an earlier working directory.
+  Physical simulation completed in the owned temporary directory, but ReadVars
+  attempted conversion before the ESO had been copied to the old retained path.
+correction:
+  - For future driver processes, copy the identical IDF to owned scratch/in.idf and verify its original hash.
+  - Do not reuse adjacent conversion control files from the canonical input directory.
+  - Preserve successful physical ESO, SQL, ERR and EIO plus their execution inventory.
+  - Recover missing CSV and NPZ only after checking original inputs, runtime and committed physical output hashes.
+  - Use the same contained ReadVars converter and unchanged annual extractor.
+  - Preserve each conversion attempt separately; reject existing outputs rather than overwrite them.
+  - Apply the original forty/hundred-iteration engineering checks to recovered trajectories.
+  - Preserve the original execution-error progress and any later corrected manifest as distinct versions.
+  - Do not count reporting recovery as a new physical experiment or set engineering qualification manually.
+unchanged: >-
+  Scientific inputs, weather, physical commands, profile assignments, solver
+  limits, numerical quality tolerances, service budgets and selection rules.
+technical_check:
+  - Same preselected Montreal annual operation in the moved isolated package.
+  - Deliberately stale adjacent conversion controls, with no valid target directory.
+  - Full 8760-hour primary arrays agree within 1.0e-8 and cached metadata hashes verify.
+active_batch: >-
+  The currently loaded batch keeps its original execution code version. New
+  staging takes effect in a new driver process, not by pretending that replacing
+  a module file changes an already imported function.

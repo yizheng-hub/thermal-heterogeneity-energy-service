@@ -1,0 +1,30 @@
+amendment: 22
+date: 2026-11-01
+scope: Technical execution and verified output retention, with no scientific parameter changes
+timing: >-
+  Direct executable startup failures on F and 900-second output-writing timeouts
+  are already known. No replacement scientific outcome is used to choose the
+  execution interface. The user has authorized automatically created temporary
+  workspaces, with all scientific inputs and retained outputs inside the project.
+execution:
+  - Use the contained EnergyPlus 22.1 official Python/C API in one child process per run.
+  - Keep the same contained API library, executable, runtime files, IDF and weather inputs.
+  - Create an owned unique NTFS temporary working directory for engine outputs.
+  - Record input and runtime hashes and the execution attempt before starting.
+  - Keep the original 900-second engine timeout and unchanged engineering rules.
+  - Stop only the owned child process tree on timeout or interruption.
+  - Copy all produced files and verify complete source and destination SHA mappings.
+  - Commit the output inventory before deleting the owned temporary directory.
+  - Retain the temporary directory if termination or output verification cannot be established.
+  - Preserve previous failed or interrupted attempts, with an explicit retry mapping.
+technical_acceptance:
+  - Isolated regression tests must pass for success, timeout, copy conflict and termination failure.
+  - Replay one preselected completed annual operation with identical scientific inputs.
+  - Require all 8760 hourly clock and occupied-mask values to match the original output.
+  - Require maximum absolute differences in operative temperature, occupancy and six energy meters at most 1.0e-8.
+  - Check retained metadata and cached output hashes.
+  - Review execution and retention code independently before resuming long batches.
+  - Do not use an energy saving, service improvement or strategy ranking as acceptance criteria.
+interpretation: >-
+  This is an execution and reporting equivalence check, not a new physical
+  experiment, field calibration, or validation of previously unreported states.

@@ -1,0 +1,8 @@
+{
+  "date": "2026-10-31",
+  "saved_before_constrained_placement_service_results": true,
+  "analysis": "Paired demand-shift evaluation of every25/50/100pct same-floor capacity-preserving placement against its own random-layout control. Same frozen original27tail members retained.",
+  "scenarios": "Originalnine static source/personSD scenarios plushalf/full development-only empirical temporal proxy shifts forASHRAE-derivedcompositions.",
+  "outputs": "Population/tail gain distributions,conditionaldrawfractions and fixed-operation energy changes,all54settings2demandcontrols3positivebudgets.",
+  "interpretation": "Training profiles generated arrangements and commands; new evaluation shifts do not change commands or allocations. Empirical transport is a declared stress assumption,not linked actual-person validation."
+}

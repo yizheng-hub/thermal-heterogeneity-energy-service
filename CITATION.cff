@@ -1,9 +1,9 @@
 cff-version: 1.2.0
-message: "Please cite the accompanying article and this software release. A DOI will be added only after an immutable public archive exists."
+message: "Please cite the accompanying article and this software release."
 type: software
-title: "Human thermal heterogeneity reshapes building energy, carbon and flexibility"
+title: "Human thermal demand heterogeneity reshapes building energy and flexibility assessments"
 abstract: "Comparison of thermal service, energy, carbon, demand response and implementation resources under three building controls and declared spatial permissions."
 authors:
   - name: "Thermal Heterogeneity Study contributors"
-version: "0.1.0"
+version: "0.2.0"
 license: BSD-3-Clause

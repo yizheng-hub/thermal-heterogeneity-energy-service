@@ -15,6 +15,13 @@ import pandas as pd
 PAIR_KEYS = ["climate", "composition_id", "event_id", "action_id"]
 ALTERNATIVE_CONTROLS = ("personal_center", "personal_range")
 GROUP_DIMENSIONS = ("action_id", "control", "local_season", "load_level")
+RESPONSE_GROUP_DIMENSIONS = (
+    "action_id", "control", "climate", "composition_id", "local_season",
+    "load_level",
+)
+PAIRED_GROUP_DIMENSIONS = (
+    "action_id", "climate", "composition_id", "local_season", "load_level",
+)
 RECOVERY_METRICS = {
     "operative_temperature_max_abs_difference_c": "operative_temperature_c",
     "facility_electricity_kw_difference": "facility_electricity_kw",
@@ -160,6 +167,8 @@ def _response_row(group: pd.DataFrame) -> dict[str, float | int]:
             qualified_full, "precondition_event_recovery_net_reduction_kwh"
         ]
     )
+    raw_power = pd.to_numeric(group["event_mean_power_reduction_kw"]).clip(lower=0)
+    service_qualified_power = raw_power.where(qualified_event, 0.0)
     count = len(group)
     return {
         "event_count": count,
@@ -170,6 +179,14 @@ def _response_row(group: pd.DataFrame) -> dict[str, float | int]:
         "qualified_event_power_median_kw": float(event_values.median()),
         "qualified_event_power_p05_kw": float(event_values.quantile(0.05)),
         "qualified_event_power_p95_kw": float(event_values.quantile(0.95)),
+        "raw_positive_event_power_mean_kw": float(raw_power.mean()),
+        "raw_positive_event_power_median_kw": float(raw_power.median()),
+        "service_qualified_event_power_mean_kw": float(
+            service_qualified_power.mean()
+        ),
+        "service_qualified_event_power_median_kw": float(
+            service_qualified_power.median()
+        ),
         "qualified_positive_full_window_count": int(qualified_full.sum()),
         "qualified_positive_full_window_fraction": float(qualified_full.mean()),
         "qualified_full_window_net_median_kwh": float(full_values.median()),
@@ -187,7 +204,7 @@ def response_summary(scores: pd.DataFrame) -> pd.DataFrame:
             factor: float(value), "group_dimension": "overall",
             "group_value": "all", **_response_row(group),
         })
-    for dimension in GROUP_DIMENSIONS:
+    for dimension in RESPONSE_GROUP_DIMENSIONS:
         for (value, category), group in scores.groupby(
             [factor, dimension], sort=True, dropna=False
         ):
@@ -206,6 +223,9 @@ def _paired_row(group: pd.DataFrame) -> dict[str, float | int]:
     alternative_full = group.alternative_full_qualified.astype(bool)
     uniform_full = group.uniform_full_qualified.astype(bool)
     difference = pd.to_numeric(group.event_power_difference_kw)
+    qualified_difference = pd.to_numeric(
+        group.qualified_event_power_difference_kw
+    )
     tolerance = 1e-9
     return {
         "pair_count": len(group),
@@ -231,6 +251,33 @@ def _paired_row(group: pd.DataFrame) -> dict[str, float | int]:
         "uniform_raw_power_greater": int((difference < -tolerance).sum()),
         "raw_power_equal": int((difference.abs() <= tolerance).sum()),
         "alternative_minus_uniform_power_median_kw": float(difference.median()),
+        "alternative_qualified_power_mean_kw": float(
+            group.alternative_qualified_event_power_kw.mean()
+        ),
+        "uniform_qualified_power_mean_kw": float(
+            group.uniform_qualified_event_power_kw.mean()
+        ),
+        "alternative_qualified_power_median_kw": float(
+            group.alternative_qualified_event_power_kw.median()
+        ),
+        "uniform_qualified_power_median_kw": float(
+            group.uniform_qualified_event_power_kw.median()
+        ),
+        "alternative_minus_uniform_qualified_power_mean_kw": float(
+            qualified_difference.mean()
+        ),
+        "alternative_minus_uniform_qualified_power_median_kw": float(
+            qualified_difference.median()
+        ),
+        "alternative_qualified_power_greater": int(
+            (qualified_difference > tolerance).sum()
+        ),
+        "uniform_qualified_power_greater": int(
+            (qualified_difference < -tolerance).sum()
+        ),
+        "qualified_power_equal": int(
+            (qualified_difference.abs() <= tolerance).sum()
+        ),
     }
 
 
@@ -291,12 +338,30 @@ def paired_control_summary(
                 - paired.event_mean_power_reduction_kw_uniform
             ),
         )
+        paired = paired.assign(
+            alternative_qualified_event_power_kw=np.where(
+                paired.alternative_event_qualified,
+                np.maximum(
+                    paired.event_mean_power_reduction_kw_alternative, 0.0
+                ),
+                0.0,
+            ),
+            uniform_qualified_event_power_kw=np.where(
+                paired.uniform_event_qualified,
+                np.maximum(paired.event_mean_power_reduction_kw_uniform, 0.0),
+                0.0,
+            ),
+        )
+        paired["qualified_event_power_difference_kw"] = (
+            paired.alternative_qualified_event_power_kw
+            - paired.uniform_qualified_event_power_kw
+        )
         rows.append({
             "main_service_factor": main_factor, "alternative_control": alternative,
             "group_dimension": "overall", "group_value": "all",
             **_paired_row(paired),
         })
-        for dimension in ("action_id", "local_season", "load_level"):
+        for dimension in PAIRED_GROUP_DIMENSIONS:
             for value, group in paired.groupby(dimension, sort=True):
                 rows.append({
                     "main_service_factor": main_factor,
@@ -304,6 +369,16 @@ def paired_control_summary(
                     "group_dimension": dimension,
                     "group_value": str(value),
                     **_paired_row(group),
+                })
+        for dimension in ("climate", "composition_id"):
+            for value in sorted(paired[dimension].unique(), key=str):
+                retained = paired[~paired[dimension].eq(value)]
+                rows.append({
+                    "main_service_factor": main_factor,
+                    "alternative_control": alternative,
+                    "group_dimension": f"leave_one_{dimension}",
+                    "group_value": str(value),
+                    **_paired_row(retained),
                 })
     return pd.DataFrame(rows).sort_values(
         ["alternative_control", "group_dimension", "group_value"], kind="stable"
@@ -418,6 +493,13 @@ def build_summary(
             "alternatives": list(ALTERNATIVE_CONTROLS),
             "uniform_control": "uniform_average",
             "pairs_per_alternative": int(overall_pairs[0]["pair_count"]),
+            "mean_definition": (
+                "All matched event-action cases receive equal weight. Positive raw "
+                "power is max(0, action-minus-baseline event reduction). "
+                "Service-preserving power retains that value only when the baseline "
+                "and action satisfy the applicable preconditioning, event and "
+                "recovery service checks; all other cases contribute zero."
+            ),
         },
         "recovery_interpretation": (
             "Descriptive action-minus-baseline residuals at the final hour of the "

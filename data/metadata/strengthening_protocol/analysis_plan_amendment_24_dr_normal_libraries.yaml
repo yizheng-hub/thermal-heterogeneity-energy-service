@@ -1,0 +1,37 @@
+amendment: 24
+date: 2026-11-01
+timing: Before any new common-budget response plan, baseline replay or event-action outcome
+scope: Complete strong normal-operation benchmarks without changing the research question
+reason: >-
+  Independent design review found that separate center/range zone libraries
+  omitted the completed zone mean/median benchmark grid. Their old labels also
+  obscured that every event uses the same native-zone action capability.
+normal_libraries:
+  building_search: All existing building-command candidates, including uniform search and building mean/median offsets.
+  zone_summary: Building search plus all stopped native-zone mean/median candidates.
+  zone_full: Zone summary plus full-demand floor and zone candidates, including both center and range representations.
+rules:
+  - Deduplicate physical operations within each setting and retain full membership with hashes.
+  - Require completed strong-search coverage and quality review before freezing normal operations.
+  - Apply the same full-individual population and original fixed-tail service requirements to every library.
+  - Choose the lowest annual energy operation before inspecting any event outcomes.
+  - Keep normal-energy caps at 0.95, 1.00 and 1.05 times the external 25C reference.
+  - Report infeasible normal budgets and response menus without fallback or constraint relaxation.
+  - Use the same five event actions, demand-based protected-zone rule and native-zone event execution capability for all libraries.
+  - Retain selected operation origin and actual normal command permission separately from library identity.
+  - Choose one action per event with perfect outcome information; report this finite-menu condition.
+  - Report event power and full-window net electricity separately, including preconditioning and recovery.
+  - Rescore frozen selected actions under paired demand uncertainty without choosing replacement actions.
+  - Retain original controller-family opportunity accounting as its separate question.
+interpretation: >-
+  This compares normal-operation libraries under common event execution,
+  service and energy conditions. It is not a pure information intervention or
+  a building-only versus zone-only event-actuation comparison. Nesting implies
+  a nonincreasing finite-library minimum normal energy, not monotonic response.
+budget:
+  additional_annual_physical_operations: 0
+  maximum_logical_normal_operations: 162
+  maximum_logical_event_actions: 6480
+  energy_cap_values_reuse_physical_trajectories: true
+  physical_runs: Deduplicate exact inputs and weather; estimate after normal selection, before event outcomes.
+acceptance: Data, trajectory, history and engineering quality; no required winner or ranking.

@@ -1,0 +1,16 @@
+{
+  "scope": "Frozen original demand construction; verification reference only, never a generator input. Same-host folder relocation check.",
+  "data_products": {
+    "ASHRAE_ANALYSIS_UNIT_POOL.csv.gz": "b86365fc249f81666314434f51b22bde6d8a810fc91395bfb812f2a0cf02439b",
+    "ASHRAE_ASSIGNMENTS.csv.gz": "f00ee88eb8f9a137d8b08b231f6ec0c48a9075fc22363f18a67ef756ec3cb8c6",
+    "ASHRAE_ASSIGNMENTS.npz": "78d36391a56b5f0670e70d91dcfc6acc1d271800ed5638ce69a768af35c48978",
+    "ASHRAE_ASSIGNMENTS_LINKED.csv.gz": "3085bec5c7a1c82b1166501ecae69290469d992671344e56e7f724a2edabe9c3",
+    "ASHRAE_RECORDS.csv.gz": "de603125db199e722622ce9cc15a30c48ac2b783a5a21d3c451af938d892be40",
+    "CTCD_ASSIGNMENTS.csv.gz": "bcd2e7af08f8b7db1c984059f569deb3cb5ed11a2e89209352e4a44717d89d10",
+    "CTCD_ASSIGNMENTS_LINKED.csv.gz": "9eea9fbd267473fcbf9ae0b019f0f2f8708796f63496f2ca4144bdd4b030f66f",
+    "CTCD_EXECUTABLE_POOL.csv.gz": "b0bd3fbb70de1e7363b450e9d53c4e1cb338c89e01c74ce608d7aee20ccc9990",
+    "CTCD_FILTER_STAGES.csv": "9d889c2183b69f4c5a97a44b19dc8b52bd6c7e3223281fdcf57c70442a191567",
+    "CTCD_RECORDS.csv.gz": "f4dae40c570645f2b5914dd592d139fc84a51f8008d3917d03d2a56995194462",
+    "ZONE_INVENTORY.csv": "67d749372d4f0babb0fab8cbdbd5afdb0d78429beee0c98381228fccef6bc0d7"
+  }
+}

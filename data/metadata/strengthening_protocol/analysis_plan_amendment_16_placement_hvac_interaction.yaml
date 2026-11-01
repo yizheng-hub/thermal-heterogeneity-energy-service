@@ -1,0 +1,12 @@
+date: 2026-10-31
+before_cross_system_placement_results: true
+purpose: Test whether the observed within-floor partial-placement mechanism and its resource cost depend on HVAC architecture or central supply control.
+design: Transfer all324 frozen constrained-placement target vectors, comprising25%,50%,100% relocation budgets and both demand controls across54 settings, to each independently validated alternative HVAC condition.
+eligible_architectures: [independent_pthp, vav_coordinated_outdoor_reset]
+gate: Each architecture must first complete its declared mixed-placement technical confirmation. Then run the same three weather-selected climates and two compositions for all three relocation budgets and both demand controls; expand only if all36 logical pilot operations pass existing engineering checks.
+paired_reference: The same control's mixed-placement run within that HVAC architecture and climate; identical fixed hardware capacities, physical loads, ventilation and original annual fixed-tail identities.
+mechanism: Same frozen commands across hardware isolate hardware/control interaction; this is separate from own-system target retuning.
+deduplication: Reuse identical target vectors within a system and climate while retaining every logical composition/layout/control mapping.
+primary_endpoints: [population_mismatch_change, fixed_tail_mismatch_change, electricity_change, gas_change, total_purchased_energy_change, terminal_reheat_and_cooling_change]
+maximum_new_logical_operations: 648
+success: Technical quality only, with no required energy or service direction.

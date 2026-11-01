@@ -176,6 +176,16 @@ def _sha256(path: Path) -> str:
 def require_times_new_roman() -> dict[str, str]:
     """Resolve the exact normal and bold fonts, failing instead of falling back."""
 
+    local_fonts = Path(__file__).resolve().parents[2] / "tools/fonts"
+    if local_fonts.is_dir():
+        from matplotlib import font_manager
+
+        font_manager.fontManager.ttflist = [
+            font for font in font_manager.fontManager.ttflist if font.name != FONT_FAMILY
+        ]
+        for font in sorted(local_fonts.glob("times*.ttf")):
+            font_manager.fontManager.addfont(str(font))
+        font_manager.fontManager._findfont_cached.cache_clear()
     resolved: dict[str, str] = {}
     for weight in ("normal", "bold"):
         properties = FontProperties(family=[FONT_FAMILY], weight=weight)

@@ -1,0 +1,639 @@
+{
+  "schema_version": 1,
+  "workers": 4,
+  "timeout_seconds": 900,
+  "output_root": "output/strengthening/simulations/diagnostic_sql_replay",
+  "runtime": {
+    "executable_path": "tools/EnergyPlus-22.1.0/energyplus.exe",
+    "executable_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+    "api_sha256": "1e35a0904d1d3106ec8635f75b666a8a5afb1681c1ac1ccc6ebe8f4e2b44fd3e",
+    "package_manifest_sha256": "495602c5418884310a09cbaca87049eadebb200785467c6e73fb936437e452f7",
+    "runtime_backend": "official_python_c_api_subprocess"
+  },
+  "stopping_protocol": {
+    "hours": 8760,
+    "absolute_tolerance": 1e-08,
+    "clock_and_occupied": "exact",
+    "sizing": "identical original EIO sizing lines",
+    "warning_categories": "same original four-category presence flags; severe/fatal zero",
+    "cleanup_raw": false,
+    "result_direction": "No energy/service direction is required",
+    "qualification": "Original fixed 40/100 engineering qualification remains authoritative; technical replay is not a new control experiment"
+  },
+  "planning_evidence_sha256": {
+    "ALTERNATE_SQL_CACHE_NEEDS_REPLAY.csv": "118cdcaeaadfbc21c801385773f8a67e3d27e0aa1563b5a07cc56b98b3c7d5a7",
+    "ALTERNATE_SQL_CACHE_PREFERRED_SOURCES.csv": "3ff78d128fca994b605c8a4e89351fbcdd81d791f57c169f46fa31e0c0aecd33"
+  },
+  "replays": [
+    {
+      "case_id": "placement_ea696f90ce41f4c30595dfdd",
+      "identity": {
+        "climate": "Brasilia",
+        "composition_id": 2026102001,
+        "control": "personal_center",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "arranged"
+      },
+      "input_idf": {
+        "path": "output/strengthening/simulations/placement_inputs/placement_ea696f90ce41f4c30595dfdd.idf",
+        "sha256": "4d6733c14ed4c3068b6eea372b4b002290a1e62e3803b6de0e9ab39c035b0834"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Brasilia.epw",
+        "sha256": "076dc3c0065d8a93bf427e1d782d1f567d4b7b2ba39f955ed774ecd53d2ade48"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/strengthening/simulations/candidate_hourly/placement_ea696f90ce41f4c30595dfdd.npz",
+        "sha256": "8a12bdb720cd4214b783a8e6e13fb53a0624b114b0d0570d594d1def116d063a"
+      },
+      "original_qa": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_ea696f90ce41f4c30595dfdd/RUN_QA.json",
+        "sha256": "2169494961f975798160ec380eb76ca61fb47a7308afecb48bdb5e1d1f57f60a"
+      },
+      "original_qualification": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_ea696f90ce41f4c30595dfdd/STRENGTHENING_QA.json",
+        "sha256": "5559f0046b620b6649723941653918329da41173eceaa69097a9305afad89e32"
+      },
+      "original_eio": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_ea696f90ce41f4c30595dfdd/eplusout.eio",
+        "sha256": "fd7f59b697e59acc1a5fb06c537d9bdada132aaed4fcc403f931c9e03e6d166c"
+      },
+      "original_err": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_ea696f90ce41f4c30595dfdd/eplusout.err",
+        "sha256": "69edf24c5d83c4380c8bb1c8731dd252afa43f302065ca94fad656e8b5599003"
+      }
+    },
+    {
+      "case_id": "placement_06c5e6e1d7cf10c70c94afa3",
+      "identity": {
+        "climate": "Brasilia",
+        "composition_id": 2026102001,
+        "control": "personal_range",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "arranged"
+      },
+      "input_idf": {
+        "path": "output/strengthening/simulations/placement_inputs/placement_06c5e6e1d7cf10c70c94afa3.idf",
+        "sha256": "3961d46d900a6cf9635e8b23f5771f481caf26f15db9f26455a8227383e14209"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Brasilia.epw",
+        "sha256": "076dc3c0065d8a93bf427e1d782d1f567d4b7b2ba39f955ed774ecd53d2ade48"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/strengthening/simulations/candidate_hourly/placement_06c5e6e1d7cf10c70c94afa3.npz",
+        "sha256": "fe54a7a21a346964f0e65c90a0b9608e207fcaee4883e6e33afc5830df46759f"
+      },
+      "original_qa": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_06c5e6e1d7cf10c70c94afa3/RUN_QA.json",
+        "sha256": "eba5ae8e3cd6b361d317eb5b3edc8c1f498bb870c6d5afa27e3325f79838df8a"
+      },
+      "original_qualification": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_06c5e6e1d7cf10c70c94afa3/STRENGTHENING_QA.json",
+        "sha256": "845d1d1d4cb72d56c550c480fca72b8d536b1f74da2b84d3238a08663c79e6c7"
+      },
+      "original_eio": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_06c5e6e1d7cf10c70c94afa3/eplusout.eio",
+        "sha256": "fd7f59b697e59acc1a5fb06c537d9bdada132aaed4fcc403f931c9e03e6d166c"
+      },
+      "original_err": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_06c5e6e1d7cf10c70c94afa3/eplusout.err",
+        "sha256": "560303bca67b12c777345b08d67cb7ca3d88229f9461e13faeb5cfb5e548fb2f"
+      }
+    },
+    {
+      "case_id": "placement_9f79c1e515d3e1e416c81f9e",
+      "identity": {
+        "climate": "Brasilia",
+        "composition_id": 2026102501,
+        "control": "personal_center",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "arranged"
+      },
+      "input_idf": {
+        "path": "output/strengthening/simulations/placement_inputs/placement_9f79c1e515d3e1e416c81f9e.idf",
+        "sha256": "977640615b0b0afb99b2b3f4fefa12fa84c8f83443f194cb7dda88fe48e49f3e"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Brasilia.epw",
+        "sha256": "076dc3c0065d8a93bf427e1d782d1f567d4b7b2ba39f955ed774ecd53d2ade48"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/strengthening/simulations/candidate_hourly/placement_9f79c1e515d3e1e416c81f9e.npz",
+        "sha256": "4732c97bd3d6427e5ac29f3f8abd80fe7505fc26769712cc89dd7a6ea5545ab4"
+      },
+      "original_qa": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_9f79c1e515d3e1e416c81f9e/RUN_QA.json",
+        "sha256": "dcaf42b81a7da92a59a501dc87d3b1eafc5175909fef7cdda59478ff513bc02f"
+      },
+      "original_qualification": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_9f79c1e515d3e1e416c81f9e/STRENGTHENING_QA.json",
+        "sha256": "2dbc2c229677ae9640bbe159360087ada1839ef36081de2a133e00a1a41a2d09"
+      },
+      "original_eio": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_9f79c1e515d3e1e416c81f9e/eplusout.eio",
+        "sha256": "398b9c116e674e9038d236acfa54763fd8bafc067074336e53c6df2348b09e38"
+      },
+      "original_err": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_9f79c1e515d3e1e416c81f9e/eplusout.err",
+        "sha256": "6e892b0d15ef9bec452facaf4c2e632a149c355cd0e7867d6edc976b8a56fcae"
+      }
+    },
+    {
+      "case_id": "placement_1e0255aff0ae4263420284a8",
+      "identity": {
+        "climate": "Brasilia",
+        "composition_id": 2026102501,
+        "control": "personal_range",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "arranged"
+      },
+      "input_idf": {
+        "path": "output/strengthening/simulations/placement_inputs/placement_1e0255aff0ae4263420284a8.idf",
+        "sha256": "f11df4dac477bc84f32ddabc2206c37bfec16eff7bfd0e3ccc19f0eecb42f09d"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Brasilia.epw",
+        "sha256": "076dc3c0065d8a93bf427e1d782d1f567d4b7b2ba39f955ed774ecd53d2ade48"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/strengthening/simulations/candidate_hourly/placement_1e0255aff0ae4263420284a8.npz",
+        "sha256": "25e18d698eabca81bb88cf986ac8564043108978d54ea867f325246f6d74f694"
+      },
+      "original_qa": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_1e0255aff0ae4263420284a8/RUN_QA.json",
+        "sha256": "7fd59061298a070ddd3a13b8c8b4820922c81dbed105f127577ac0ebe3230594"
+      },
+      "original_qualification": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_1e0255aff0ae4263420284a8/STRENGTHENING_QA.json",
+        "sha256": "e5a51e19dd2f6c5672bbd012bc61e67c6d21fd51b49ec41ac08ab5b8f2c439ac"
+      },
+      "original_eio": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_1e0255aff0ae4263420284a8/eplusout.eio",
+        "sha256": "398b9c116e674e9038d236acfa54763fd8bafc067074336e53c6df2348b09e38"
+      },
+      "original_err": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_1e0255aff0ae4263420284a8/eplusout.err",
+        "sha256": "40bcdca11f9a5b29639f7fb38fbaa2831035db655b534215f88c28e1212c5b31"
+      }
+    },
+    {
+      "case_id": "placement_b976c77b869fd55369e904df",
+      "identity": {
+        "climate": "Montreal",
+        "composition_id": 2026102001,
+        "control": "personal_center",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "arranged"
+      },
+      "input_idf": {
+        "path": "output/strengthening/simulations/placement_inputs/placement_b976c77b869fd55369e904df.idf",
+        "sha256": "7b53cb22e5f0fd726bff36a1d194f18fc4b04aeb1be35cfd7a98db840ee01ef3"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Montreal.epw",
+        "sha256": "252ffd55a38fda397e3dd4fd46fe79547ad3f325e5dc51797bd8e8f21e58f5ca"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/strengthening/simulations/candidate_hourly/placement_b976c77b869fd55369e904df.npz",
+        "sha256": "e448ec6f8344f0794ad7ec88fb5d8b5e37aaac183bbdd69c4c1338051dfb9ecd"
+      },
+      "original_qa": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_b976c77b869fd55369e904df/RUN_QA.json",
+        "sha256": "8c0dcc1885608dc4ff0f55b919c232e1137b08b93f1b817a7fe9568d10547ab5"
+      },
+      "original_qualification": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_b976c77b869fd55369e904df/STRENGTHENING_QA.json",
+        "sha256": "589fc3102b641c308f8619f72b1520d9c27a35c1b4c3fc5f437f1e71845eea7c"
+      },
+      "original_eio": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_b976c77b869fd55369e904df/eplusout.eio",
+        "sha256": "45bffc9f53c15eafdd64f77ff0f8a9232161c03bc20f5b62852d6f6813d55bb1"
+      },
+      "original_err": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_b976c77b869fd55369e904df/eplusout.err",
+        "sha256": "eeb4e7d0602472c5f624937c78fe0563af4e1b0c9634a83a0d1b78d2645e2a96"
+      }
+    },
+    {
+      "case_id": "placement_79be2ec5e0c91b5552c21513",
+      "identity": {
+        "climate": "Montreal",
+        "composition_id": 2026102001,
+        "control": "personal_range",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "arranged"
+      },
+      "input_idf": {
+        "path": "output/strengthening/simulations/placement_inputs/placement_79be2ec5e0c91b5552c21513.idf",
+        "sha256": "093a337cd0eada1794bbd0f9a061f675cdc9717ba703b229e3d0fca21fce9f9a"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Montreal.epw",
+        "sha256": "252ffd55a38fda397e3dd4fd46fe79547ad3f325e5dc51797bd8e8f21e58f5ca"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/strengthening/simulations/candidate_hourly/placement_79be2ec5e0c91b5552c21513.npz",
+        "sha256": "a9b46fe8851d105de23ed41259d25754cf5abb30923ab5ed24e38d3b4fb5fa98"
+      },
+      "original_qa": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_79be2ec5e0c91b5552c21513/RUN_QA.json",
+        "sha256": "29142793cecb6db2834c13f22db13ad79ebcf9c5529ee1437c1e9bed4e56aebd"
+      },
+      "original_qualification": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_79be2ec5e0c91b5552c21513/STRENGTHENING_QA.json",
+        "sha256": "20480279ca8bd266165b3a8c3d85670386326fd709d5503fc6bea97eacb04e27"
+      },
+      "original_eio": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_79be2ec5e0c91b5552c21513/eplusout.eio",
+        "sha256": "45bffc9f53c15eafdd64f77ff0f8a9232161c03bc20f5b62852d6f6813d55bb1"
+      },
+      "original_err": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_79be2ec5e0c91b5552c21513/eplusout.err",
+        "sha256": "51fb21cf5c4ddb2c37bfecef691f8b59f76204ad1fa70186a3cfb5110b1f2c16"
+      }
+    },
+    {
+      "case_id": "placement_763ddb82c304492333082e67",
+      "identity": {
+        "climate": "Montreal",
+        "composition_id": 2026102501,
+        "control": "personal_center",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "arranged"
+      },
+      "input_idf": {
+        "path": "output/strengthening/simulations/placement_inputs/placement_763ddb82c304492333082e67.idf",
+        "sha256": "b7789261f36893b4c5199f582f1410574f7e814509de9b8982261c29a0362be8"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Montreal.epw",
+        "sha256": "252ffd55a38fda397e3dd4fd46fe79547ad3f325e5dc51797bd8e8f21e58f5ca"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/strengthening/simulations/candidate_hourly/placement_763ddb82c304492333082e67.npz",
+        "sha256": "3bab1f1ba90d5a7eb77f3c0fb84f5882ca89d926bc87246867d971834d0db8b4"
+      },
+      "original_qa": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_763ddb82c304492333082e67/RUN_QA.json",
+        "sha256": "0b55636f82693b9a3d5134df2e1c0dbf9ce475740dc5d9659d4873932b1fc27c"
+      },
+      "original_qualification": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_763ddb82c304492333082e67/STRENGTHENING_QA.json",
+        "sha256": "1695e0222cd0a9f5283196652b86213329ac31ae6cd8bac0a5464b33f449e132"
+      },
+      "original_eio": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_763ddb82c304492333082e67/eplusout.eio",
+        "sha256": "796cda2bc84ea4eb4edb09a10ebd573c89bde444d88b53ade0e9a0d9475e360b"
+      },
+      "original_err": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_763ddb82c304492333082e67/eplusout.err",
+        "sha256": "a2e3b38233fcc61ed4aff900bfba2bf1c0ee7a8b97860fbdb9d265289b2731aa"
+      }
+    },
+    {
+      "case_id": "placement_46268700085e787a63f1e4ae",
+      "identity": {
+        "climate": "Montreal",
+        "composition_id": 2026102501,
+        "control": "personal_range",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "arranged"
+      },
+      "input_idf": {
+        "path": "output/strengthening/simulations/placement_inputs/placement_46268700085e787a63f1e4ae.idf",
+        "sha256": "98d07a09a2611a2e5aaef088ef6ed7f18618c18544db9d6f1a5091a77203f6df"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Montreal.epw",
+        "sha256": "252ffd55a38fda397e3dd4fd46fe79547ad3f325e5dc51797bd8e8f21e58f5ca"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/strengthening/simulations/candidate_hourly/placement_46268700085e787a63f1e4ae.npz",
+        "sha256": "eb74f0c8d07f7d0d6d46d7c434747516f17bdf101bc3787982bb0a4060c1dcf3"
+      },
+      "original_qa": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_46268700085e787a63f1e4ae/RUN_QA.json",
+        "sha256": "ae26d6fc7fd31a3b78525eb5acb7c29b6fcfa3d5f0970dd7ae27a258d73c6fdd"
+      },
+      "original_qualification": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_46268700085e787a63f1e4ae/STRENGTHENING_QA.json",
+        "sha256": "f6e7b7dc9353f64fbf1a2a878092ffd81bc7b41f77109a791eb9e825a9d66d5a"
+      },
+      "original_eio": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_46268700085e787a63f1e4ae/eplusout.eio",
+        "sha256": "796cda2bc84ea4eb4edb09a10ebd573c89bde444d88b53ade0e9a0d9475e360b"
+      },
+      "original_err": {
+        "path": "output/strengthening/simulations/candidate_runs/placement_46268700085e787a63f1e4ae/eplusout.err",
+        "sha256": "0f0a4c509dd18dd14795e432661806b2ee893b1d8728a334d4b7c55ecb0f0518"
+      }
+    }
+  ],
+  "existing_sources": [
+    {
+      "case_id": "annual_26adf21f58bde2faa5e6a793",
+      "identity": {
+        "climate": "Brasilia",
+        "composition_id": 2026102002,
+        "control": "personal_center",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "mixed"
+      },
+      "input_idf": {
+        "path": "output/from_raw/matrix/annual_runs/inputs/annual_26adf21f58bde2faa5e6a793.idf",
+        "sha256": "67942983969e7f94f7eb6d268127024d1aab55dac73336abc1bb665fcb1585c5"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Brasilia.epw",
+        "sha256": "076dc3c0065d8a93bf427e1d782d1f567d4b7b2ba39f955ed774ecd53d2ade48"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/from_raw/matrix/annual_runs/hourly/annual_26adf21f58bde2faa5e6a793.npz",
+        "sha256": "aaff2240a7be0205a1f002663110d529b0a3b41bbd17e493a4248672463b887b"
+      },
+      "sql": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_26adf21f58bde2faa5e6a793/eplusout.sql",
+        "sha256": "d108ed48accb8e797ec67d50060b4d4790b77a6f8a80e573736578da8469234f"
+      },
+      "qa": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_26adf21f58bde2faa5e6a793/RUN_QA.json",
+        "sha256": "3071c94db78fbd722d664152865f62585043040fb853a77253ec4cbf93cea90c"
+      },
+      "cache_hourly": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/hourly/annual_26adf21f58bde2faa5e6a793.npz",
+        "sha256": "d58ebb8b22aaf652e1c2f2cfb8ca6ba007965bdad5d32ace8dad7809af836e0d"
+      }
+    },
+    {
+      "case_id": "annual_ee3a78e913687c6b94daa505",
+      "identity": {
+        "climate": "Brasilia",
+        "composition_id": 2026102503,
+        "control": "personal_range",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "mixed"
+      },
+      "input_idf": {
+        "path": "output/from_raw/matrix/annual_runs/inputs/annual_ee3a78e913687c6b94daa505.idf",
+        "sha256": "419d1306f9a604ec6f113d87f8fcc512d88908d900c1ee50123dc3c63275396c"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Brasilia.epw",
+        "sha256": "076dc3c0065d8a93bf427e1d782d1f567d4b7b2ba39f955ed774ecd53d2ade48"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/from_raw/matrix/annual_runs/hourly/annual_ee3a78e913687c6b94daa505.npz",
+        "sha256": "84655f721bd84ec92ea58f4eab43928995993ed7410ff602da5ea321563d495d"
+      },
+      "sql": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_ee3a78e913687c6b94daa505/eplusout.sql",
+        "sha256": "860568491943b9ede4c2ebb5fd940cc43e7387cbc3989f04eb63a5688935c23a"
+      },
+      "qa": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_ee3a78e913687c6b94daa505/RUN_QA.json",
+        "sha256": "8fd2df9d8a6aa8158c32227bc45a98b0a5283ff719057db49c35abfce857ec2b"
+      },
+      "cache_hourly": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/hourly/annual_ee3a78e913687c6b94daa505.npz",
+        "sha256": "69b2eb834da928f420daa993b889664f99a0eb661a5775d353b122e49b17fb55"
+      }
+    },
+    {
+      "case_id": "annual_12acee41e79213d7af894950",
+      "identity": {
+        "climate": "Malmo",
+        "composition_id": 2026102003,
+        "control": "personal_range",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "mixed"
+      },
+      "input_idf": {
+        "path": "output/from_raw/matrix/annual_runs/inputs/annual_12acee41e79213d7af894950.idf",
+        "sha256": "9395d55927ab23a23bb252757472f629bd75711609047d1831cd702739a0b050"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Malmo_PVGIS_ERA5_2005_2020.epw",
+        "sha256": "326a3b09e92af46db2aab53ff4481fffb9ea75d0cbb50480ff34078277195e4b"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/from_raw/matrix/annual_runs/hourly/annual_12acee41e79213d7af894950.npz",
+        "sha256": "361b6424a80c79fe58b4132df06912028c78cc05a7fd045acff30ac156ec006e"
+      },
+      "sql": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_12acee41e79213d7af894950/eplusout.sql",
+        "sha256": "fc451b024a53228a954aaa4e603b9354df2ae903f9504b73d37152f6d9ede284"
+      },
+      "qa": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_12acee41e79213d7af894950/RUN_QA.json",
+        "sha256": "d46d0d0d58245e5c3a4feebce7254630f21e936f43d2a67e34f04873287b57be"
+      },
+      "cache_hourly": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/hourly/annual_12acee41e79213d7af894950.npz",
+        "sha256": "d8f36a53745e29949126a2c3e108f7303e720feb7436ea8a915fa4a38baf214d"
+      }
+    },
+    {
+      "case_id": "annual_8247db0b17c31047e31fbb3a",
+      "identity": {
+        "climate": "Miami",
+        "composition_id": 2026102502,
+        "control": "personal_center",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "mixed"
+      },
+      "input_idf": {
+        "path": "output/from_raw/matrix/annual_runs/inputs/annual_8247db0b17c31047e31fbb3a.idf",
+        "sha256": "0e6fb50f860b6823c246e20da518b5b1d5cef115309458e73f2d449ab0df0c8a"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Miami.epw",
+        "sha256": "a406d809eb656a522eac3e01846a722731a3872e6b7c9ebf8fe0c4a791ed8ac4"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/from_raw/matrix/annual_runs/hourly/annual_8247db0b17c31047e31fbb3a.npz",
+        "sha256": "1744dff5697b1a57bbf8cbb847443a06595a9bbf4e8b79dc57e6bb5b6d4e42a7"
+      },
+      "sql": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_8247db0b17c31047e31fbb3a/eplusout.sql",
+        "sha256": "49efbb54257a9542057071b30301adbf8d76cfab1d79356272147dbdaaa594d5"
+      },
+      "qa": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_8247db0b17c31047e31fbb3a/RUN_QA.json",
+        "sha256": "73093d150d7a09b9045b635938288e5725d61bbb8487ec4c600cbfa22a2f478b"
+      },
+      "cache_hourly": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/hourly/annual_8247db0b17c31047e31fbb3a.npz",
+        "sha256": "8349e84b14ef5ecee1eae910cd0c715b78e67db35c7e9f080046cc7a75599a7a"
+      }
+    },
+    {
+      "case_id": "annual_228e683886ff05b95a1c7c62",
+      "identity": {
+        "climate": "Montreal",
+        "composition_id": 2026102001,
+        "control": "personal_range",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "mixed"
+      },
+      "input_idf": {
+        "path": "output/from_raw/matrix/annual_runs/inputs/annual_228e683886ff05b95a1c7c62.idf",
+        "sha256": "4132e5ee7b111ed272e9662624a40673e51dabae19f7a481f5fd8d456241a3f4"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Montreal.epw",
+        "sha256": "252ffd55a38fda397e3dd4fd46fe79547ad3f325e5dc51797bd8e8f21e58f5ca"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/from_raw/matrix/annual_runs/hourly/annual_228e683886ff05b95a1c7c62.npz",
+        "sha256": "d76c42e016dd1f1372fcb61753710725fa519c51989a12cfd3468a341f060668"
+      },
+      "sql": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_228e683886ff05b95a1c7c62/eplusout.sql",
+        "sha256": "25e6911b4003d20c76358d13fd26501e873478b9a885e649f03cae9a75a32734"
+      },
+      "qa": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_228e683886ff05b95a1c7c62/RUN_QA.json",
+        "sha256": "ef4e5eb5c30c7e0402ccb25e65daa223b39a479ec0ef1aee8f7c1958c4066b14"
+      },
+      "cache_hourly": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/hourly/annual_228e683886ff05b95a1c7c62.npz",
+        "sha256": "72770b44bf64e2786839ee685c75d40b0f444f842c1da571a0c72bc3ac7b7984"
+      }
+    },
+    {
+      "case_id": "annual_9e46c2c9915d27df0a77768f",
+      "identity": {
+        "climate": "Montreal",
+        "composition_id": 2026102502,
+        "control": "personal_range",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "mixed"
+      },
+      "input_idf": {
+        "path": "output/from_raw/matrix/annual_runs/inputs/annual_9e46c2c9915d27df0a77768f.idf",
+        "sha256": "9ddcd84e2d80eff7d03799485572abfa832ccf53939b4c8da9a7600b6dd1fd86"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Montreal.epw",
+        "sha256": "252ffd55a38fda397e3dd4fd46fe79547ad3f325e5dc51797bd8e8f21e58f5ca"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/from_raw/matrix/annual_runs/hourly/annual_9e46c2c9915d27df0a77768f.npz",
+        "sha256": "6d937926caf4f12557921efa03725a6e25dda8c5cc7afb965814ad4641796756"
+      },
+      "sql": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_9e46c2c9915d27df0a77768f/eplusout.sql",
+        "sha256": "7e8363b9ed98752e52a05bc8e0677ba508ccbce74915ed7e3bf80d93598543a3"
+      },
+      "qa": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_9e46c2c9915d27df0a77768f/RUN_QA.json",
+        "sha256": "24b4573da507ba4c336ccfd176b584eba35aac6962a4fce7d6212b9635d24100"
+      },
+      "cache_hourly": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/hourly/annual_9e46c2c9915d27df0a77768f.npz",
+        "sha256": "091abc9f7ec58708e2629f72989cb1da33e8bbd7b21100eb08d09a1aef7eccb4"
+      }
+    },
+    {
+      "case_id": "annual_901d05d38f231aca9573deef",
+      "identity": {
+        "climate": "Singapore",
+        "composition_id": 2026102501,
+        "control": "personal_center",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "mixed"
+      },
+      "input_idf": {
+        "path": "output/from_raw/matrix/annual_runs/inputs/annual_901d05d38f231aca9573deef.idf",
+        "sha256": "2e2fc12d78db40ca6d3e0038040b05ca7197cca035c0047df1f6375b943c6bca"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Singapore.epw",
+        "sha256": "b96fcb505cb4d64e16d24322b8bb7f98f5dfe32416ffbb77eb7726cb6ec6b506"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/from_raw/matrix/annual_runs/hourly/annual_901d05d38f231aca9573deef.npz",
+        "sha256": "49d7a0e72a2cfc8054b498869ae8b5bbe0d1b3275a15f0b8671046f7037b5e7e"
+      },
+      "sql": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_901d05d38f231aca9573deef/eplusout.sql",
+        "sha256": "5d3431d29fdeadddf6dba65850823d986042157c96f9933097f6f3f6ffa38049"
+      },
+      "qa": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_901d05d38f231aca9573deef/RUN_QA.json",
+        "sha256": "dd83a742d8685f8cdad3ecfa962470f730fea206456b9d95d9089432c2a20af9"
+      },
+      "cache_hourly": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/hourly/annual_901d05d38f231aca9573deef.npz",
+        "sha256": "de009b806825147fed01be0e7c06e504a1d5d839e92f09a77a552f5a9f21304f"
+      }
+    },
+    {
+      "case_id": "annual_ef3d033b394c86cdbcfde6bc",
+      "identity": {
+        "climate": "Singapore",
+        "composition_id": 2026102502,
+        "control": "personal_range",
+        "layout": "within_floor_relocation_25pct",
+        "system": "vav",
+        "placement": "mixed"
+      },
+      "input_idf": {
+        "path": "output/from_raw/matrix/annual_runs/inputs/annual_ef3d033b394c86cdbcfde6bc.idf",
+        "sha256": "41c7bc9e7969ef1225521971f231803feebc146ed92e5b9c979d693f8aec3686"
+      },
+      "weather": {
+        "path": "data/upstream/global_climate_matrix/weather/Singapore.epw",
+        "sha256": "b96fcb505cb4d64e16d24322b8bb7f98f5dfe32416ffbb77eb7726cb6ec6b506"
+      },
+      "runtime_sha256": "8e56b46647e109944d8762df6f35eff2fa149c94dc43a78cbf17c69f56e3ee27",
+      "original_hourly": {
+        "path": "output/from_raw/matrix/annual_runs/hourly/annual_ef3d033b394c86cdbcfde6bc.npz",
+        "sha256": "cbccb00e9bf51ad33ccb5608732fc6d89a38794e8a4ca4af5501c379df89bb9d"
+      },
+      "sql": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_ef3d033b394c86cdbcfde6bc/eplusout.sql",
+        "sha256": "d92fb0dd5961ba62a5a6c802c89731cf452552209679466a6419fda87fd40213"
+      },
+      "qa": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/runs/annual_ef3d033b394c86cdbcfde6bc/RUN_QA.json",
+        "sha256": "662cb13f75612908a582fa6bf317c28f18b265a9825d6ac3de1b8bd898ec316b"
+      },
+      "cache_hourly": {
+        "path": "output/from_raw/matrix/facility_sql_repair_annual/hourly/annual_ef3d033b394c86cdbcfde6bc.npz",
+        "sha256": "f130ce11ca7f012af3e06c574350cbcba4b3d807f635b295eef2d4d6089a9142"
+      }
+    }
+  ]
+}

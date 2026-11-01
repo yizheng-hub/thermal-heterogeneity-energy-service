@@ -1,0 +1,19 @@
+amendment: 20
+date: 2026-10-31
+scope: Independent climate quality gates for own-system response calibration
+timing: >-
+  Written after the pilot passed and Beijing confirmation probes showed operating-range
+  warnings, before confirmation controller outcomes were generated. This is a change
+  to execution handling, not an outcome-blind original analysis specification.
+unchanged:
+  - All 31 declared uniform targets and all nine climates remain in the probe inventory.
+  - Capacities, ventilation, physical loads, objectives and engineering thresholds.
+  - Failed operations and their original warnings remain in the delivered results.
+rule:
+  - A climate supports retuning only when every declared probe target passes quality checks.
+  - Do not interpolate over failed or omitted targets or shrink the target domain.
+  - The pilot remains an all-pass prerequisite for launching confirmation probes.
+  - Continue independent confirmation climates that meet the complete-probe requirement.
+  - List unavailable climate-composition-controller settings against all 162 planned operations.
+  - Report partial status if any declared climate cannot support retuning.
+selection: No energy or service outcome is used to determine climate eligibility.

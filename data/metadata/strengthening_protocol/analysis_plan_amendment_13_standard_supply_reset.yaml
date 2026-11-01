@@ -1,0 +1,14 @@
+date: 2026-10-31
+before_performance_results: true
+reason: The 12.8–18C warmest-zone reset produced warmup convergence severe errors in Brasilia and did not pass the technical gate.
+preserve_previous_attempts: true
+new_condition: vav_coordinated_standard
+supply_reset_c: [12.8, 15.56]
+rule: Same Warmest maximum-temperature algorithm; use the 12.8C to 15.56C example range documented by EnergyPlus Tips and Tricks, rather than the wider 18C ceiling.
+primary_documentation: https://energyplus.readthedocs.io/en/v23.2.0/tips_and_tricks/tips_and_tricks.html
+not_a_regulatory_compliance_claim: true
+capacity: Freeze every original VAV equipment capacity from its climate-specific common-reference sizing; preserve loads, geometry, ventilation, thermostat targets and deadband.
+pilot: Same three weather-selected climates and two compositions as the frozen original pilot; 3 references plus 18 control operations.
+confirmation: Expand to all nine climates and all six compositions only if all 21 pilot operations pass the existing numerical, ventilation and energy-closure gate.
+success: Technical validity only. No condition on energy savings, service improvement or controller ranking.
+budget: At most 171 annual operations, including 21 pilot operations, plus technical iteration comparisons when warnings occur.

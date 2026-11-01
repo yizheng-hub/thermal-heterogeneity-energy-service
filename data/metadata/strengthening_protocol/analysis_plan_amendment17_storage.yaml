@@ -1,0 +1,10 @@
+{
+  "amendment": 17,
+  "scope": "Storage only; scientific protocol, baseline selection, action menu, model, runtime, service checks and numerical limits unchanged.",
+  "reason": "Up to6480 full-year response actions retain bit-exact state histories. The measured action state difference alone is8.565MB per physical run; additional hourly arrays and SQL metadata make D-drive capacity uncertain.",
+  "response_output_root": "<historical response output root; execution uses --output-root>",
+  "available_bytes_at_freeze": 502322954240,
+  "physical_run_maximum": 6480,
+  "large_output_action": "Create new outputs in the explicitly recorded F-drive directory. No original data or result is moved or deleted.",
+  "portable_workflow": "The retained reproduce_strengthening entry derives simulation paths from its chosen output-root; it does not require this working-directory path."
+}

@@ -807,7 +807,7 @@ def apply_annual_solver_stability_exception(
     return True, audit
 
 
-def _cached_run(job: dict, runtime_sha256: str) -> dict | None:
+def _cached_run(job: dict, runtime_sha256: str, runtime_info: dict | None = None) -> dict | None:
     run_folder = job["run_folder"]
     compact = job["compact"]
     qa_path = run_folder / "RUN_QA.json"
@@ -821,6 +821,18 @@ def _cached_run(job: dict, runtime_sha256: str) -> dict | None:
         "hourly_sha256": sha256(compact),
     }
     if qa.get("completed") and all(qa.get(key) == value for key, value in expected.items()):
+        if runtime_info and qa.get("runtime_api_sha256") is not None:
+            if any(qa.get(key) != runtime_info[key] for key in ("runtime_api_sha256", "runtime_package_manifest_sha256")):
+                raise ValueError("Cached API runtime fingerprint differs from the declared environment")
+        qa["cached_artifact_runtime_backend"] = qa.get("runtime_backend", "historical_executable")
+        qa["compact_output"] = str(compact.resolve())
+        for key in ("sql_metadata_path", "execution_audit_path"):
+            if qa.get(key):
+                qa[key] = str(run_folder / Path(qa[key]).name)
+        if qa.get("sql_metadata_path") and qa.get("sql_metadata_sha256"):
+            metadata = Path(qa["sql_metadata_path"])
+            if not metadata.is_file() or sha256(metadata) != qa["sql_metadata_sha256"]:
+                raise ValueError("Cached simulation metadata is missing or changed")
         return qa
     raise ValueError(
         f"Cached run provenance mismatch for {job['run_id']}; "
@@ -830,9 +842,11 @@ def _cached_run(job: dict, runtime_sha256: str) -> dict | None:
 
 def _execute_jobs(jobs: list[dict], executable: Path, workers: int) -> list[dict]:
     runtime_hash = sha256(executable)
+    from thermal_heterogeneity.energyplus_launcher import runtime_provenance
+    runtime_info = runtime_provenance(executable)
 
     def execute(job: dict) -> dict:
-        cached = _cached_run(job, runtime_hash)
+        cached = _cached_run(job, runtime_hash, runtime_info)
         if cached is None:
             qa = run_energyplus(
                 job["idf"], job["weather"], executable, job["run_folder"],
@@ -1513,6 +1527,8 @@ def main() -> None:
     )
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=6)
+    parser.add_argument("--automatic-solver-stability", action="store_true",
+                        help="Generate fresh40-versus100 iteration evidence for otherwise-clean HVAC-iteration-only gate failures.")
     parser.add_argument(
         "--candidate-scope",
         choices=("sentinel", "all"),
@@ -1544,17 +1560,20 @@ def main() -> None:
         climates, args.prototype_root.resolve(), args.weather_root.resolve(),
         args.reference_idf.resolve(), root / "models", args.prototype_mode,
     )
-    probes = run_probes(
-        climates,
-        model_manifest,
-        root / "probe_runs",
-        args.runtime.resolve(),
-        args.workers,
-        (
-            args.solver_stability_manifest.resolve()
-            if args.solver_stability_manifest is not None else None
-        ),
-    )
+    try:
+        probes = run_probes(
+            climates, model_manifest, root / "probe_runs", args.runtime.resolve(), args.workers,
+            args.solver_stability_manifest.resolve() if args.solver_stability_manifest is not None else None,
+        )
+    except RuntimeError:
+        if not args.automatic_solver_stability or args.solver_stability_manifest is not None:
+            raise
+        from automatic_solver_stability import audit_probes
+        evidence = audit_probes(root, args.runtime.resolve(), args.workers)
+        probes = run_probes(climates, model_manifest, root / "probe_runs", args.runtime.resolve(), args.workers, evidence)
+    if args.automatic_solver_stability:
+        from automatic_solver_stability import ensure_reference_metadata
+        ensure_reference_metadata(root, args.runtime.resolve(), args.workers)
     controller = _controller_root(climates, probes, profiles, root / "control_generation")
     designs = generate_control_designs(climates, controller, args.candidate_scope)
     existing_annual = None
@@ -1569,14 +1588,22 @@ def main() -> None:
             designs, args.extend_from_annual_manifest.resolve()
         )
         annual_output_root = root / "annual_candidate_extension"
-    run_controls(
-        designs_to_run, model_manifest, root / "probe_runs", annual_output_root,
-        args.runtime.resolve(), args.workers,
-        (
-            args.annual_solver_stability_manifest.resolve()
-            if args.annual_solver_stability_manifest is not None else None
-        ),
-    )
+    try:
+        run_controls(
+            designs_to_run, model_manifest, root / "probe_runs", annual_output_root,
+            args.runtime.resolve(), args.workers,
+            args.annual_solver_stability_manifest.resolve() if args.annual_solver_stability_manifest is not None else None,
+        )
+    except RuntimeError:
+        if not args.automatic_solver_stability or args.annual_solver_stability_manifest is not None:
+            raise
+        from automatic_solver_stability import audit_annual
+        args.annual_solver_stability_manifest = audit_annual(
+            annual_output_root / "ANNUAL_CONTROL_RUN_MANIFEST.csv", args.runtime.resolve(),
+            root / "solver_stability/annual", args.workers,
+        )
+        run_controls(designs_to_run, model_manifest, root / "probe_runs", annual_output_root,
+                     args.runtime.resolve(), args.workers, args.annual_solver_stability_manifest)
     annual_manifest = annual_output_root / "ANNUAL_CONTROL_RUN_MANIFEST.csv"
     if existing_annual is not None:
         extension_manifest = (
