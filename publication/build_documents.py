@@ -402,6 +402,7 @@ def build(source_name, publication, output):
             p = doc.add_paragraph()
             typography(p, 11, False, False)
             p.paragraph_format.line_spacing = 1.15
+            p.paragraph_format.keep_together = True
             name = "Supplementary Fig. " if n.startswith("S") else "Fig. "
             run = p.add_run(name + n + " | " + title_text + ". ")
             run.bold = True
