@@ -15,6 +15,7 @@ if importlib.util.find_spec("docx") is None:
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
@@ -415,6 +416,11 @@ def build(source_name, publication, output):
         typography(p)
     output.mkdir(parents=True, exist_ok=True)
     target = output / (Path(source_name).stem + ".docx")
+    # The template body was replaced; remove its now-unreferenced figure assets.
+    used_images = set(doc._element.xpath(".//@r:embed | .//@r:link"))
+    for rid, relation in list(doc.part.rels.items()):
+        if relation.reltype == RT.IMAGE and rid not in used_images:
+            doc.part.drop_rel(rid)
     doc.save(target)
     # Restore preserve-only package parts byte-for-byte after the body edit.
     with zipfile.ZipFile(template) as z:
