@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import subprocess
+from types import SimpleNamespace
 
 import pytest
 from thermal_heterogeneity import energyplus_launcher as launcher
@@ -87,7 +88,8 @@ def test_unverified_process_termination_never_copies_or_deletes(case, monkeypatc
     assert json.loads(audit.read_text())["status"] == "termination_failed_scratch_retained"
 
 
-def test_taskkill_oserror_is_a_termination_failure(monkeypatch):
+def test_taskkill_oserror_is_a_termination_failure(monkeypatch, tmp_path):
+    monkeypatch.setattr(launcher, "os", SimpleNamespace(name="nt", environ={"SystemRoot": str(tmp_path)}))
     class Child:
         pid = 12345
 
@@ -103,7 +105,8 @@ def test_taskkill_oserror_is_a_termination_failure(monkeypatch):
         launcher._run_process(["owned child"], stdout=subprocess.DEVNULL, cwd=Path.cwd(), timeout_seconds=1)
 
 
-def test_taskkill_failure_retains_scratch_even_if_parent_has_exited(monkeypatch):
+def test_taskkill_failure_retains_scratch_even_if_parent_has_exited(monkeypatch, tmp_path):
+    monkeypatch.setattr(launcher, "os", SimpleNamespace(name="nt", environ={"SystemRoot": str(tmp_path)}))
     class Child:
         pid = 12345
         polls = 0
