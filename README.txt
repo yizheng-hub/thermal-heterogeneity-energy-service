@@ -1,6 +1,6 @@
 Human thermal demand, building energy and flexibility
 
-Software release 0.2.3.
+Software release 0.2.4.
 Install
 
 Use Python 3.11.15 and the locked environment:
@@ -8,10 +8,16 @@ Use Python 3.11.15 and the locked environment:
     uv sync --frozen --extra notebook
 Data
 
-Download the matching study data identified in the article's Data availability
-statement and extract it at the repository root, preserving relative paths.
-Data_for_Figures/ contains the plotting inputs. Supporting_tables/ contains
-supporting numerical results, and Supplementary_tables/ the displayed tables.
+Download the two archives identified in the article's data deposit and extract
+them at the repository root, retaining relative paths:
+
+- Simulation_Inputs.zip: original observations, weather and building models
+  under data/, for new simulations.
+- Numerical_Results.zip: figure inputs and complete numerical results under
+  Data/. RESULTS_INDEX.csv identifies the additional result datasets.
+
+The article's Supplementary Software 1 separately supplies a standalone plotting
+notebook, figure data and all high-resolution PNG figures.
 Figures and tables
 
     uv run --frozen python reproduce_publication.py --output-root output/publication

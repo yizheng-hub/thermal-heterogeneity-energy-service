@@ -5,6 +5,6 @@ title: "Human thermal demand shapes building energy use and service-preserving f
 abstract: "Comparison of thermal service, energy, carbon, demand response and implementation resources under three building controls and declared spatial permissions."
 authors:
   - name: "Thermal Heterogeneity Study contributors"
-version: "0.2.3"
+version: "0.2.4"
 license: BSD-3-Clause
 repository-code: "https://github.com/yizheng-hub/thermal-heterogeneity-energy-service"

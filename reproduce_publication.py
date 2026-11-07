@@ -40,7 +40,10 @@ def main():
             )
         )
         return
-    from publication.figure_data import verify
+    if (ROOT / "Data/index.json").is_file():
+        from publication.standalone_plotting import verify
+    else:
+        from publication.figure_data import verify
 
     verify()
     notebook = json.loads((ROOT / "plot/Plot.ipynb").read_text(encoding="utf-8"))

@@ -57,6 +57,9 @@ def build(raw, analysis, publication, resource_scenarios=None):
 
     def read(relative, base=analysis):
         path = (base / relative).resolve()
+        if not path.is_file() and (ROOT / "Data/index.json").is_file():
+            from publication.standalone_plotting import resolve
+            path = resolve(path)
         sources[path.relative_to(ROOT).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
         return pd.read_csv(path)
 

@@ -680,3 +680,6 @@
 !/tests/test_prepare_reference_model.py
 
 !/publication/build_release_assets.py
+!/publication/build_clean_figure_package.py
+!/publication/standalone_plotting.py
+!/publication/build_simulation_data.py
