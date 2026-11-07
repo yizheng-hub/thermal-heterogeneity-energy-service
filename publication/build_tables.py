@@ -4,9 +4,11 @@ from pathlib import Path
 import argparse
 import hashlib
 import json
+import sys
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 CONTROL = {
     "uniform_average": "Average",
     "personal_center": "Personal center",
@@ -57,8 +59,8 @@ def build(raw, analysis, publication, resource_scenarios=None):
 
     def read(relative, base=analysis):
         path = (base / relative).resolve()
-        if not path.is_file() and (ROOT / "Data/index.json").is_file():
-            from publication.standalone_plotting import resolve
+        if not path.is_file() and any((ROOT / f / "index.json").is_file() for f in ["Data", "Source_Data"]):
+            from publication.figure_data import resolve
             path = resolve(path)
         sources[path.relative_to(ROOT).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
         return pd.read_csv(path)
@@ -113,7 +115,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
         shared[
             ["Evaluation", "Center", "Half-width (°C)", "Balanced accuracy", "AUROC", "Brier score"]
         ],
-        "Balanced accuracy is the mean of sensitivity and specificity; each entry reports its point estimate followed by the lower and upper bounds of a 95% participant-cluster bootstrap confidence interval (CI) in brackets (500 resamples within the source–building structure). The area under the receiver operating characteristic curve (AUROC) measures discrimination. The Brier score is mean squared probability error; lower is better, whereas higher balanced accuracy and AUROC are better. AUROC and Brier entries are point estimates. Half-widths are selected using development data and shared across center models within each design. This table shows the individual, shrinkage and building-median models. All nine center baselines, tuned-width and Personal range metrics, and paired contrasts are supplied in Supplementary Software 1.",
+        "Balanced accuracy is the mean of sensitivity and specificity; each entry reports its point estimate followed by the lower and upper bounds of a 95% participant-cluster bootstrap confidence interval (CI) in brackets (500 resamples within the source–building structure). The area under the receiver operating characteristic curve (AUROC) measures discrimination. The Brier score is mean squared probability error; lower is better, whereas higher balanced accuracy and AUROC are better. AUROC and Brier entries are point estimates. Half-widths are selected using development data and shared across center models within each design. This table shows the individual, shrinkage and building-median models. All nine center baselines, tuned-width and Personal range metrics, and paired contrasts are supplied in Supplementary Data 1.",
     )
     tables[-1]["columns"][3] = "Balanced accuracy [95% CI]"
     old = read("results/decision_effect_sizes/DECISION_EFFECT_SIZES.csv", raw)

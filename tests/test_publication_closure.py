@@ -45,9 +45,14 @@ def test_result_integrity_rejects_changed_payload_and_escape(tmp_path):
 def test_notebook_figures_are_individually_addressable_and_packaged():
     notebook = json.loads((ROOT / "plot/Plot.ipynb").read_text(encoding="utf-8"))
     cells = [c for c in notebook["cells"] if c["cell_type"] == "code"]
-    assert len(cells) == 17
+    assert len(cells) == 16
     assert all(not c.get("outputs") and c.get("execution_count") is None for c in cells)
-    assert all("".join(c["source"]).count("draw(") == 1 for c in cells[1:])
+    import ast
+    for cell in cells:
+        tree = ast.parse("".join(cell["source"]))
+        assert any(isinstance(node, ast.FunctionDef) for node in tree.body)
+        assert any(isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "FONT_SIZE" for t in node.targets) for node in tree.body)
+        assert not any(isinstance(node, ast.ImportFrom) and node.module and node.module.split(".")[0] in {"publication", "plot", "thermal_heterogeneity", "reference_figures", "strengthened_figures"} for node in ast.walk(tree))
     allowed = set((ROOT / "src/provenance/PUBLIC_FILE_ALLOWLIST.txt").read_text().splitlines())
     for folder in ["publication", "plot"]:
         for path in (ROOT / folder).glob("*.py"):
@@ -139,27 +144,22 @@ def test_publication_support_removes_identity_without_changing_plotted_support()
     assert "no identity" in description
 
 
-def test_public_figure_generation_does_not_require_private_manuscript(tmp_path, monkeypatch):
-    import sys
-    from types import SimpleNamespace
-    from PIL import Image
-
-    def render(number, data_root, output, strict_raw):
-        output.mkdir(parents=True)
-        Image.new("RGB", (5, 5), "white").save(output / "Figure_01.png")
-        for suffix in [".pdf", ".svg", ".json"]:
-            (output / ("Figure_01" + suffix)).write_text("fixture")
-
-    for name in ["reference_figures", "supplementary_figures", "extended_figures"]:
-        monkeypatch.setitem(sys.modules, name, SimpleNamespace(draw=render))
-    spec = importlib.util.spec_from_file_location("notebook_figures", ROOT / "publication/notebook_figures.py")
+def test_public_figure_generation_does_not_require_private_manuscript(tmp_path):
+    spec = importlib.util.spec_from_file_location("publication_runner", ROOT / "reproduce_publication.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    monkeypatch.setattr(module, "ROOT", tmp_path)
     (tmp_path / "plot").mkdir()
-    result = module.draw(1)
-    assert result.is_file()
-    assert (tmp_path / "plot/main/Figure_01.tiff").is_file()
+    cells = [{"cell_type": "code", "metadata": {"figure": f"Figure_{i:02}"}, "source": [
+        "from pathlib import Path\n",
+        "assert 'previous_cell' not in globals()\n",
+        "previous_cell = True\n",
+        f"(PUBLICATION_OUTPUT / 'Figure_{i:02}.txt').write_text('drawn')\n",
+    ]} for i in range(1, 17)]
+    (tmp_path / "plot/Plot.ipynb").write_text(json.dumps({"cells": cells}))
+    output = tmp_path / "output"
+    output.mkdir()
+    module.execute_notebook(tmp_path, output)
+    assert len(list(output.glob("Figure_*.txt"))) == 16
     assert not (tmp_path / "publication/Main_manuscript.md").exists()
 
 

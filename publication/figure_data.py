@@ -206,6 +206,15 @@ def export(publication):
 
 
 def verify():
+    for folder in [ROOT / "Data", ROOT / "Source_Data"]:
+        index = folder / "index.json"
+        if index.is_file():
+            records = json.loads(index.read_text(encoding="utf-8"))
+            for row in records:
+                path = (ROOT / row["file"]).resolve()
+                if not path.is_relative_to(folder.resolve()) or not path.is_file() or sha(path) != row["sha256"]:
+                    raise ValueError("Source data changed or missing: " + row["file"])
+            return {"files": records}
     manifest = json.loads((ROOT / "Data_for_Figures/FIGURE_DATA_MANIFEST.json").read_text())
     for row in manifest["files"]:
         path = (ROOT / row["result"]).resolve()
@@ -216,6 +225,20 @@ def verify():
         ):
             raise ValueError(f"Data_for_Figures input changed or missing: {row['result']}")
     return manifest
+
+
+def resolve(request):
+    """Locate a numerical input in a figure-data index."""
+    def key(value):
+        value = str(value).replace("\\", "/").split("Data_for_Figures/")[-1]
+        value = value.replace("output/from_raw/", "baseline/").replace("output/strengthening/", "analysis/")
+        return re.sub(r"run_[^/]+/", "", value)
+    records = verify()["files"]
+    exact = [row for row in records if key(row.get("key", row.get("result", ""))) == key(request)]
+    matches = exact or [row for row in records if Path(row.get("key", row.get("result", ""))).name == Path(request).name]
+    if len(matches) != 1:
+        raise FileNotFoundError("Expected exactly one dataset for " + str(request))
+    return ROOT / matches[0].get("file", matches[0].get("result"))
 
 
 if __name__ == "__main__":

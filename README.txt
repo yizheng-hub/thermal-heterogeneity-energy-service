@@ -1,6 +1,6 @@
 Human thermal demand, building energy and flexibility
 
-Software release 0.2.4.
+Software release 0.2.5.
 Install
 
 Use Python 3.11.15 and the locked environment:
@@ -16,14 +16,19 @@ them at the repository root, retaining relative paths:
 - Numerical_Results.zip: figure inputs and complete numerical results under
   Data/. RESULTS_INDEX.csv identifies the additional result datasets.
 
-The article's Supplementary Software 1 separately supplies a standalone plotting
-notebook, figure data and all high-resolution PNG figures.
+The article's Supplementary Data 1 supplies numerical figure source data and
+high-resolution PNG figures. It contains no software. Plotting code is in
+plot/Plot.ipynb in this repository.
 Figures and tables
 
     uv run --frozen python reproduce_publication.py --output-root output/publication
 
 This creates six main figures, four Extended Data figures, six supplementary
-figures and ten tables. plot/Plot.ipynb provides one figure per plotting cell.
+figures and ten tables. plot/Plot.ipynb has 16 independent figure cells.
+Each includes its complete
+data loading, style, layout and drawing code. Edit the notebook directly;
+the command-line runner executes these cells and does not regenerate them
+from Python plotting modules.
 Times New Roman regular and bold must be installed locally.
 Scientific experiments
 

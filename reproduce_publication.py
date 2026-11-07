@@ -11,10 +11,30 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 
+def execute_notebook(root, output, selected=None):
+    """Execute each complete figure cell with its own Python namespace."""
+    notebook = json.loads((root / "plot/Plot.ipynb").read_text(encoding="utf-8"))
+    cells = [cell for cell in notebook["cells"] if cell["cell_type"] == "code"]
+    if len(cells) != 16:
+        raise ValueError("Expected 16 complete, independently executable figure cells")
+    previous = Path.cwd()
+    try:
+        os.chdir(root)
+        for cell in cells:
+            label = cell["metadata"]["figure"]
+            if selected is not None and label not in selected:
+                continue
+            namespace = {"__name__": "__main__", "PUBLICATION_OUTPUT": output}
+            exec(compile("".join(cell["source"]), f"Plot.ipynb:{label}", "exec"), namespace)
+    finally:
+        os.chdir(previous)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-root", type=Path, default=ROOT / "output/publication")
     parser.add_argument("--plan", action="store_true")
+    parser.add_argument("--figure", nargs="+", help="Selected figure IDs: 1–6, E1–E4 or S1–S6")
     parser.add_argument(
         "--documents",
         action="store_true",
@@ -40,25 +60,20 @@ def main():
             )
         )
         return
-    if (ROOT / "Data/index.json").is_file():
-        from publication.standalone_plotting import verify
-    else:
-        from publication.figure_data import verify
+    from publication.figure_data import verify
 
     verify()
-    notebook = json.loads((ROOT / "plot/Plot.ipynb").read_text(encoding="utf-8"))
-    cells = [cell for cell in notebook["cells"] if cell["cell_type"] == "code"]
-    if len(cells) != 17:
-        raise ValueError("Expected one setup cell and 16 single-figure cells")
     output.mkdir(parents=True, exist_ok=True)
-    namespace = {"__name__": "__main__", "PUBLICATION_OUTPUT": output}
-    previous = Path.cwd()
-    try:
-        os.chdir(ROOT)
-        for index, cell in enumerate(cells):
-            exec(compile("".join(cell["source"]), f"Plot.ipynb:cell{index}", "exec"), namespace)
-    finally:
-        os.chdir(previous)
+    selected = None
+    if args.figure:
+        selected = {f"Figure_{value[0].upper()}{int(value[1:]):02}" if value[0].isalpha()
+                    else f"Figure_{int(value):02}" for value in args.figure}
+        allowed = {f"Figure_{i:02}" for i in range(1, 7)} | {f"Figure_E{i:02}" for i in range(1, 5)} | {f"Figure_S{i:02}" for i in range(1, 7)}
+        if not selected <= allowed:
+            parser.error("Unknown figure ID")
+    execute_notebook(ROOT, output, selected)
+    if selected is not None:
+        return
     subprocess.run(
         [
             sys.executable,
@@ -93,7 +108,7 @@ def main():
         json.dumps(
             {
                 "status": "completed",
-                "executed_code_cells": 17,
+                "executed_code_cells": 16,
                 "main_figures": 6,
                 "extended_data_figures": 4,
                 "supplementary_figures": 6,

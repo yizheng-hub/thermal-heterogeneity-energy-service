@@ -1,17 +1,21 @@
 """Verify the published projection example and the equal-area geometry."""
 
-from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
+import ast
+import json
 
 import numpy as np
 
 
 def projection():
-    path = Path(__file__).resolve().parents[2] / "plot/strengthened_figures.py"
-    spec = spec_from_file_location("strengthened_map_projection", path)
-    module = module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module.equal_earth
+    path = Path(__file__).resolve().parents[2] / "plot/Plot.ipynb"
+    notebook = json.loads(path.read_text())
+    cell = next(c for c in notebook["cells"] if c.get("id") == "main-1")
+    tree = ast.parse("".join(cell["source"]))
+    function = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main_equal_earth")
+    namespace = {"np": np}
+    exec(compile(ast.Module(body=[function], type_ignores=[]), "Plot.ipynb:projection", "exec"), namespace)
+    return namespace["main_equal_earth"]
 
 
 def test_equal_earth_matches_proj_published_spherical_example():

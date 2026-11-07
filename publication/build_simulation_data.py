@@ -61,7 +61,14 @@ def build_results(destination, figure_archive):
     if destination.exists():
         raise FileExistsError(destination)
     with zipfile.ZipFile(figure_archive) as source:
-        files = {n: source.read(n) for n in source.namelist() if n.startswith("Data/")}
+        files = {n.replace("Source_Data/", "Data/", 1): source.read(n).replace(b"Source_Data/", b"Data/")
+                 if not n.endswith(".npz") else source.read(n)
+                 for n in source.namelist() if n.startswith(("Data/", "Source_Data/"))}
+    if "Data/index.json" in files:
+        records = json.loads(files["Data/index.json"])
+        for row in records:
+            row["sha256"] = hashlib.sha256(files[row["file"]]).hexdigest()
+        files["Data/index.json"] = (json.dumps(records, indent=2) + "\n").encode()
     hashes = {hashlib.sha256(b).hexdigest(): n for n, b in files.items()}
     rows = []
     for line in (ROOT / "publication/source_data_files.txt").read_text().splitlines():

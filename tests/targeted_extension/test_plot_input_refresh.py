@@ -186,33 +186,24 @@ def test_figure_four_building_to_zone_counts_match_final_spatial_evidence():
 
 
 @pytest.mark.parametrize("selection", [None, "3"])
-def test_plot_cli_refreshes_after_all_or_single_figure(tmp_path, monkeypatch, selection):
-    runner = load_module("plot_reproduce_refresh", ROOT / "plot/reproduce.py")
-    runner.REQUIRED_FIGURE_INPUTS = {}
-    runner.validate_final_story_hashes = lambda root, labels: None
-    monkeypatch.syspath_prepend(str(ROOT / "src"))
+def test_notebook_executes_all_or_selected_independent_cells(tmp_path, selection):
+    runner = load_module("publication_cell_execution", ROOT / "reproduce_publication.py")
     plot = tmp_path / "plot"
     plot.mkdir()
     captions = tmp_path / "results/captions"
     captions.mkdir(parents=True)
     for number in (3, 4):
         (captions / f"Figure_{number:02d}.txt").write_text("old", encoding="utf-8")
-    cells = [{"cell_type": "code", "metadata": {"figure": "Setup"},
-              "source": ["from pathlib import Path\n",
-                         "from utilities.prepare_plot_data import refresh_plot_inputs\n"]}]
-    for number in (3, 4):
+    cells = []
+    for number in range(1, 17):
         cells.append({"cell_type": "code", "metadata": {"figure": f"Figure_{number:02d}"},
-                      "source": [f"Path('results/captions/Figure_{number:02d}.txt').write_text('new{number}', encoding='utf-8')\n"]})
+                      "source": ["from pathlib import Path\n",
+                                 "assert 'previous_figure' not in globals()\n",
+                                 "previous_figure = True\n",
+                                 f"Path('results/captions/Figure_{number:02d}.txt').write_text('new{number}', encoding='utf-8')\n"]})
     (plot / "Plot.ipynb").write_text(json.dumps({"cells": cells}), encoding="utf-8")
-    monkeypatch.setattr(runner, "__file__", str(plot / "reproduce.py"))
-    arguments = ["reproduce.py"] + (["--figure", selection] if selection else [])
-    monkeypatch.setattr(sys, "argv", arguments)
     previous = Path.cwd()
-    runner.main()
+    runner.execute_notebook(tmp_path, tmp_path / "output", None if selection is None else {"Figure_03"})
     assert Path.cwd() == previous
-    inventory = json.loads((tmp_path / "results/PLOT_INPUTS.json").read_text(encoding="utf-8"))
-    hashes = {row["path"]: row["sha256"] for row in inventory["files"]}
     assert (captions / "Figure_03.txt").read_text() == "new3"
     assert (captions / "Figure_04.txt").read_text() == ("old" if selection else "new4")
-    for relative, checksum in hashes.items():
-        assert checksum == hashlib.sha256((tmp_path / "results" / relative).read_bytes()).hexdigest()

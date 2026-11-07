@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from publication.build_clean_figure_package import build
+from publication.build_source_data_package import build
 from publication.build_simulation_data import build_inputs, build_results
 
 

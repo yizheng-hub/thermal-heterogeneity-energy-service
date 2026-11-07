@@ -9,7 +9,7 @@ Extract Simulation_Inputs.zip from the matching data deposit at the repository
 root. It supplies the exact observation files, weather and building models used
 by this workflow. Retain the data/ directory structure.
 
-The source locations and versions are recorded in data/metadata/metadata/source_manifest.csv,
+The source locations and versions are recorded in data/metadata/source_manifest.csv,
 data/metadata/ctcd_bundle_source.json and
 data/metadata/global_fixed_reference_weather_sources.csv. Required files are
 listed in src/utilities/audit_reproduction_inputs.py. Place the original

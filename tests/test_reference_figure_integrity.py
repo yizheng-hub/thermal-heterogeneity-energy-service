@@ -7,10 +7,18 @@ import unittest
 from pathlib import Path
 import numpy as np
 import pandas as pd
+import ast
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "plot"))
-from reference_figures import Study, native_floor_panels  # noqa: E402 - local project module
+
+def notebook_definitions(cell_id):
+    """Load a figure's visible definitions without drawing it."""
+    notebook = json.loads((ROOT / "plot/Plot.ipynb").read_text())
+    cell = next(c for c in notebook["cells"] if c.get("id") == cell_id)
+    code = "".join(cell["source"]).split("# Read the data, draw this figure and save it.")[0]
+    namespace = {"__name__": __name__}
+    exec(compile(code, "Plot.ipynb:" + cell_id, "exec"), namespace)
+    return namespace
 
 
 def frame(name):
@@ -23,12 +31,10 @@ def frame(name):
 @unittest.skipUnless((ROOT / "Data_for_Figures").is_dir(), "Download and extract Study_Data.zip first")
 class IntegrityTests(unittest.TestCase):
     def test_supplied_hashes(self):
-        audit = json.loads((ROOT / "plot/reference_figure_inputs.json").read_text(encoding="utf-8"))
-        present = [r for r in audit if r["status"] == "exact_hash_match"]
-        self.assertEqual(len(present), 31)
-        for row in present:
-            p = ROOT / row["original_project_path"]
-            self.assertEqual(hashlib.sha256(p.read_bytes()).hexdigest(), row["expected_sha256"])
+        manifest = json.loads((ROOT / "Data_for_Figures/FIGURE_DATA_MANIFEST.json").read_text())
+        for row in manifest["files"]:
+            p = ROOT / row["result"]
+            self.assertEqual(hashlib.sha256(p.read_bytes()).hexdigest(), row["sha256"])
 
     def test_observation_counts(self):
         cities = frame("CITY_MAP_POINTS.csv")
@@ -78,8 +84,9 @@ class IntegrityTests(unittest.TestCase):
         )
 
     def test_native_floor_counts(self):
-        study = Study(ROOT / "Data_for_Figures", ROOT / "output/publication/main", True)
-        panels, bounds, meta = native_floor_panels(study)
+        namespace = notebook_definitions("main-3")
+        study = namespace["main_Study"](ROOT / "Data_for_Figures", ROOT / "output/publication/main", True)
+        panels, bounds, meta = namespace["main_native_floor_panels"](study)
         self.assertEqual([len(x["points"]) for x in panels], [89] * 6)
         self.assertEqual(bounds, (17.0, 32.0))
         self.assertEqual(meta["mode"], "native_CSV_and_geometry_JSON")
