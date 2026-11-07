@@ -22,18 +22,18 @@ def notebook_definitions(cell_id):
 
 
 def frame(name):
-    found = list((ROOT / "Data_for_Figures").rglob(name))
+    found = list((ROOT / "data/figure_data").rglob(name))
     if len(found) != 1:
         raise ValueError(f"Ambiguous input: {name}")
     return pd.read_csv(found[0])
 
 
-@unittest.skipUnless((ROOT / "Data_for_Figures").is_dir(), "Download and extract Study_Data.zip first")
+@unittest.skipUnless((ROOT / "data/figure_data").is_dir(), "Download and extract Study_Data.zip first")
 class IntegrityTests(unittest.TestCase):
     def test_supplied_hashes(self):
-        manifest = json.loads((ROOT / "Data_for_Figures/FIGURE_DATA_MANIFEST.json").read_text())
-        for row in manifest["files"]:
-            p = ROOT / row["result"]
+        records = json.loads((ROOT / "data/figure_data/index.json").read_text())
+        for row in records:
+            p = ROOT / row["file"]
             self.assertEqual(hashlib.sha256(p.read_bytes()).hexdigest(), row["sha256"])
 
     def test_observation_counts(self):
@@ -85,7 +85,7 @@ class IntegrityTests(unittest.TestCase):
 
     def test_native_floor_counts(self):
         namespace = notebook_definitions("main-3")
-        study = namespace["main_Study"](ROOT / "Data_for_Figures", ROOT / "output/publication/main", True)
+        study = namespace["main_Study"](ROOT / "data/figure_data", ROOT / "output/publication/main", True)
         panels, bounds, meta = namespace["main_native_floor_panels"](study)
         self.assertEqual([len(x["points"]) for x in panels], [89] * 6)
         self.assertEqual(bounds, (17.0, 32.0))

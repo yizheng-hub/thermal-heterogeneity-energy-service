@@ -536,12 +536,6 @@
 !/data/metadata/strengthening_protocol/analysis_plan_amendment_34_response_information_review.yaml
 !/data/metadata/strengthening_protocol/analysis_plan_amendment_35_raw_sql_retention.yaml
 !/data/metadata/strengthening_protocol/analysis_plan_amendment_36_frozen_information_uncertainty.yaml
-!/publication/
-!/publication/build_documents.py
-!/publication/build_tables.py
-!/publication/figure_data.py
-!/publication/README.md
-!/publication/render_with_word.ps1
 !/reproduce_publication.py
 !/src/analysis/global_extension/automatic_solver_stability.py
 !/src/analysis/global_extension/decision_effect_sizes.py
@@ -630,10 +624,7 @@
 !/tests/test_raw_hourly_sql_retention.py
 !/tests/test_vrp_request_diagnostic.py
 !/tests/test_zone_ventilation_diagnostic.py
-!/publication/build_review_package.py
-!/publication/review_data_files.txt
 !/.gitleaks.toml
-!/publication/prepare_nc_artwork.py
 
 # Final experiment configurations and model preparation entry point.
 !/data/metadata/strengthening_protocol/acceptability_validation.yaml
@@ -673,6 +664,6 @@
 !/src/utilities/prepare_reference_model.py
 !/tests/test_prepare_reference_model.py
 
-!/publication/build_release_assets.py
-!/publication/build_simulation_data.py
-!/publication/build_source_data_package.py
+
+/data/figure_data/
+/data/analysis_results/

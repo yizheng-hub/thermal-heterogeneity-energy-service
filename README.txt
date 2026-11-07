@@ -1,6 +1,6 @@
 Human thermal demand, building energy and flexibility
 
-Software release 0.2.5.
+Software release 0.2.6.
 Install
 
 Use Python 3.11.15 and the locked environment:
@@ -14,11 +14,10 @@ them at the repository root, retaining relative paths:
 - Simulation_Inputs.zip: original observations, weather and building models
   under data/, for new simulations.
 - Numerical_Results.zip: figure inputs and complete numerical results under
-  Data/. RESULTS_INDEX.csv identifies the additional result datasets.
+  data/figure_data/ and data/analysis_results/. data/RESULTS_INDEX.csv
+  identifies the additional result datasets.
 
-The article's Supplementary Data 1 supplies numerical figure source data and
-high-resolution PNG figures. It contains no software. Plotting code is in
-plot/Plot.ipynb in this repository.
+Plotting code is in plot/Plot.ipynb in this repository.
 Figures and tables
 
     uv run --frozen python reproduce_publication.py --output-root output/publication

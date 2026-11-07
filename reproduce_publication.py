@@ -1,4 +1,4 @@
-"""Regenerate each Plot.ipynb figure from Data_for_Figures without running simulations."""
+"""Regenerate each Plot.ipynb figure from data/figure_data without running simulations."""
 
 from pathlib import Path
 import argparse
@@ -35,11 +35,6 @@ def main():
     parser.add_argument("--output-root", type=Path, default=ROOT / "output/publication")
     parser.add_argument("--plan", action="store_true")
     parser.add_argument("--figure", nargs="+", help="Selected figure IDs: 1–6, E1–E4 or S1–S6")
-    parser.add_argument(
-        "--documents",
-        action="store_true",
-        help="Also build Word files using retained author sources and templates",
-    )
     args = parser.parse_args()
     output = args.output_root.resolve()
     if not output.is_relative_to(ROOT):
@@ -48,19 +43,19 @@ def main():
         print(
             json.dumps(
                 {
-                    "input": "Data_for_Figures/FIGURE_DATA_MANIFEST.json",
+                    "input": "data/figure_data/FIGURE_DATA_MANIFEST.json",
                     "notebook": "plot/Plot.ipynb",
                     "main_figures": 6,
                     "extended_data_figures": 4,
                     "supplementary_figures": 6,
                     "EnergyPlus_runs": 0,
-                    "documents": args.documents,
+                    "manuscripts_required": False,
                 },
                 indent=2,
             )
         )
         return
-    from publication.figure_data import verify
+    from src.thermal_heterogeneity.figure_inputs import verify
 
     verify()
     output.mkdir(parents=True, exist_ok=True)
@@ -77,33 +72,21 @@ def main():
     subprocess.run(
         [
             sys.executable,
-            str(ROOT / "publication/build_tables.py"),
+            str(ROOT / "src/analysis/figure_tables.py"),
             "--raw-root",
-            str(ROOT / "Data_for_Figures/output/from_raw"),
+            str(ROOT / "data/figure_data/output/from_raw"),
             "--analysis-root",
-            str(ROOT / "Data_for_Figures/output/strengthening"),
+            str(ROOT / "data/figure_data/output/strengthening"),
             "--publication-root",
             str(output),
             "--resource-scenarios",
             str(
                 ROOT
-                / "Data_for_Figures/output/publication/support/implementation/IMPLEMENTATION_RESOURCE_SCENARIOS.csv"
+                / "data/figure_data/output/publication/support/implementation/IMPLEMENTATION_RESOURCE_SCENARIOS.csv"
             ),
         ],
         check=True,
     )
-    if args.documents:
-        subprocess.run(
-            [
-                sys.executable,
-                str(ROOT / "publication/build_documents.py"),
-                "--publication-root",
-                str(output),
-                "--output-root",
-                str(output / "documents"),
-            ],
-            check=True,
-        )
     (output / "NOTEBOOK_EXECUTION.json").write_text(
         json.dumps(
             {
@@ -114,7 +97,7 @@ def main():
                 "supplementary_figures": 6,
                 "tables": 10,
                 "EnergyPlus_runs": 0,
-                "input_root": "Data_for_Figures",
+                "input_root": "data/figure_data",
             },
             indent=2,
         )
