@@ -9,18 +9,19 @@ Extract Simulation_Inputs.zip from the matching data deposit at the repository
 root. It supplies the exact observation files, weather and building models used
 by this workflow. Retain the data/ directory structure.
 
+Download Simulation_Inputs.zip from the associated Figshare dataset. Place it
+beside pyproject.toml and extract it at the code repository root. In PowerShell:
+
+    Expand-Archive -LiteralPath .\Simulation_Inputs.zip -DestinationPath . -Force
+
 The source locations and versions are recorded in data/metadata/source_manifest.csv,
 data/metadata/ctcd_bundle_source.json and
 data/metadata/global_fixed_reference_weather_sources.csv. Required files are
-listed in src/utilities/audit_reproduction_inputs.py. Place the original
-observations in data/upstream/ and the nine EPW files in
-data/upstream/global_climate_matrix/weather/, retaining the stated filenames.
-
-Obtain the official DOE/PNNL ASHRAE 90.1-2019 medium-office prototype from
-https://www.energycodes.gov/prototype-building-models and extract its Miami IDF.
-Prepare the reference used by the experiments:
-
-    uv run --frozen python src/utilities/prepare_reference_model.py --source-idf data/upstream/global_climate_matrix/prototypes_22_1/Miami.idf --output data/upstream/frozen_buildings/Miami/baseline.idf
+listed in src/utilities/audit_reproduction_inputs.py. The archive already places
+the observations in data/upstream/, the nine EPW files in
+data/upstream/global_climate_matrix/weather/, and the prepared reference in
+data/upstream/frozen_buildings/Miami/baseline.idf. Use these supplied files;
+no additional model download or reference preparation is needed.
 
 Install the complete EnergyPlus 22.1.0 Windows distribution, build ed759b17ee,
 at tools/EnergyPlus-22.1.0/. Scientific inputs and retained outputs remain
