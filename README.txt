@@ -1,6 +1,5 @@
 Human thermal demand, building energy and flexibility
 
-Software release 0.2.6.
 Install
 
 Use Python 3.11.15 and the locked environment:
