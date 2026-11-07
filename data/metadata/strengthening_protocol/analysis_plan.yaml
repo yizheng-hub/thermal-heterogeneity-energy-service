@@ -1,10 +1,6 @@
 {
-  "protocol_id": "HEM_NC_strengthening_20261031_v1",
-  "frozen_at": "2026-10-31T06:04:09.381868+00:00",
-  "status": "frozen_before_new_results",
-  "original_files_read_only": true,
+  "protocol_id": "thermal_service_experiments",
   "primary_question": "How demand distributions, spatial assignment and HVAC conditions alter attainable thermal-service, energy and response combinations; when mean representation is adequate.",
-  "existing_results": "Replication targets, not acceptance criteria: 54 settings,810 logical annual candidates,23 qualifying-set changes,10 choice changes,6480 event-action evaluations. No outcome is required to reproduce after new interventions.",
   "seeds": {
     "split": 2026103101,
     "bootstrap": 2026103102,
@@ -75,14 +71,6 @@
     "fixed_tail": "original membership retained; post-operation worst10% supplementary only",
     "reference_rule": "same demand realization jointly rescoring candidate and25C reference",
     "separate_fixed_limits": true,
-    "outputs": [
-      "excess probability conditional on scenario",
-      "excess magnitude",
-      "affected profiles and person-hours",
-      "choice frequency",
-      "extra energy",
-      "service loss"
-    ],
     "operations": [
       "A fixed-operation rescoring",
       "B reselection from common library",
@@ -113,7 +101,7 @@
       5
     ],
     "interpretation": "model mismatch budgets; not comfort standards or regulatory limits",
-    "numeric_tolerance_c": 1e-09,
+    "numeric_tolerance_c": "1e-09",
     "energy_ties": "original deterministic lexicographic tie rule"
   },
   "candidate_refinement": {
@@ -202,21 +190,12 @@
       "recovery"
     ],
     "recovery_hours": 48,
-    "initial_state": "continuous simulation and matching operation history; no air-temperature-only initialization",
-    "outputs": [
-      "baseline kW",
-      "absolute event kW",
-      "reduction kW",
-      "preconditioning kWh",
-      "recovery kWh",
-      "whole-window net kWh",
-      "service excess probability"
-    ]
+    "initial_state": "continuous simulation and matching operation history; no air-temperature-only initialization"
   },
   "numerics": {
     "hvac_iterations": 40,
     "retry_iterations": 100,
-    "retry_rule": "new critical warning or nonconvergence; never outcome sign",
+    "retry_rule": "Critical warnings or nonconvergence, independent of energy or service outcomes",
     "solver_comparison_tolerance": {
       "maximum_occupied_zone_temperature_delta_c": 0.02,
       "relative_annual_energy_delta": 0.001
@@ -231,28 +210,5 @@
       "energy closure and unmet-load reporting"
     ],
     "pilot_success": "data integrity, engineering completeness and score agreement; not positive savings or strategy ranking"
-  },
-  "compute_budget": {
-    "workers": 6,
-    "timeout_per_annual_seconds": 900,
-    "initial_estimate_seconds_per_physical_run": [
-      40,
-      120
-    ],
-    "candidate_max_physical_runs": 648,
-    "candidate_wall_hours_estimate": [
-      1.2,
-      3.6
-    ],
-    "baselines_max_physical_runs": 216,
-    "hvac_pilot_max_runs": 54,
-    "hvac_confirmation_max_runs": 486,
-    "placement_max_runs": 648,
-    "new_dr_max_runs": 810,
-    "additional_costs": "separate counts; cache exact physical operations; update after timing pilot",
-    "max_further_refinement_logical_runs": 1296,
-    "insufficient_compute": "mark pending; no results imputed"
-  },
-  "claim_policy": "Only completed and validated new evidence enters manuscript conclusions. All failure/infeasible cases retained. Existing checks clearly labeled existing rather than new.",
-  "authorship": "Compare main/SI and record discrepancies for author confirmation; never add/remove author automatically."
+  }
 }

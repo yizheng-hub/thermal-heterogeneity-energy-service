@@ -1,0 +1,19 @@
+{
+  "scope": "Finite-library grid sensitivity using only completed operations, not a new convergence or global-optimality claim",
+  "levels": {
+    "half": "Family and all four mean/median baselines restricted to offsets [-1, -0.5, 0, 0.5, 1]",
+    "quarter": "Family and all four mean/median baselines restricted to the nine offsets from -1 to1 at0.25spacing",
+    "eighth": "Family and all four mean/median baselines use all17 offsets from -1 to1 at0.125spacing"
+  },
+  "constant_operations": "Retain the same31 all-domain uniform-command targets at all three levels; preserve compatible original mixed spatial candidates and command-scope aliases",
+  "inventory": "Every one of54 climate-composition settings at every level, with physical-operation deduplication inside each level",
+  "service": "Same full-distribution25C reference population and original fixed27-person tail budgets for both full and zone-mean scoring",
+  "missing_mean_scores": "Calculate from hourly trajectories using the same explicit service scorer",
+  "selection": "Existing minimum purchased-energy and numerical tie rule; retain infeasible outcomes without fallback",
+  "endpoints": [
+    "Eligible operation-set differences and physical lowest-energy choice differences at each level",
+    "Paired full and mean selected energy and service exceedance across nested levels",
+    "Selected physical-operation changes even when their energy difference is numerically tied",
+    "Exact finite-library minimum energy monotonicity for both scoring methods"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "scope": "Isolate event-service scoring representation on the same frozen normal operations and physical action menus",
+  "fixed": [
+    "All54 settings, three normal-operation libraries, original annual full-demand qualification and three normal-energy budgets",
+    "Existing events, five mutually exclusive actions, protected zones, engineering status and each matched normal-operation history",
+    "Native-zone aggregation regardless of normal building/floor/zone command scope",
+    "Full-demand25C reference scores in every assessed window and original27 tail members",
+    "Native person-hour population and window-tail weights"
+  ],
+  "representations": {
+    "full": "Original profile centers",
+    "zone_mean": "Replace each profile center by the mean center of its assigned native zone; do not average the reference service requirement or change individual interval endpoints"
+  },
+  "service": {
+    "baseline": "Original pre-event check only when its reference has occupied weight, plus event and recovery checks",
+    "action": "The same occupied pre-event rule and the original event/recovery checks",
+    "event_limit_factor": 1.0,
+    "score_tolerance_c": 1e-09
+  },
+  "selection": {
+    "positive_event": "Original event electricity reduction greater than1e-9kWh, not a substituted kW threshold",
+    "order": "Highest mean event facility-power reduction; action_id ascending breaks ties",
+    "positive_net_policy": "Among service-qualified positive-event actions with full-window net electricity strictly greater than zero, choose maximum event power",
+    "engineering_unknown_or_normal_ineligible": "Preserve status and missing capacity",
+    "resolved_no_positive_action": "Preserve status and a separate zero available-response field, without a fallback operation"
+  },
+  "common_baseline_subset": "For a normal-eligible engineering-resolved event, require full and zone-mean baseline-window qualification for every one of the five original actions, preserving any action-specific pre-event windows; never define this subset from the subsequently selected action",
+  "interpretation": [
+    "Nominal finite-menu information review, not a model of which protected actions a mean-only operator could construct",
+    "Does not include averaging-induced changes in annual normal-operation selection",
+    "No claim that constrained placement has been evaluated during response events",
+    "Existing selected-action uncertainty covers original full-selected actions only; no unrun mean-selected uncertainty implied",
+    "Repeated budgets and shared physical operations remain labeled correlated evaluations, not independent buildings or observations"
+  ]
+}

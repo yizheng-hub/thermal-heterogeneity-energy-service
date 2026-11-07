@@ -159,7 +159,7 @@ def main():
     out = ROOT / "results/dr_capability_summary"
     paths = {name: folder / name for name in ["CAPABILITY_AUDIT.json", "ONE_ACTION_PER_EVENT_BUDGET_CHOICES.csv",
         "ISOLATED_EVENT_ACTION_SCORES.csv", "NORMAL_OPERATION_BUDGET_STATUS.csv", "PLAN_AUDIT.json"]}
-    paths["protocol"] = ROOT / "analysis_plan_amendment_28_dr_resource_accounting.yaml"
+    paths["protocol"] = ROOT / "response_accounting.yaml"
     paths["event_protocol"] = RAW_RUN / "response/EVENT_PROTOCOL.csv"
     paths["source"] = Path(__file__)
     hashes = {path.relative_to(CODE).as_posix(): digest(path) for path in paths.values()}

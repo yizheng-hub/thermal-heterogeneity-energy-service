@@ -161,7 +161,7 @@ def main():
         "timed_single_model": base / "single_record/timed/FROZEN_SELECTIONS.json",
         "undated_single_model": base / "single_record/undated/FROZEN_SELECTIONS.json",
         "identified_records": ROOT / "results/data_support/IDENTIFIED_AS_HRAE_RECORDS.csv.gz",
-        "protocol": CODE / "data/metadata/strengthening_protocol/analysis_plan_amendment_30_group_prediction.yaml"}
+        "protocol": CODE / "data/metadata/strengthening_protocol/group_prediction.yaml"}
     inputs = {p.relative_to(CODE).as_posix(): digest(p) for p in paths.values()}
     functions = [main, group_centers, evaluation, frozen_splits, signed_margin, probability_model, digest]
     sources = {Path(inspect.getfile(f)).resolve().relative_to(CODE).as_posix(): digest(inspect.getfile(f)) for f in functions}

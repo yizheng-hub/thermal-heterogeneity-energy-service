@@ -184,7 +184,7 @@ def main():
         raise FileExistsError("Preserve the previous ventilation diagnostic attempt")
     hashes = {}
     for path in [Path(__file__).resolve(), Path(common.__file__).resolve(),
-                 CODE / "data/metadata/strengthening_protocol/analysis_plan_amendment_32_zone_ventilation.yaml"]:
+                 CODE / "data/metadata/strengthening_protocol/zone_ventilation.yaml"]:
         read_input(path, hashes)
     cases, history = inventory(mechanism, hashes)
     frozen = dict(hashes)

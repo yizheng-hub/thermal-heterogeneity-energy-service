@@ -202,7 +202,7 @@ def main():
     if any(out.iterdir()):
         raise FileExistsError("Preserve the previous placement-frontier run before recomputing")
     inputs = {}
-    protocol = contained_input(ROOT / "analysis_plan_amendment_27_placement_service_frontiers.yaml", inputs)
+    protocol = contained_input(ROOT / "placement_service_frontiers.yaml", inputs)
     for name in [__file__, __import__("service_distribution").__file__, __import__("analyse_global_results").__file__]:
         contained_input(name, inputs)
     write_json(out / "EXECUTION_PLAN.json", {"protocol_sha256": digest(protocol), "planned_frontier_cells": 26784,

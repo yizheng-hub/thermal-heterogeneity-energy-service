@@ -1,0 +1,4 @@
+{
+  "scope": "Paired static, temporal, placement and response sensitivity calculations.",
+  "identity": "Use source-qualified participant keys when available, otherwise raw-record keys; preserve the same key across paired operations."
+}

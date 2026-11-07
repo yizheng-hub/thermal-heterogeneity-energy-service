@@ -76,7 +76,7 @@ def build(destination, python_home, site_packages, include_publication=False):
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
     for source in (ROOT / "data/upstream").rglob("*"):
-        if source.is_file() and (source.suffix == ".md" or source.name.startswith("LICENSE")):
+        if source.is_file() and (source.suffix in {".md", ".txt"} or source.name.startswith("LICENSE")):
             target = destination / source.relative_to(ROOT)
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, target)

@@ -156,7 +156,7 @@ def main():
         if single_record:
             paths.append(ROOT / "results/demand_validation/single_record/timed/CONTINUOUS_PROXY_ERRORS.csv")
         for number, suffix in [(25, "shared_error_groups"), (26, "placement_hvac_uncertainty")]:
-            name = f"analysis_plan_amendment_{number}_{suffix}.yaml"
+            name = suffix + ".yaml"
             path = CODE / "data/metadata/strengthening_protocol" / name
             if not path.is_file():
                 path = Path(__file__).resolve().parent / name

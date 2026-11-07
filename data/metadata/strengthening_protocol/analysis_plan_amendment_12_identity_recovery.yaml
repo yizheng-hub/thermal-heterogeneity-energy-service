@@ -1,9 +1,0 @@
-date: 2026-10-31
-reason: Recovered deterministic source-to-slot identifier construction and restored a raw-input assignment generator.
-before_new_results: true
-change: Key personal draws by verified source/building/subject identity, or raw record where no verified subject exists, rather than virtual sample slot.
-scope: All paired static, temporal, placement and later DR sensitivity calculations.
-unchanged: Existing demand error scales, seeds, draws, original fixed tail, service limits, selection rule, physical trajectories and controller commands.
-validation_required: Raw regeneration must reproduce every core profile ID, zone and demand coordinate before the new identity map can be used.
-previous_outputs: Retain as superseded virtual-slot correlation results; rerun into identity-specific output directories.
-interpretation: Identity recovery fixes repeated representation correlation. It does not identify latent estimation error separately from observation noise and temporal drift.

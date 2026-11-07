@@ -1,0 +1,4 @@
+{
+  "format": "float64 NumPy arrays",
+  "compression": "Bit-exact XOR differences between action and matched normal states; retain full annual trajectories."
+}

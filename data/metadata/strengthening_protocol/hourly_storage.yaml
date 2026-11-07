@@ -1,0 +1,9 @@
+{
+  "entrypoint": "src/analysis/global_extension/run_global_matrix_retained_sql.py",
+  "cleanup_raw": false,
+  "outputs": [
+    "Full EnergyPlus SQLite output",
+    "Hourly arrays",
+    "Input IDF"
+  ]
+}

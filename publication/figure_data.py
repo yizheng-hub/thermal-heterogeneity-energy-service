@@ -1,10 +1,11 @@
-"""Export the exact retained figure/table inputs into the portable Result folder."""
+"""Export the exact retained figure/table inputs into the portable Data_for_Figures folder."""
 
 from pathlib import Path
 import argparse
 import hashlib
 import json
 import shutil
+import gzip
 import re
 import pandas as pd
 
@@ -46,25 +47,45 @@ def minimize_human_inputs(name, frame):
 
 
 def export(publication):
-    destination = ROOT / "Result"
+    destination = ROOT / "Data_for_Figures"
     destination.mkdir(exist_ok=True)
     expected = {}
+    # Publication notebooks already read the minimized, verified Data_for_Figures files.
+    # Keep their original provenance when refreshing the publication data bundle.
+    retained = {}
     for folder, pattern, count in [
         ("main", "Figure_*.json", 6),
-        ("supplementary", "Figure_S*.json", 16),
+        ("extended", "Figure_E*.json", 4),
+        ("supplementary", "Figure_S*.json", 6),
     ]:
         receipts = sorted((publication / folder).glob(pattern))
         if len(receipts) != count:
             raise ValueError(f"Expected {count} complete {folder} figures")
         for receipt in receipts:
-            for name, digest in json.loads(receipt.read_text())["input_sha256"].items():
-                if name.startswith("Result/"):
-                    raise ValueError("Export from scientific outputs, not a previous Result copy")
+            for name, digest in json.loads(receipt.read_text(encoding="utf-8"))["input_sha256"].items():
+                if name.startswith("Data_for_Figures/"):
+                    if not retained:
+                        retained = {row["result"]: row for row in verify()["files"]}
+                    if name not in retained or retained[name]["sha256"] != digest:
+                        raise ValueError(f"Unregistered Data_for_Figures input: {name}")
+                    record = retained[name]
+                    name, digest = record["source"], record["source_sha256"]
+                elif "Data_for_Figures/" + name in retained:
+                    record = retained["Data_for_Figures/" + name]
+                    if digest == record["sha256"]:
+                        digest = record["source_sha256"]
                 if name in expected and expected[name] != digest:
                     raise ValueError(f"Conflicting source versions: {name}")
                 expected[name] = digest
     tables = json.loads((publication / "tables/TABLES.json").read_text(encoding="utf-8"))
     for name, digest in tables["input_sha256"].items():
+        if name.startswith("Data_for_Figures/"):
+            if name not in retained or retained[name]["sha256"] != digest:
+                raise ValueError(f"Unregistered Data_for_Figures table input: {name}")
+            record = retained[name]
+            name, digest = record["source"], record["source_sha256"]
+        elif "Data_for_Figures/" + name in retained and digest == retained["Data_for_Figures/" + name]["sha256"]:
+            digest = retained["Data_for_Figures/" + name]["source_sha256"]
         if name in expected and expected[name] != digest:
             raise ValueError(f"Figure/table source mismatch: {name}")
         expected[name] = digest
@@ -75,15 +96,25 @@ def export(publication):
             status = path.parent / "STATUS.json"
             expected[status.relative_to(ROOT).as_posix()] = sha(status)
     records = []
+    retained_by_source = {row["source"]: row for row in retained.values()}
     for name, digest in sorted(expected.items()):
+        existing = retained_by_source.get(name)
+        if existing is not None and existing["source_sha256"] == digest:
+            records.append(existing)
+            continue
         source = (ROOT / name).resolve()
         if not source.is_relative_to(ROOT) or not source.is_file() or sha(source) != digest:
             raise ValueError(f"Source changed or missing: {name}")
         target = destination / name
+        if source.name.endswith(".csv.gz"):
+            target = target.with_suffix("")
         target.parent.mkdir(parents=True, exist_ok=True)
-        if source.suffix.lower() != ".idf":
-            shutil.copy2(source, target)
         transformation = "byte-identical"
+        if source.name.endswith(".csv.gz"):
+            target.write_bytes(gzip.decompress(source.read_bytes()))
+            transformation = "gzip container removed without changing CSV text"
+        elif source.suffix.lower() != ".idf":
+            shutil.copy2(source, target)
         if source.name in {"NORMAL_OPERATION_REPLAY_COMPLETED.csv", "ACTION_FULL_COMPLETED.csv"}:
             frame = pd.read_csv(source)
             keep = frame.hourly_path.map(
@@ -94,7 +125,7 @@ def export(publication):
             if frame.empty:
                 raise ValueError("Missing illustrated response trajectories")
             frame["hourly_path"] = frame.hourly_path.map(
-                lambda value: "Result/" + Path(value).relative_to(ROOT).as_posix()
+                lambda value: "Data_for_Figures/" + Path(value).relative_to(ROOT).as_posix()
             )
             frame.to_csv(target, index=False)
             transformation = "illustrated trajectory rows; project-relative hourly paths"
@@ -106,7 +137,7 @@ def export(publication):
                 raise ValueError("Illustrated physical geometry was not recorded")
             model = {
                 "Miami": {
-                    "floor_geometry": "Result/"
+                    "floor_geometry": "Data_for_Figures/"
                     + str(Path(relative).with_suffix(".geometry.json")).replace("\\", "/")
                 }
             }
@@ -161,6 +192,9 @@ def export(publication):
                 "transformation": transformation,
             }
         )
+    if retained:
+        retained.update({row["result"]: row for row in records})
+        records = sorted(retained.values(), key=lambda row: row["result"])
     manifest = {
         "status": "exported_from_verified_figure_inputs",
         "files": records,
@@ -172,15 +206,15 @@ def export(publication):
 
 
 def verify():
-    manifest = json.loads((ROOT / "Result/FIGURE_DATA_MANIFEST.json").read_text())
+    manifest = json.loads((ROOT / "Data_for_Figures/FIGURE_DATA_MANIFEST.json").read_text())
     for row in manifest["files"]:
         path = (ROOT / row["result"]).resolve()
         if (
-            not path.is_relative_to(ROOT / "Result")
+            not path.is_relative_to(ROOT / "Data_for_Figures")
             or not path.is_file()
             or sha(path) != row["sha256"]
         ):
-            raise ValueError(f"Result input changed or missing: {row['result']}")
+            raise ValueError(f"Data_for_Figures input changed or missing: {row['result']}")
     return manifest
 
 

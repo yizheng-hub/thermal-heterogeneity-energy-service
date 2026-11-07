@@ -37,8 +37,8 @@ def main():
                              "half_deadband_c": cfg["half_deadband_c"],
                              "runtime_sha256": runtimes[context]}
     (out / "MODEL_CONTEXTS.json").write_text(json.dumps(exported, indent=2) + "\n", encoding="utf-8")
-    (out / "LOCAL_SOURCE_TERMS.md").write_text(
-        "# Locally supplied complete model inputs\n\n"
+    (out / "LOCAL_SOURCE_TERMS.txt").write_text(
+        "Locally supplied complete model inputs\n\n"
         "These exact model and weather files are a local preservation of previously supplied "
         "materials. This export does not assert redistribution permission or add an upstream "
         "licence. They remain outside the public code allow-list. No EnergyPlus executable is "

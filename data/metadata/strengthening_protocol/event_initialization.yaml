@@ -1,0 +1,5 @@
+{
+  "decision": "All new capability actions use complete annual simulations with exactly one isolated event. No shortened period or transferred initial state.",
+  "baseline": "Complete annual reporting-only replay of frozen normal operation; sourceoperation equality and allreportedair,humidity,surfacetemperaturehistoriesverifiedbeforeaction.",
+  "maximum_logical_action_runs": 6480
+}

@@ -1,0 +1,250 @@
+[
+  {
+    "path": "Data_for_Figures/Miami.geometry.json",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "0a45308910d936b768142d23eb316aa5f12009201b75905cbd43c21f218013a1",
+    "expected_sha256": "0a45308910d936b768142d23eb316aa5f12009201b75905cbd43c21f218013a1",
+    "original_project_path": "Data_for_Figures/output/from_raw/matrix/models/Miami.geometry.json"
+  },
+  {
+    "path": "Data_for_Figures/MODEL_MANIFEST.json",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "358c9a8578ddefd7ce12acf0d07966a00073701a2014963f1692179b9bbc518a",
+    "expected_sha256": "358c9a8578ddefd7ce12acf0d07966a00073701a2014963f1692179b9bbc518a",
+    "original_project_path": "Data_for_Figures/output/from_raw/matrix/models/MODEL_MANIFEST.json"
+  },
+  {
+    "path": "Data_for_Figures/CITY_MAP_POINTS.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "dd1f441d5cbda32b5c77251bfbbd1ee59f5046207c3a86f3466a41c3ada58079",
+    "expected_sha256": "dd1f441d5cbda32b5c77251bfbbd1ee59f5046207c3a86f3466a41c3ada58079",
+    "original_project_path": "Data_for_Figures/output/from_raw/results/observation_figures/CITY_MAP_POINTS.csv"
+  },
+  {
+    "path": "Data_for_Figures/COUNTRY_DEMAND_SUMMARY.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "cae61001ccc1c7ea3cc66658f0fcc170fa40669a8275858b4d65e8a9b887f483",
+    "expected_sha256": "cae61001ccc1c7ea3cc66658f0fcc170fa40669a8275858b4d65e8a9b887f483",
+    "original_project_path": "Data_for_Figures/output/from_raw/results/observation_figures/COUNTRY_DEMAND_SUMMARY.csv"
+  },
+  {
+    "path": "Data_for_Figures/LEAVE_ONE_SOURCE_VARIANCE.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "57ddaaff1a93767bc4da3e033c3d7e724252582759f4c56d3b8b81ae54203335",
+    "expected_sha256": "57ddaaff1a93767bc4da3e033c3d7e724252582759f4c56d3b8b81ae54203335",
+    "original_project_path": "Data_for_Figures/output/from_raw/results/observation_figures/LEAVE_ONE_SOURCE_VARIANCE.csv"
+  },
+  {
+    "path": "Data_for_Figures/ASHRAE_NESTED_VARIANCE.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "33930a7e58d13f9d240969210f3045f1f93c624e4504c1ce91c7212d1387db04",
+    "expected_sha256": "33930a7e58d13f9d240969210f3045f1f93c624e4504c1ce91c7212d1387db04",
+    "original_project_path": "Data_for_Figures/output/from_raw/results/observations/ASHRAE_NESTED_VARIANCE.csv"
+  },
+  {
+    "path": "Data_for_Figures/SHARED_ROOM_SUMMARY.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "081c4ba799fe2de35f3577a292e60ed06c656404c07873ceae0ac6b7dfa7db3d",
+    "expected_sha256": "081c4ba799fe2de35f3577a292e60ed06c656404c07873ceae0ac6b7dfa7db3d",
+    "original_project_path": "Data_for_Figures/output/from_raw/results/shared_room/SHARED_ROOM_SUMMARY.csv"
+  },
+  {
+    "path": "Data_for_Figures/CONSTRAINED_PLACEMENT_PROFILES.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "68cb26d9bb785c76692c2aeb8ecc37e340e61d6ca3c20e67303deddd81cc2e55",
+    "expected_sha256": "68cb26d9bb785c76692c2aeb8ecc37e340e61d6ca3c20e67303deddd81cc2e55",
+    "original_project_path": "Data_for_Figures/output/strengthening/config/CONSTRAINED_PLACEMENT_PROFILES.csv"
+  },
+  {
+    "path": "Data_for_Figures/PAIRED_WITHIN_FLOOR_PLACEMENT_EFFECTS.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "9f225a4e95bd57b4c7e0cd475d5fe0b981aa08aebfd90e3a4a7bc67d534751eb",
+    "expected_sha256": "9f225a4e95bd57b4c7e0cd475d5fe0b981aa08aebfd90e3a4a7bc67d534751eb",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/constrained_placement/PAIRED_WITHIN_FLOOR_PLACEMENT_EFFECTS.csv"
+  },
+  {
+    "path": "Data_for_Figures/ACTION_FULL_COMPLETED.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "10fcf856ea48be2eef6d48200aeb0a1e44b9f6d02e7d31d67e203310c1eb5267",
+    "expected_sha256": "3551fc5383a62b479366882246502db1cd8bb8928c185234ddc9e0a6747ae5ab",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/dr_capability/ACTION_FULL_COMPLETED.csv"
+  },
+  {
+    "path": "Data_for_Figures/ISOLATED_EVENT_ACTION_SCORES.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "42416cbe5dc8d431411e4755b37735578b5c8ce0e4098765f51ec458a4fbaadc",
+    "expected_sha256": "42416cbe5dc8d431411e4755b37735578b5c8ce0e4098765f51ec458a4fbaadc",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/dr_capability/ISOLATED_EVENT_ACTION_SCORES.csv"
+  },
+  {
+    "path": "Data_for_Figures/NORMAL_OPERATION_REPLAY_COMPLETED.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "b5ebfe3d8deff59190036c187a81b66315b6f26d86e9b710105f4b9004892d12",
+    "expected_sha256": "0bebc101e219d359c75fbba1ee86c1d41c301367cc19ebfbad487f6a0b82d107",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/dr_capability/NORMAL_OPERATION_REPLAY_COMPLETED.csv"
+  },
+  {
+    "path": "Data_for_Figures/ONE_ACTION_PER_EVENT_BUDGET_CHOICES.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "e11c28a8650fc823efbced9a2ad8dc1544748611e17143510cd12c8926ce78b5",
+    "expected_sha256": "e11c28a8650fc823efbced9a2ad8dc1544748611e17143510cd12c8926ce78b5",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/dr_capability/ONE_ACTION_PER_EVENT_BUDGET_CHOICES.csv"
+  },
+  {
+    "path": "Data_for_Figures/SINGLE_EVENT_ACTION_PLAN.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "29fbca587e07460d72008d3de9d661b2d0fd00c200f667d5dbab6b054a6463be",
+    "expected_sha256": "b19e6cc12d3150debd1fa1ab897573ea3fa8e4c41593fc36e2d5cb814e183b54",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/dr_capability/SINGLE_EVENT_ACTION_PLAN.csv"
+  },
+  {
+    "path": "Data_for_Figures/FULL_REPLAY_ACTION_SCORES.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "6559380ad92e2390e830697d8985b4ae98bf3ed8c4d41d8f211f641a1304797a",
+    "expected_sha256": "6559380ad92e2390e830697d8985b4ae98bf3ed8c4d41d8f211f641a1304797a",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/dr_information_review/FULL_REPLAY_ACTION_SCORES.csv"
+  },
+  {
+    "path": "Data_for_Figures/PAIRED_EVENT_INFORMATION_REVIEW.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "3c3ea60f81780bfdeea8d8c16c59a77dcaa0a40d37eb4b5da366a2751ec35d9c",
+    "expected_sha256": "3c3ea60f81780bfdeea8d8c16c59a77dcaa0a40d37eb4b5da366a2751ec35d9c",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/dr_information_review/PAIRED_EVENT_INFORMATION_REVIEW.csv"
+  },
+  {
+    "path": "Data_for_Figures/PAIRED_FROZEN_POWER_DRAWS.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "9f86affdbf31fef74f9e3416b28fdfaad670f5a8a2b3fc0a4c5ee044f80aaaaa",
+    "expected_sha256": "9f86affdbf31fef74f9e3416b28fdfaad670f5a8a2b3fc0a4c5ee044f80aaaaa",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/dr_information_uncertainty/PAIRED_FROZEN_POWER_DRAWS.csv"
+  },
+  {
+    "path": "Data_for_Figures/NOMINAL_POOLED_CHOICES_WITH_ORIGINS.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "6c2725b673912391866f1d4417328e189687f8b281e04664b881a516eab4e384",
+    "expected_sha256": "6c2725b673912391866f1d4417328e189687f8b281e04664b881a516eab4e384",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/information_uncertainty_summary/NOMINAL_POOLED_CHOICES_WITH_ORIGINS.csv"
+  },
+  {
+    "path": "Data_for_Figures/SETTING_SELECTION_STABILITY_ALL_BRANCHES.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "9a9d59434f4da367d441f9cbf5c407db28ceedbefc2b8600484427147eb04c8e",
+    "expected_sha256": "9a9d59434f4da367d441f9cbf5c407db28ceedbefc2b8600484427147eb04c8e",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/information_uncertainty_summary/SETTING_SELECTION_STABILITY_ALL_BRANCHES.csv"
+  },
+  {
+    "path": "Data_for_Figures/NOMINAL_QUALIFICATION_COUNTS.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "4dc89b4eef8d10b207efc225a34975287c70ff1b1c2319d3f2ff0e582b66018e",
+    "expected_sha256": "4dc89b4eef8d10b207efc225a34975287c70ff1b1c2319d3f2ff0e582b66018e",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/nominal_information/NOMINAL_QUALIFICATION_COUNTS.csv"
+  },
+  {
+    "path": "Data_for_Figures/independent_pthp_MATCHED_CROSS_SYSTEM_EFFECTS.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "95cc7880d672291041302bf684b0b242a0dd28a76ffe27783cced8d24aea4b51",
+    "expected_sha256": "95cc7880d672291041302bf684b0b242a0dd28a76ffe27783cced8d24aea4b51",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/placement_hvac_interaction/independent_pthp_MATCHED_CROSS_SYSTEM_EFFECTS.csv"
+  },
+  {
+    "path": "Data_for_Figures/vav_coordinated_outdoor_reset_MATCHED_CROSS_SYSTEM_EFFECTS.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "706a25e06b11bcf0a229638ff926ebac9a79da3518a82d76a831bed4f5964084",
+    "expected_sha256": "706a25e06b11bcf0a229638ff926ebac9a79da3518a82d76a831bed4f5964084",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/placement_hvac_interaction/vav_coordinated_outdoor_reset_MATCHED_CROSS_SYSTEM_EFFECTS.csv"
+  },
+  {
+    "path": "Data_for_Figures/DESCRIPTIVE_BUDGET_SUMMARY.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "3aa09ae792bef6f78d405504117ec214806696fb9d4f7681cae67e0848dd02bd",
+    "expected_sha256": "3aa09ae792bef6f78d405504117ec214806696fb9d4f7681cae67e0848dd02bd",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/placement_service_frontiers/DESCRIPTIVE_BUDGET_SUMMARY.csv"
+  },
+  {
+    "path": "Data_for_Figures/DECOMPOSITION.csv",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "c7a391720c74fd5b2a37671be7fc40e158aa517ca400e24e1b1258ef6e6fc889",
+    "expected_sha256": "c7a391720c74fd5b2a37671be7fc40e158aa517ca400e24e1b1258ef6e6fc889",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/spatial_hvac_mechanism/run_20261031T192002_968791Z/DECOMPOSITION.csv"
+  },
+  {
+    "path": "Data_for_Figures/STATUS.json",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "7aa4121f3fe90f9131ab2380bfe5bff3d63e1f67c35f3e25a64029b046cfec40",
+    "expected_sha256": "5117c6882d32b615dafcd99bb05c117321f7e8ea05457da16f5f37d1e80136b0",
+    "original_project_path": "Data_for_Figures/output/strengthening/results/spatial_hvac_mechanism/run_20261031T192002_968791Z/STATUS.json"
+  },
+  {
+    "path": "Data_for_Figures/isolated_0e545d46d7ce446398d31866.npz",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "bdb6f937f5a0847b2820f9bf58e4bbdc60513a0b2736dea7296fa212689a9900",
+    "expected_sha256": "bdb6f937f5a0847b2820f9bf58e4bbdc60513a0b2736dea7296fa212689a9900",
+    "original_project_path": "Data_for_Figures/output/strengthening/simulations/single_event_hourly/isolated_0e545d46d7ce446398d31866.npz"
+  },
+  {
+    "path": "Data_for_Figures/isolated_4caeea1e4b24d6220d74d1dc.npz",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "48c98885c14f405a5966b2a0f5775242c223c443b72db304dbffcee677a7a9e4",
+    "expected_sha256": "48c98885c14f405a5966b2a0f5775242c223c443b72db304dbffcee677a7a9e4",
+    "original_project_path": "Data_for_Figures/output/strengthening/simulations/single_event_hourly/isolated_4caeea1e4b24d6220d74d1dc.npz"
+  },
+  {
+    "path": "Data_for_Figures/normal_f620f82ff7dd4584423772e3.npz",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "af94cb52193b7a73c2191f1a158b5b0f140fced4ed9d53c420a0580eee09b225",
+    "expected_sha256": "af94cb52193b7a73c2191f1a158b5b0f140fced4ed9d53c420a0580eee09b225",
+    "original_project_path": "Data_for_Figures/output/strengthening/simulations/single_event_hourly/normal_f620f82ff7dd4584423772e3.npz"
+  },
+  {
+    "path": "Data_for_Figures/GLOBAL_CLIMATES.json",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "e432770a7ddd71818ba9208f8658e2a6a3cfbae4158bd338a4e69ff3f654b677",
+    "expected_sha256": "e432770a7ddd71818ba9208f8658e2a6a3cfbae4158bd338a4e69ff3f654b677",
+    "original_project_path": "Data_for_Figures/src/analysis/global_extension/GLOBAL_CLIMATES.json"
+  },
+  {
+    "path": "Data_for_Figures/ne_110m_land.geojson",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "9e0729ee253ca7d7a5c4ae9395fb1902264c5377c52e224d13dd85010e2835d9",
+    "expected_sha256": "9e0729ee253ca7d7a5c4ae9395fb1902264c5377c52e224d13dd85010e2835d9",
+    "original_project_path": "Data_for_Figures/src/thermal_heterogeneity/assets/ne_110m_land.geojson"
+  },
+  {
+    "path": "Data_for_Figures/ne_110m_observed_countries.json",
+    "status": "exact_hash_match",
+    "source": "complete_project_figure_inputs",
+    "sha256": "44a2149f6b0c97bb87d274f8881564129c7c64222a95328eecd20792b37c1036",
+    "expected_sha256": "44a2149f6b0c97bb87d274f8881564129c7c64222a95328eecd20792b37c1036",
+    "original_project_path": "Data_for_Figures/src/thermal_heterogeneity/assets/ne_110m_observed_countries.json"
+  }
+]

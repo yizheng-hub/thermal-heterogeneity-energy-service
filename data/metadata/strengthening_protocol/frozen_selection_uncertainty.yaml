@@ -1,0 +1,42 @@
+{
+  "question": "How do the existing paired demand-error scenarios affect full-service availability of the frozen full-information and zone-mean selections?",
+  "scope": "A only, fixed physical operations and fixed nominal maximum-power choices; no per-draw action reselection or regenerated control",
+  "inventory": {
+    "settings": 54,
+    "events_per_setting": 8,
+    "normal_menus": [
+      "building_search",
+      "zone_summary",
+      "zone_full"
+    ],
+    "normal_energy_budgets": [
+      0.95,
+      1.0,
+      1.05
+    ],
+    "deduplication": "Same climate, composition, normal operation, physical action, event and exact window definition; never deduplicate different demand compositions"
+  },
+  "fixed": [
+    "Original25C reference, original27 annual tail members, native person-hour window weights and unweighted annual tail mean",
+    "All normal operations, actions, physical powers, net electricity and nominal selections under the response-information protocol",
+    "Same256 identity-keyed draws and seed2026103103 as the completed full-selected analysis",
+    "Alternative source-common and study/contributor-common SD grids0/0.25/0.5C crossed with person SD0/0.25/0.5C; do not stack the two shared terms",
+    "ASHRAE-only development temporal-proxy transports at fractions0.5and1 for both multi-record and single-record pools; no CTCD empirical transport"
+  ],
+  "checks": [
+    "Annual normal service and baseline/action event and recovery service are required",
+    "Precondition baseline/action checks apply only when original reference occupied weight is positive; otherwise mark not_applicable, not zero violation",
+    "For each metric use finite observed and reference values and original observed <= reference +1e-9C comparison",
+    "Candidate, baseline and reference use exactly the same demand draw for every corresponding identity"
+  ],
+  "status_rules": {
+    "resolved_no_action": "Available power is0; selected-operation service frequency is not applicable",
+    "nominal_normal_ineligible_or_unresolved": "Missing availability and explicit status, never automatic zero or fallback",
+    "perturbed_selected_operation_fails": "Frozen selected response contributes0 available power without selecting another action"
+  },
+  "interpretation": [
+    "Conditional fixed-operation stress analysis, not calibrated real discomfort probabilities or population confidence intervals",
+    "Paired draw differences require same-draw masks, not subtraction of separate marginal quantiles",
+    "Positive-net policy and robust per-draw action optimization are outside this fixed-selection analysis"
+  ]
+}

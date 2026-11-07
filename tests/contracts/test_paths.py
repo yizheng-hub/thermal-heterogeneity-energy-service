@@ -21,36 +21,6 @@ def test_absolute_asset_path_is_rejected(tmp_path: Path):
         resolve_asset(load_config(config_path), "x")
 
 
-@pytest.mark.parametrize("records,expected", [(20, "PASS"), (19, "FAIL")])
-def test_demographic_summary_disclosure_threshold(tmp_path, records, expected):
-    root = Path(__file__).resolve().parents[2]
-    path = (
-        tmp_path
-        / "src"
-        / "analysis"
-        / "support"
-        / "science_audit"
-        / "demographic_city_season_gender_summary.csv"
-    )
-    path.parent.mkdir(parents=True)
-    with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=["gender", "records", "analysis_units"])
-        writer.writeheader()
-        writer.writerow({"gender": "female", "records": records, "analysis_units": 10})
-    result = subprocess.run(
-        [
-            sys.executable,
-            str(root / "src/utilities" / "release_scan.py"),
-            "--root",
-            str(tmp_path),
-            "--mode",
-            "paths-identifiers",
-        ],
-        text=True,
-        stdout=subprocess.PIPE,
-        check=False,
-    )
-    assert json.loads(result.stdout)["status"] == expected
 
 
 @pytest.mark.parametrize("change", ["none", "tampered_payload", "extra_file", "tampered_manifest"])

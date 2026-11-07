@@ -213,13 +213,13 @@ def main():
         ("scores", "ISOLATED_EVENT_ACTION_SCORES.csv"), ("choices", "ONE_ACTION_PER_EVENT_BUDGET_CHOICES.csv")]}
     info_paths.update(protocol=RAW_RUN / "response/EVENT_PROTOCOL.csv", profiles=MATRIX / "GLOBAL_PROFILES.csv",
         probes=MATRIX / "probe_runs/PROBE_RUN_MANIFEST.csv", tails=ROOT / "results/base/annual/GLOBAL_FIXED_TAIL_MEMBERSHIPS.csv",
-        amendment=CODE / "data/metadata/strengthening_protocol/analysis_plan_amendment_34_response_information_review.yaml")
+        amendment=CODE / "data/metadata/strengthening_protocol/response_information.yaml")
     current_info_assets = primary_assets(info_paths)
     current_assets = primary_assets(info_paths | {"information_receipt": info / "AUDIT.json",
         "information_pairs": info / "PAIRED_EVENT_INFORMATION_REVIEW.csv",
         "full_replay": info / "FULL_REPLAY_ACTION_SCORES.csv",
         "old_uncertainty": ROOT / "results/dr_capability_uncertainty_identity/AUDIT.json",
-        "amendment36": CODE / "data/metadata/strengthening_protocol/analysis_plan_amendment_36_frozen_information_uncertainty.yaml"})
+        "amendment36": CODE / "data/metadata/strengthening_protocol/frozen_selection_uncertainty.yaml"})
     if (out / "AUDIT.json").is_file():
         audit = json.loads((out / "AUDIT.json").read_text())
         if (audit["status"] != "completed" or audit["source_sha256"] != SOURCES
@@ -239,7 +239,7 @@ def main():
     for path, sha in json.loads((info / "INPUT_SHA256.json").read_text()).items():
         tracked(CODE / path, sha)
     tracked(info / "AUDIT.json")
-    tracked(CODE / "data/metadata/strengthening_protocol/analysis_plan_amendment_36_frozen_information_uncertainty.yaml")
+    tracked(CODE / "data/metadata/strengthening_protocol/frozen_selection_uncertainty.yaml")
     pairs = read(info / "PAIRED_EVENT_INFORMATION_REVIEW.csv")
     pairs = pairs[pairs.policy.eq("maximum_power")].copy()
     plan = read(capability / "SINGLE_EVENT_ACTION_PLAN.csv")

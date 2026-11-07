@@ -29,7 +29,7 @@ MODEL = {
     "study_median": "Study median",
     "source_prior_only": "Source prior",
 }
-MENU = {"building_search": "Building", "zone_summary": "Zone summary", "zone_full": "Full demand"}
+MENU = {"building_search": "Building", "zone_summary": "Zone summary", "zone_full": "Full zone"}
 
 
 def quarter_reassignment_rows(interaction):
@@ -89,9 +89,11 @@ def build(raw, analysis, publication, resource_scenarios=None):
         1,
         "Final response-evaluation support",
         support,
-        "Timed evaluations use later responses after personal calibration. Untimed evaluations use the independent participant split without a verified time order.",
+        "Records count held-out responses and participants count distinct source-qualified identities in the final evaluation. Timed evaluations use later responses after personal calibration. Untimed evaluations use a participant split without verified time order. Repeated calibration uses the available early records; single calibration uses one record. Acceptability and no-change preference are separate response endpoints.",
     )
     shared = metrics[metrics.width_policy.eq("shared_width")].copy()
+    # The complete nine-model table accompanies the plotting inputs.
+    shared = shared[shared.center_model.isin(["raw_center", "shrink_center", "building_median"])].copy()
     shared["Evaluation"] = shared.design.map(DESIGN)
     shared["Center"] = shared.center_model.map(MODEL)
     if shared[["Evaluation", "Center"]].isna().any().any():
@@ -104,12 +106,13 @@ def build(raw, analysis, publication, resource_scenarios=None):
     shared["Brier score"] = shared.brier.map(f)
     add(
         2,
-        "Independent response prediction at a shared width",
+        "Individual and building-median prediction at a shared width",
         shared[
             ["Evaluation", "Center", "Half-width (°C)", "Balanced accuracy", "AUROC", "Brier score"]
         ],
-        "Bracketed values are 95% participant-cluster bootstrap intervals. Widths are selected in development data. Tuned-width and Personal range metrics and all paired contrasts are retained in Supplementary Data 1.",
+        "Balanced accuracy is the mean of sensitivity and specificity; each entry reports its point estimate followed by the lower and upper bounds of a 95% participant-cluster bootstrap confidence interval (CI) in brackets (500 resamples within the source–building structure). The area under the receiver operating characteristic curve (AUROC) measures discrimination. The Brier score is mean squared probability error; lower is better, whereas higher balanced accuracy and AUROC are better. AUROC and Brier entries are point estimates. Half-widths are selected using development data and shared across center models within each design. This table shows the individual, shrinkage and building-median models. All nine center baselines, tuned-width and Personal range metrics, and paired contrasts are supplied in Supplementary Software 1.",
     )
+    tables[-1]["columns"][3] = "Balanced accuracy [95% CI]"
     old = read("results/decision_effect_sizes/DECISION_EFFECT_SIZES.csv", raw)
     old = old[old.selection_disagreement.eq(True)].copy()
     composition_labels = {
@@ -118,8 +121,8 @@ def build(raw, analysis, publication, resource_scenarios=None):
         for i, letter in enumerate("ABC")
     }
     old["Composition"] = old.composition.map(composition_labels)
-    old["Population excess (°C)"] = (-old.zone_mean_selected_full_population_margin_c).map(f)
-    old["Tail excess (°C)"] = (-old.zone_mean_selected_full_tail_margin_c).map(f)
+    old["Population excess (°C)"] = old.zone_mean_selected_full_population_margin_c.map(f)
+    old["Tail excess (°C)"] = old.zone_mean_selected_full_tail_margin_c.map(f)
     old["Extra energy (MWh)"] = (old.delta_purchased_kwh_full_minus_zone_mean / 1000).map(f)
     old = old.rename(columns={"climate": "Climate"})
     add(
@@ -134,7 +137,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
                 "Extra energy (MWh)",
             ]
         ],
-        "Signed excess is the mean-selected operation's full-demand mismatch minus the common limit; negative values indicate a margin below the limit. Extra energy is full-demand selection minus mean selection. Composition labels identify sampled demand groups, not countries of simulated occupants.",
+        "Signed excess is the mean-selected operation’s full-demand mismatch minus the corresponding 25 °C reference limit; positive values exceed the limit and negative values remain below it. Tail denotes the fixed 27 least-served profiles among 267, identified under the reference. Extra energy is full-demand selection minus mean selection, in annual purchased MWh. These ten settings come from the 810-entry library. Compositions 1–3 sample the ASHRAE Global Thermal Comfort Database II and 4–6 the Chinese Thermal Comfort Dataset; they are demand samples rather than occupant nationalities.",
     )
     grid = read("results/aligned_grid_sensitivity/ALIGNED_GRID_SUMMARY.csv")
     compact = grid[
@@ -160,7 +163,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
         4,
         "Selection stability across aligned offset grids",
         compact,
-        "All grids use the same full-demand reference requirements and retain the frozen uniform building search. These are finite-library results.",
+        "Grid denotes the temperature-offset spacing. Set differences count settings with different qualifying operation sets under zone-mean and individual-demand scoring; choice differences count different lowest-energy physical selections. The last column checks mean-selected operations against individual-demand service limits. Each row covers the same 54 climate–composition settings and full-demand reference requirements, with the frozen uniform building search retained. Minima refer to each evaluated finite library.",
     )
     pooled = read("results/information_uncertainty_summary/NOMINAL_POOLED_CHOICES_WITH_ORIGINS.csv")
     rows = []
@@ -188,7 +191,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
                 "Median extra energy (MWh)",
             ],
         ),
-        "Excess and extra energy summarize only settings with different choices. A dash denotes no such setting, not a zero service difference.",
+        "Results use the expanded 8,586-entry logical library, with six compositions per climate. Excess is the larger of population and fixed least-served mismatch minus its own reference limit. Excess and extra energy summarize only settings with different choices; extra energy is individual-demand minus mean-selected annual purchased energy. A dash denotes no changed choice. Compositions sample the ASHRAE Global Thermal Comfort Database II and Chinese Thermal Comfort Dataset.",
     )
     interaction = read(
         "results/placement_hvac_interaction/independent_pthp_MATCHED_CROSS_SYSTEM_EFFECTS.csv"
@@ -210,7 +213,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
                 "Energy change (%)",
             ],
         ),
-        "All entries are medians of within-system paired changes. The same 52 Personal center and 53 Personal range comparisons are retained for both systems.",
+        "Variable-air-volume (VAV) equipment is compared with independent packaged terminal heat pumps (zone heat pumps). All entries are medians of within-system paired changes from mixed to within-floor arranged placement under the 25% move allowance. Service gains are mixed minus arranged mismatch; percentage energy changes are arranged minus mixed energy divided by mixed energy. The same 52 Personal center and 53 Personal range comparisons meet the engineering criteria in both systems. Purchased energy sums facility electricity and gas.",
     )
     resource = read("results/dr_capability_summary/RESOURCE_SUMMARY_ALL_SETTINGS.csv")
     resource = resource[resource.normal_energy_reference_factor.eq(1)].copy()
@@ -229,7 +232,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
         7,
         "One-action response under the reference energy budget",
         response,
-        "Each mean uses all 432 opportunities, including resolved cases without a positive service-preserving response as zero. The positive-net policy maximizes event power subject to positive full-window electricity savings.",
+        "Building, zone-summary and full-zone menus provide alternative normal-operation command libraries under the same individual-demand population and fixed-group service limits. The annual energy budget equals reference operation. Each power mean uses all 432 opportunities (nine climates × six compositions × eight events), including resolved cases without a positive service-preserving response as zero. One of five actions is selected per event. The positive-net policy maximizes event power subject to positive electricity savings over preparation, event and 48-hour recovery.",
     )
     decisions = read(
         "results/information_compression_final/GLOBAL_INFORMATION_COMPRESSION_DECISIONS.csv", raw
@@ -257,12 +260,12 @@ def build(raw, analysis, publication, resource_scenarios=None):
                 "Representation",
                 "Settings",
                 "Choices",
-                "Individually qualifying selections",
+                "Full-demand qualifying selections",
                 "Qualifying plans retained",
                 "Full qualifying plans",
             ],
         ),
-        "Qualification and exact selection agreement are different endpoints. Cross-context error margins are identified by the representation name. Plan counts sum over settings.",
+        "Choices count settings returning a selection; qualifying selections count those also meeting the full-demand service requirements. Retained plans count setting–operation instances qualifying under both representations; the denominator is 700 full-demand qualifying instances in this library. These are qualification endpoints, distinct from exact selection agreement. Five-bin summaries group demand centers; cross-context error margins are identified in the representation name. Counts sum over 54 settings.",
     )
     costs = (
         read(resource_scenarios.name, resource_scenarios.parent)
@@ -293,7 +296,25 @@ def build(raw, analysis, publication, resource_scenarios=None):
                 "Maximum (US$)",
             ],
         ),
-        "Illustrative inputs are not observed building-management costs. Capital is annualized over five years at 3%; reassignment and command scope remain quantities for local valuation.",
+        "The two wage assumptions each contain 108 illustrative resource scenarios, giving 216 scenarios in total. The table summarizes annual costs in United States dollars (US$) within each wage assumption rather than observed management-cost distributions. Capital is annualized over five years at 3%; reassignment counts and command scope remain quantities for local valuation. Setup, maintenance, feedback, software and optional interfaces use the declared resource inputs.",
+    )
+    add(
+        10,
+        "Equipment operation acceptance and diagnostic definitions",
+        pd.DataFrame(
+            [
+                ["Annual completion", "Acceptance", "Complete 8,760-hour trajectory for 15 conditioned zones; no reported severe or fatal errors."],
+                ["Zone-feedback warmup", "Acceptance", "EnergyPlus warmup retains a minimum of six and maximum of 25 days, a temperature-convergence tolerance of 0.20 °C and a loads-convergence tolerance of 0.04. Reported warmup-nonconvergence severe errors exclude an operation even if its annual trajectory completes."],
+                ["Zone-feedback expansion", "Acceptance and stopping rule", "Each climate must pass all seven technical-pilot operations (one reference and three controls for each of two compositions) before the remaining twelve operations are run. All seven pilot operations failed in each of Brasília and Singapore, leaving twelve operations per climate unrun (24 total)."],
+                ["Warnings and numerical stability", "Acceptance", "Coil operating-range warnings exclude an operation. HVAC-iteration, wet-bulb or psychrometric-temperature warnings trigger a 100-iteration rerun. Maximum hourly zone-temperature difference must be ≤0.02 °C, relative annual purchased-energy difference ≤0.001, and maximum occupancy difference ≤10⁻¹⁰, with no new warning category. Warning-count changes are recorded."],
+                ["Electricity accounting", "Acceptance", "At every hour, heating, cooling and fan electricity plus metered transformer loss must close to HVAC electricity within 10⁻⁶ kWh."],
+                ["Outdoor-air delivery", "Acceptance and separate diagnostic", "No occupied hour may deliver less than 99% of the area-based outdoor-air request after applying its fractional schedule. The separate VAV analysis checks actual air-loop delivery against the native mechanical-ventilation request. Occupied-loop hours and occupied-building hours are separate denominators."],
+                ["Equipment capacity", "Fixed comparison input", "Autosized equipment and airflow fields are resolved using the common 25 °C design run for each system and climate, then held fixed across strategies. VAV reset alternatives retain original VAV capacities; the heat-pump architecture uses its own sizing run."],
+                ["Setpoint tracking", "Reported diagnostic", "Heating and cooling use the EnergyPlus reporting tolerance of 0.556 °C and EnergyPlus While Occupied durations. Annual zone-hours sum these durations over 15 conditioned zones and 8,760 hourly records. No unmet-hour cutoff is used for engineering exclusion. Service-window and outside-window sums partition this annual total."],
+            ],
+            columns=["Item", "Role", "Executed rule or definition"],
+        ),
+        "Heating, ventilation and air-conditioning (HVAC) operation is assessed using the rules above. Variable-air-volume (VAV) candidates use the reference equipment. Relative annual energy tolerance 0.001 equals 0.1%. Alternative systems use the acceptance rules above; reference VAV candidates also undergo prototype-relative warning checks. Numerical acceptance, setpoint-tracking diagnostics and thermal-service selection are separate. Thermal-service selection uses population and fixed-group mismatch. The hourly maximum of zone unmet durations is the largest unmet duration among zones in that hour.",
     )
     destination = publication / "tables"
     destination.mkdir(parents=True, exist_ok=True)

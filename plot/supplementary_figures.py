@@ -33,6 +33,8 @@ class Sources:
 
     def read(self, name, raw=False):
         path = (self.raw if raw else self.analysis) / name
+        if not path.is_file() and path.suffix == ".csv" and path.with_suffix(".csv.gz").is_file():
+            path = path.with_suffix(".csv.gz")
         self.paths.append(path)
         return pd.read_csv(path, low_memory=False)
 
@@ -46,11 +48,11 @@ class Sources:
         return pd.read_csv(paths[-1])
 
 
-def canvas(count=4):
+def canvas(count=4, legend_gap=False):
     rows = count // 2
     height = 5.5 if rows == 2 else 7.0
     fig = plt.figure(figsize=(WIDTH, height))
-    positions = [0.61, 0.15] if rows == 2 else [0.745, 0.44, 0.135]
+    positions = ([0.625, 0.135] if legend_gap else [0.61, 0.15]) if rows == 2 else [0.745, 0.44, 0.135]
     axes = [
         fig.add_axes([x, y, 0.30, 0.29 if rows == 2 else 0.19])
         for y in positions
@@ -87,9 +89,9 @@ def common_legend(fig, labels, colors, y=0.035, columns=None):
 
 
 def s1(s):
-    ash = s.read("demand/ASHRAE_RECORDS.csv.gz", True)
-    ct = s.read("demand/CTCD_RECORDS.csv.gz", True)
-    people = s.read("results/data_support/IDENTIFIED_AS_HRAE_RECORDS.csv.gz")
+    ash = s.read("demand/ASHRAE_RECORDS.csv", True)
+    ct = s.read("demand/CTCD_RECORDS.csv", True)
+    people = s.read("results/data_support/IDENTIFIED_AS_HRAE_RECORDS.csv")
     variance = s.read("results/observations/ASHRAE_NESTED_VARIANCE.csv", True)
     fig, (a, b, c, d) = canvas()
     for frame, color in [(ash, BLUE), (ct, PURPLE)]:
@@ -101,7 +103,7 @@ def s1(s):
             color=color,
             linewidth=1.1,
         )
-    a.set(xlabel="Demand center (°C)", ylabel="Density (°C⁻¹)", xlim=(10, 40))
+    a.set(xlabel="Demand center (°C)", ylabel="Density (°C⁻¹)", xlim=(10, 45))
     title(a, "a", "Record-level demand")
     coverage = (
         people
@@ -112,13 +114,13 @@ def s1(s):
     )
     counts = coverage.records
     ecdf(b, counts, GREEN)
-    b.set_xlabel("Records per person")
+    b.set_xlabel("Records per analysis unit")
     b.set_xscale("log")
     title(b, "b", "Repeated-record support")
     c.scatter(
         coverage.records, coverage.hi - coverage.lo, s=5, color=BLUE, alpha=0.35, linewidths=0
     )
-    c.set(xlabel="Records per person", ylabel="Observed temperature\nspan (°C)", xscale="log")
+    c.set(xlabel="Records per analysis unit", ylabel="Observed temperature\nspan (°C)", xscale="log")
     title(c, "c", "Temperature coverage")
     x = variance[variance.component.eq("unit_group")]
     names = {
@@ -143,7 +145,7 @@ def s1(s):
         loc="upper center", bbox_to_anchor=(0.5, 1.01), ncol=2, columnspacing=0.5, handlelength=0.8
     )
     d.set_ylim(0, 100)
-    common_legend(fig, ["ASHRAE", "CTCD"], [BLUE, PURPLE], y=0.51)
+    a.legend([Line2D([], [], color=BLUE), Line2D([], [], color=PURPLE)], ["ASHRAE", "CTCD"], loc="upper right")
     return fig, "abcd"
 
 
@@ -153,6 +155,9 @@ def s2(s):
     seasons = s.read("results/seasonal_command/SEASONAL_PLACE_EFFECTS.csv", True)
     rooms = s.read("results/shared_room/BURDEN_THRESHOLD_RESULTS.csv", True)
     fig, (a, b, c, d) = canvas()
+    for ax in (b, d):
+        bounds = ax.get_position()
+        ax.set_position([0.64, bounds.y0, 0.33, bounds.height])
     for archive, g in cities.groupby("archive"):
         a.scatter(
             g.observation_records,
@@ -169,7 +174,7 @@ def s2(s):
     p = policies[policies.griffiths.eq("g0.50")].pivot(
         index="policy", columns="position", values="proportion"
     )
-    short = {name: name.split()[0] for name in p.index}
+    short = {name: name.split()[0].replace("USA", "United States") for name in p.index}
     left = np.zeros(len(p))
     for key, color in [("below", BLUE), ("within", GREEN), ("above", CORAL)]:
         b.barh(np.arange(len(p)), 100 * p[key], left=left, color=color, height=0.65)
@@ -178,7 +183,7 @@ def s2(s):
     b.invert_yaxis()
     b.set(xlabel="Demand centers (%)", xlim=(0, 100))
     b.set_xticks([0, 50, 100])
-    title(b, "b", "Published temperature\nranges")
+    title(b, "b", "Published temperature ranges")
     for source, g in seasons.groupby("demand_source"):
         c.scatter(
             g.cool_mean_c,
@@ -205,9 +210,11 @@ def s2(s):
         )
     d.set(xlabel="Mean-request threshold", ylabel="Windows with hidden\nindividual requests (%)")
     title(d, "d", "Averaging shared requests")
-    d.legend(loc="upper center", bbox_to_anchor=(0.5, 1.02), handlelength=0.8)
-    d.set_ylim(0, 15)
-    common_legend(fig, ["Below", "Within", "Above"], [BLUE, GREEN, CORAL], y=0.51)
+    d.legend(loc="upper right", handlelength=0.8)
+    d.set_ylim(0, 19)
+    b.set_ylim(len(p) - 0.5, -2.3)
+    b.legend([Patch(fc=x) for x in [BLUE, GREEN, CORAL]], ["Below", "Within", "Above"], loc="upper center", ncol=3, columnspacing=0.6, handlelength=0.8)
+    c.legend([Line2D([], [], color=BLUE), Line2D([], [], color=PURPLE)], ["ASHRAE", "CTCD"], loc="lower right")
     return fig, "abcd"
 
 
@@ -293,6 +300,9 @@ def s4(s):
     domain = s.read("results/target_domain_final/TARGET_DOMAIN_SUMMARY.csv", True)
     anchors = s.read("results/global_final/GLOBAL_25C_SERVICE_ANCHORS.csv", True)
     fig, (a, b, c, d) = canvas()
+    fig.set_size_inches(WIDTH, 5.1)
+    for ax, x, y in [(a, 0.13, 0.60), (b, 0.62, 0.60), (c, 0.13, 0.15), (d, 0.62, 0.15)]:
+        ax.set_position([x, y, 0.35, 0.31])
     for ax, column, paint, label in [
         (a, "centre_c", BLUE, "Demand center (°C)"),
         (b, "range_width_c", PURPLE, "Personal range width (°C)"),
@@ -321,7 +331,7 @@ def s4(s):
         xlabel="Lowest zone target (°C)",
         ylabel="Highest zone target (°C)",
         xlim=(19.5, 27.5),
-        ylim=(19.5, 29.7),
+        ylim=(19.5, 34.5),
     )
     c.plot([20, 27], [20, 27], color="#999999", lw=0.6, ls=":")
     title(c, "c", "Target extent by control")
@@ -331,7 +341,7 @@ def s4(s):
         xlabel="Population reference\nmismatch (°C)", ylabel="Least-served reference\nmismatch (°C)"
     )
     title(d, "d", "Reference service limits")
-    common_legend(fig, list(CONTROL.values()), [GOLD, BLUE, PURPLE], y=0.035)
+    c.legend(loc="upper left", handlelength=0.8)
     return fig, "abcd"
 
 
@@ -382,7 +392,7 @@ def s5(s):
     fig.colorbar(image, cax=fig.add_axes([0.49, 0.15, 0.014, 0.29]), ticks=[0, 27, 54])
     d.plot(tol.delta_c, tol.eligibility_set_changed_settings, marker="o", ms=3, color=PURPLE)
     d.plot(tol.delta_c, tol.selected_physical_plan_changed_settings, marker="o", ms=3, color=BLUE)
-    d.set(xlabel="Added service margin (°C)", ylabel="Settings with a change", ylim=(0, 55))
+    d.set(xlabel="Added service margin (°C)", ylabel="Settings with a change", ylim=(0, 30))
     title(d, "d", "Original-library margins")
     return fig, "abcd"
 
@@ -391,7 +401,7 @@ def s6(s):
     x = s.read(
         "results/information_uncertainty_summary/SETTING_SELECTION_STABILITY_ALL_BRANCHES.csv"
     )
-    fig, (a, b, c, d) = canvas()
+    fig, (a, b, c, d) = canvas(legend_gap=True)
     branch = x.library_and_scenario_design.unique()
     # Compare identical declared error scales where the scenario is available.
     for label, paint in [("pooled_archive_shared", BLUE), ("pooled_study_shared", PURPLE)]:
@@ -436,7 +446,7 @@ def s6(s):
     title(d, "d", "Temporal error scenarios")
     if not a.lines or not d.lines:
         raise ValueError("Expected uncertainty branches not found")
-    common_legend(fig, ["Archive shared", "Contributor shared"], [BLUE, PURPLE], y=0.485)
+    common_legend(fig, ["Archive shared", "Contributor shared"], [BLUE, PURPLE], y=0.500)
     d.legend(
         [Line2D([], [], color=BLUE), Line2D([], [], color=PURPLE)],
         ["Single record", "Repeated records"],
@@ -448,7 +458,7 @@ def s6(s):
 
 def s7(s):
     x = s.read("results/constrained_placement/PAIRED_WITHIN_FLOOR_PLACEMENT_EFFECTS.csv")
-    fig, (a, b, c, d) = canvas()
+    fig, (a, b, c, d) = canvas(legend_gap=True)
     budgets = sorted(x.maximum_relocation_fraction.unique())
     for control, paint in [("personal_center", BLUE), ("personal_range", PURPLE)]:
         g = x[x.control.eq(control)]
@@ -490,7 +500,7 @@ def s7(s):
         ["Actual movement", "Population service", "Least-served service", "Energy consequence"],
     ):
         title(ax, letter, name)
-    common_legend(fig, ["Personal center", "Personal range"], [BLUE, PURPLE], y=0.025)
+    common_legend(fig, ["Personal center", "Personal range"], [BLUE, PURPLE], y=0.500)
     return fig, "abcd"
 
 
@@ -499,7 +509,7 @@ def s8(s):
     operations = s.read("results/hvac_retuned/SYSTEM_OPERATION_SCORES.csv")
     unavailable = s.read("results/hvac_retuned/UNAVAILABLE_RETUNED_SETTINGS.csv")
     x = x[x.engineering_pass_demand.eq(True) & x.engineering_pass_average.eq(True)]
-    fig, (a, b, c, d) = canvas()
+    fig, (a, b, c, d) = canvas(legend_gap=True)
     for control, paint in [("personal_center", BLUE), ("personal_range", PURPLE)]:
         g = x[x.compared_control.eq(control)]
         a.scatter(
@@ -540,8 +550,9 @@ def s8(s):
         ["Population service", "Least-served service", "Load tracking", "Annual operation support"],
     ):
         title(ax, letter, name)
-    common_legend(fig, ["Personal center", "Personal range"], [BLUE, PURPLE], y=0.485)
-    common_legend(fig, ["Planned", "Engineering accepted"], ["#e8e8e8", GREEN], y=0.025)
+    common_legend(fig, ["Personal center", "Personal range"], [BLUE, PURPLE], y=0.500)
+    d.set_ylim(len(counts) - 0.5, -3.2)
+    d.legend([Patch(fc="#e8e8e8"), Patch(fc=GREEN)], ["Planned", "Engineering accepted"], loc="upper center", bbox_to_anchor=(0.5, 1.03), handlelength=0.8)
     return fig, "abcd"
 
 
@@ -549,7 +560,7 @@ def s9(s):
     energy = s.latest("results/spatial_hvac_mechanism", "ENERGY_WINDOW_LEVELS.csv")
     tracking = s.latest("results/spatial_hvac_mechanism", "TRACKING_WINDOW_LEVELS.csv")
     vrp = s.latest("results/vrp_request_diagnostic", "AIRLOOP_REQUEST_FULFILLMENT.csv")
-    fig, (a, b, c, d) = canvas()
+    fig, (a, b, c, d) = canvas(legend_gap=True)
     keys = ["climate", "composition_id", "control", "system", "placement"]
     annual = energy.groupby(keys, as_index=False).sum(numeric_only=True)
     tracking = tracking.groupby(keys, as_index=False).sum(numeric_only=True)
@@ -587,7 +598,7 @@ def s9(s):
     ):
         title(ax, letter, name)
     common_legend(
-        fig, [{"pthp": "Zone heat pump", "vav": "VAV"}[v] for v in systems], [BLUE, PURPLE], y=0.485
+        fig, [{"pthp": "Zone heat pump", "vav": "VAV"}[v] for v in systems], [BLUE, PURPLE], y=0.500
     )
     d.legend(
         [Line2D([], [], color=BLUE), Line2D([], [], color=PURPLE)],
@@ -601,12 +612,12 @@ def s9(s):
 def s10(s):
     x = s.read("results/dr_capability_summary/RESOURCE_SUMMARY_BY_CLIMATE.csv")
     choices = s.read("results/dr_capability/ONE_ACTION_PER_EVENT_BUDGET_CHOICES.csv")
-    fig, (a, b, c, d) = canvas()
+    fig, (a, b, c, d) = canvas(legend_gap=True)
     x = x[x.normal_energy_reference_factor.eq(1)]
     menus = [
         ("building_search", "Building", GOLD),
         ("zone_summary", "Zone summary", BLUE),
-        ("zone_full", "Full demand", PURPLE),
+        ("zone_full", "Full zone", PURPLE),
     ]
     climates = sorted(x.climate.unique())
     for menu, label, paint in menus:
@@ -656,7 +667,7 @@ def s10(s):
         ["Available power", "Event availability", "Absolute event power", "Response size"],
     ):
         title(ax, letter, name)
-    common_legend(fig, [v[1] for v in menus], [v[2] for v in menus], y=0.485)
+    common_legend(fig, [v[1] for v in menus], [v[2] for v in menus], y=0.500)
     return fig, "abcd"
 
 
@@ -740,7 +751,7 @@ def s11(s):
         ],
     ):
         title(ax, letter, name)
-    common_legend(fig, ["Archive shared", "Contributor shared"], [BLUE, PURPLE], y=0.025)
+    c.legend([Line2D([], [], color=BLUE), Line2D([], [], color=PURPLE)], ["Archive shared", "Contributor shared"], loc="lower right", handlelength=0.8)
     return fig, "abcd"
 
 
@@ -754,7 +765,7 @@ def s12(s):
         .head(1)
     )
     ecdf(a, terminal.operative_temperature_max_abs_difference_c, BLUE)
-    a.set_xlabel("Temperature residual at\naccounting end (°C)")
+    a.set_xlabel("Temperature residual in\nlast recovery hour (°C)")
     maximum = hourly.groupby(
         ["normal_id", "run_id", "event_id"]
     ).operative_temperature_max_abs_difference_c.max()
@@ -781,14 +792,16 @@ def s12(s):
         [a, b, c, d],
         "abcd",
         [
-            "Terminal temperature",
+            "Last recovery hour",
             "Follow-on temperature",
             "Six-hour electricity",
             "Hourly electricity residual",
         ],
     ):
         title(ax, letter, name)
-    common_legend(fig, ["Whole building", "HVAC"], [BLUE, PURPLE], y=0.025)
+    lo, hi = d.get_ylim()
+    d.set_ylim(lo, hi + 0.55 * (hi - lo))
+    d.legend([Line2D([], [], color=BLUE), Line2D([], [], color=PURPLE)], ["Whole building", "HVAC"], loc="upper right", handlelength=0.8)
     return fig, "abcd"
 
 
@@ -801,7 +814,7 @@ def s13(s):
     complete = s.read(
         "results/energy_boundary_final/GLOBAL_ENERGY_BOUNDARY_DIRECT_COMPARISONS.csv", True
     )
-    fig, (a, b, c, d) = canvas()
+    fig, (a, b, c, d) = canvas(legend_gap=True)
     for control, paint in [("personal_center", BLUE), ("personal_range", PURPLE)]:
         g = direct[direct.alternative_control.eq(control)]
         a.scatter(
@@ -846,7 +859,7 @@ def s13(s):
         ],
     ):
         title(ax, letter, name)
-    common_legend(fig, ["Personal center", "Personal range"], [BLUE, PURPLE], y=0.025)
+    common_legend(fig, ["Personal center", "Personal range"], [BLUE, PURPLE], y=0.500)
     return fig, "abcd"
 
 
@@ -859,7 +872,7 @@ def s14(s):
         "results/seasonal_facility_energy_final/SEASONAL_COMMAND_SEASON_METRICS_COMPLETE_FACILITY.csv",
         True,
     )
-    fig, (a, b, c, d) = canvas()
+    fig, (a, b, c, d) = canvas(legend_gap=True)
     for fraction, ax in [(0.5, a), (1, b)]:
         g = annual[annual.seasonal_contrast_fraction.eq(fraction)]
         baseline = (
@@ -914,14 +927,14 @@ def s14(s):
         ],
     ):
         title(ax, letter, name)
-    common_legend(fig, ["Personal center", "Personal range"], [BLUE, PURPLE], y=0.485)
+    common_legend(fig, ["Personal center", "Personal range"], [BLUE, PURPLE], y=0.500)
     return fig, "abcd"
 
 
 def s15(s):
     permission = s.read("results/spatial_final/GLOBAL_PERMISSION_COMPARISONS.csv", True)
     placement = s.read("results/spatial_final/GLOBAL_PLACEMENT_COMPARISONS.csv", True)
-    fig, (a, b, c, d) = canvas()
+    fig, (a, b, c, d) = canvas(legend_gap=True)
     for frame, axes in [(permission, (a, b)), (placement, (c, d))]:
         for control, paint in [("personal_center", BLUE), ("personal_range", PURPLE)]:
             g = frame[frame.control.eq(control)]
@@ -957,13 +970,13 @@ def s15(s):
         ],
     ):
         title(ax, letter, name)
-    common_legend(fig, ["Personal center", "Personal range"], [BLUE, PURPLE], y=0.485)
+    common_legend(fig, ["Personal center", "Personal range"], [BLUE, PURPLE], y=0.500)
     return fig, "abcd"
 
 
 def s16(s):
     x = s.read("results/response_mean_decomposition/RESPONSE_MEAN_DECOMPOSITION.csv", True)
-    fig, (a, b, c, d) = canvas()
+    fig, (a, b, c, d) = canvas(legend_gap=True)
     total = x[x.group_dimension.eq("overall")].set_index("control").loc[list(CONTROL)]
     positions = np.arange(3)
     for ax, col, name in [
@@ -1007,12 +1020,12 @@ def s16(s):
     d.set_xticks(range(3), ["Average", "Personal\ncenter", "Personal\nrange"])
     d.set_yticks(range(len(actions)), [action_names[n] for n in actions.index])
     title(d, "d", "Action-specific power")
-    d.set_position([0.67, 0.18, 0.30, 0.26])
+    d.set_position([0.67, 0.165, 0.30, 0.26])
     colorbar = fig.colorbar(
-        image, cax=fig.add_axes([0.67, 0.08, 0.30, 0.014]), orientation="horizontal"
+        image, cax=fig.add_axes([0.67, 0.065, 0.30, 0.014]), orientation="horizontal"
     )
     colorbar.set_label("All-case mean power (kW)", labelpad=0)
-    common_legend(fig, list(CONTROL.values()), [GOLD, BLUE, PURPLE], y=0.485)
+    common_legend(fig, list(CONTROL.values()), [GOLD, BLUE, PURPLE], y=0.500)
     return fig, "abcd"
 
 
@@ -1044,6 +1057,7 @@ def main(argv=None):
         "--output-root", type=Path, default=ROOT / "output/publication/supplementary"
     )
     parser.add_argument("--figure", type=int, nargs="+", default=list(FUNCTIONS))
+    parser.add_argument("--published-number", type=int)
     args = parser.parse_args(argv)
     fonts = style()
     if not all(
@@ -1052,6 +1066,9 @@ def main(argv=None):
     ):
         raise ValueError("All publication inputs and outputs must remain inside the project")
     for number in args.figure:
+        published = args.published_number or number
+        if args.published_number and len(args.figure) != 1:
+            raise ValueError("A published number requires exactly one source figure")
         source = Sources(args.raw_root, args.analysis_root)
         fig, letters = FUNCTIONS[number](source)
         for axis in fig.axes:
@@ -1063,11 +1080,11 @@ def main(argv=None):
                 inside = (ticks >= min(limits) - 1e-10) & (ticks <= max(limits) + 1e-10)
                 if not inside.all():
                     coordinate.set_ticks(ticks[inside])
-        export(fig, args.output_root, 100 + number, source.paths, letters, fonts)
+        export(fig, args.output_root, 100 + published, source.paths, letters, fonts)
         for extension in ["png", "pdf", "svg", "json"]:
-            old = args.output_root / f"Figure_{100+number}.{extension}"
-            old.replace(args.output_root / f"Figure_S{number:02}.{extension}")
-        path = args.output_root / f"Figure_S{number:02}.json"
+            old = args.output_root / f"Figure_{100+published}.{extension}"
+            old.replace(args.output_root / f"Figure_S{published:02}.{extension}")
+        path = args.output_root / f"Figure_S{published:02}.json"
         receipt = json.loads(path.read_text())
         receipt["supplementary_plot_sha256"] = hashlib.sha256(
             Path(__file__).read_bytes()

@@ -1,0 +1,5 @@
+{
+  "no_final_response_fitting": true,
+  "physical_control_commands": "unchanged; correction affects only independent validation covariate preprocessing",
+  "missing_clothing": "Fit contributor medians using development participants only; apply the same preprocessing to temporal and undated validation."
+}

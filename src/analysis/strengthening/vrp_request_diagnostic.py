@@ -73,7 +73,7 @@ def main():
     hashes = {}
     for path in [Path(__file__).resolve(), Path(zone.__file__).resolve(),
                  CODE / "src/analysis/strengthening/common.py",
-                 CODE / "data/metadata/strengthening_protocol/analysis_plan_amendment_33_vrp_request_check.yaml"]:
+                 CODE / "data/metadata/strengthening_protocol/ventilation_request.yaml"]:
         zone.read_input(path, hashes)
     cases, history = zone.inventory(mechanism, hashes)
     frozen = dict(hashes)

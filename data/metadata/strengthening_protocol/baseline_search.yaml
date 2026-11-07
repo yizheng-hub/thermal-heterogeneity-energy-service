@@ -1,0 +1,6 @@
+{
+  "clarification": "All four simple mean/median and building/zone baselines receive exactly the same stopped global offset grid as the three original controls. Existing216 nominal candidates retained; nonzero offsets evaluated uniformly acrossall54 settings, with exact physical reuse.",
+  "technical_pilot": "same3 weather-selected climates and2source compositions, both卤0.25C offsets,48logical candidates. Gate depends on engineering validity only.",
+  "added_logical_candidates_max": 3456,
+  "storage": "New completed annual SQL files use hash-verified lossless zstd archives; original files untouched."
+}

@@ -21,7 +21,8 @@ try {
             $document=$word.Documents.Open($source,$false,$true,$false)
             $document.Repaginate()
             $pages=$document.ComputeStatistics(2)
-            $document.ExportAsFixedFormat($pdf,17)
+            # Explicit physical pages avoid Word's unstable default All-range export.
+            $document.ExportAsFixedFormat([string]$pdf,17,$false,0,3,1,[int]$pages)
             $receipts+=@{document=$name;renderer='Microsoft Word';version=$word.Version;pages=$pages;source_sha256=$before;pdf=$pdf}
         } finally {
             if ($null -ne $document) { $document.Close(0); [void][Runtime.InteropServices.Marshal]::ReleaseComObject($document) }

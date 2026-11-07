@@ -38,10 +38,15 @@ BLUE, PURPLE, GREEN, CORAL, GOLD = "#6B9CBF", "#AA8BAE", "#70A598", "#CC8176", "
 
 
 def style():
+    mpl.rcdefaults()
     fonts = require_times_new_roman()
     mpl.rcParams.update(
         {
             "font.family": "Times New Roman",
+            "mathtext.fontset": "custom",
+            "mathtext.rm": "Times New Roman",
+            "mathtext.it": "Times New Roman:italic",
+            "mathtext.bf": "Times New Roman:bold",
             "font.size": FONT,
             "axes.titlesize": TITLE,
             "axes.titleweight": "bold",
@@ -60,6 +65,7 @@ def style():
             "legend.fontsize": FONT,
             "legend.title_fontsize": FONT,
             "legend.frameon": False,
+            "legend.labelspacing": 0.45,
             "legend.facecolor": "none",
             "legend.edgecolor": "none",
             "pdf.fonttype": 42,

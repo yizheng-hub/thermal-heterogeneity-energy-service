@@ -84,7 +84,7 @@ def main():
         raise ValueError("Completed response manifests duplicate physical identifiers")
     if not set(plan.run_id).issubset(actions.index) or not set(plan.normal_id).issubset(normals.index):
         raise ValueError("Response plan is missing completed-operation records")
-    protocol = CODE / "data/metadata/strengthening_protocol/analysis_plan_amendment_29_new_response_recovery.yaml"
+    protocol = CODE / "data/metadata/strengthening_protocol/response_recovery.yaml"
     track(protocol)
     aliases, rows, followup = [], [], []
     normal_cache = {}

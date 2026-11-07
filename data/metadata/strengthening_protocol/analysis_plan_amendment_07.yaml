@@ -1,6 +1,0 @@
-{
-  "date": "2026-10-31",
-  "saved_before_new_temporal_center_metrics": true,
-  "endpoint": "Frozen early-record raw and source-shrinkage centers predicting later reconstructed Tref centers on the existing locked person/time partition. Record absolute errors and unit-mean signed/absolute errors reported separately. Development90th percentile absolute unit shift sets predictive half-width; final units evaluate coverage.",
-  "not_claimed": "Latent true center errors,measured post-control comfort or calibrated errors for unlinked original profile hashes."
-}

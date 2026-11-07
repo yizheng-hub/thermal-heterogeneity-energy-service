@@ -10,7 +10,7 @@ The PMV routine is retained from the study's archived numerical fallback in
 run_full_archive_virtual_ltpref.py, which implements the Fanger heat balance.
 The earlier study workflow used pythermalcomfort for a separate compatibility
 comparison. That package is neither imported nor bundled by this entry point.
-See THIRD_PARTY_NOTICES.md for the recorded provenance boundary.
+See THIRD_PARTY_NOTICES.txt for the recorded provenance boundary.
 """
 from __future__ import annotations
 

@@ -1,9 +1,10 @@
 cff-version: 1.2.0
 message: "Please cite the accompanying article and this software release."
 type: software
-title: "Human thermal demand heterogeneity reshapes building energy and flexibility assessments"
+title: "Human thermal demand shapes building energy use and service-preserving flexibility"
 abstract: "Comparison of thermal service, energy, carbon, demand response and implementation resources under three building controls and declared spatial permissions."
 authors:
   - name: "Thermal Heterogeneity Study contributors"
-version: "0.2.0"
+version: "0.2.3"
 license: BSD-3-Clause
+repository-code: "https://github.com/yizheng-hub/thermal-heterogeneity-energy-service"

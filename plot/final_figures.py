@@ -36,7 +36,7 @@ def project(ring):
 
 
 def data_asset(raw, name):
-    base = ROOT / "Result" if raw.resolve().is_relative_to(ROOT / "Result") else ROOT
+    base = ROOT / "Data_for_Figures" if raw.resolve().is_relative_to(ROOT / "Data_for_Figures") else ROOT
     return base / name
 
 

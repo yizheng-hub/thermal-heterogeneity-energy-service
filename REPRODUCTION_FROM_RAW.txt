@@ -1,0 +1,40 @@
+Run the scientific experiments
+
+Use Python 3.11.15 with the locked environment:
+
+    uv sync --frozen --extra notebook
+Inputs
+
+The source locations and versions are recorded in data/metadata/metadata/source_manifest.csv,
+data/metadata/ctcd_bundle_source.json and
+data/metadata/global_fixed_reference_weather_sources.csv. Required files are
+listed in src/utilities/audit_reproduction_inputs.py. Place the original
+observations in data/upstream/ and the nine EPW files in
+data/upstream/global_climate_matrix/weather/, retaining the stated filenames.
+
+Obtain the official DOE/PNNL ASHRAE 90.1-2019 medium-office prototype from
+https://www.energycodes.gov/prototype-building-models and extract its Miami IDF.
+Prepare the reference used by the experiments:
+
+    uv run --frozen python src/utilities/prepare_reference_model.py --source-idf data/upstream/global_climate_matrix/prototypes_22_1/Miami.idf --output data/upstream/frozen_buildings/Miami/baseline.idf
+
+Install the complete EnergyPlus 22.1.0 Windows distribution, build ed759b17ee,
+at tools/EnergyPlus-22.1.0/. Scientific inputs and retained outputs remain
+inside the project; the program may create its own temporary working directory.
+Run
+
+Inspect the workflow without running simulations:
+
+    uv run --frozen python reproduce_from_raw.py --output-root output/new_run --plan
+
+Run all stages:
+
+    uv run --frozen python reproduce_from_raw.py --output-root output/new_run --workers 6
+
+The stages reconstruct demand, analyze observations, generate annual candidates,
+and evaluate seasonal commands, spatial arrangements, equipment and response
+operations. Use a new output directory for a new demand reconstruction.
+The complete workflow requires at least 250 GiB free space at startup.
+Fixed seeds, partitions, grids, service budgets and numerical criteria are in
+data/metadata/strengthening_protocol/. Third-party inputs retain their original
+terms, recorded in THIRD_PARTY_NOTICES.txt.

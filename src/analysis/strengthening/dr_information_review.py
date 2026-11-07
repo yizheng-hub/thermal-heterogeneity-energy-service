@@ -366,7 +366,7 @@ def main():
     paths.update(protocol=RAW_RUN / "response/EVENT_PROTOCOL.csv", profiles=MATRIX / "GLOBAL_PROFILES.csv",
         probes=MATRIX / "probe_runs/PROBE_RUN_MANIFEST.csv",
         tails=ROOT / "results/base/annual/GLOBAL_FIXED_TAIL_MEMBERSHIPS.csv",
-        amendment=CODE / "data/metadata/strengthening_protocol/analysis_plan_amendment_34_response_information_review.yaml")
+        amendment=CODE / "data/metadata/strengthening_protocol/response_information.yaml")
     inputs = {}
 
     def tracked(path, expected=None):

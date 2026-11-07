@@ -166,7 +166,7 @@ def test_synthetic_main_writes_all_levels_derived_hashes_and_reuses_completed_ca
     (nominal / "AUDIT.json").write_text(json.dumps({"status": "completed", "output_sha256": module.digest(paths["nominal"])}))
     (nominal / "INPUT_SHA256.json").write_text(json.dumps({
         paths[k].relative_to(tmp_path).as_posix(): module.digest(paths[k]) for k in ["library", "profiles", "tails"]}))
-    protocol = tmp_path / "data/metadata/strengthening_protocol/analysis_plan_amendment_31_aligned_grid_sensitivity.yaml"
+    protocol = tmp_path / "data/metadata/strengthening_protocol/aligned_grid.yaml"
     protocol.parent.mkdir(parents=True)
     protocol.write_text("synthetic frozen protocol")
     module.main()

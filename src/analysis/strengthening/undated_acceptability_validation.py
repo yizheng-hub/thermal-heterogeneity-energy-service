@@ -177,7 +177,7 @@ def main():
         "final_test_records": len(t),
         "calibration_and_evaluation_records_disjoint": True,
         "final_labels_used_for_model_or_width_selection": False,
-        "protocol": "analysis_plan_amendment_01.yaml",
+        "protocol": "acceptability_validation.yaml",
         "metrics": summary,
     }
     write_json(out / "AUDIT.json", audit)

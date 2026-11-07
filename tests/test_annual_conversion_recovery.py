@@ -40,3 +40,4 @@ def test_changed_completed_physical_output_is_rejected_before_conversion(tmp_pat
     monkeypatch.setattr(module.subprocess, "run", lambda *a, **k: pytest.fail("Changed physics must not be converted"))
     with pytest.raises(ValueError, match="physical output changed: eplusout.eso"):
         module.recover(folder, idf, weather, tmp_path / "hourly.npz")
+

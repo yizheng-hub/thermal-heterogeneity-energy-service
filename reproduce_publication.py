@@ -1,4 +1,4 @@
-"""Regenerate each Plot.ipynb figure from Result without running simulations."""
+"""Regenerate each Plot.ipynb figure from Data_for_Figures without running simulations."""
 
 from pathlib import Path
 import argparse
@@ -28,10 +28,11 @@ def main():
         print(
             json.dumps(
                 {
-                    "input": "Result/FIGURE_DATA_MANIFEST.json",
+                    "input": "Data_for_Figures/FIGURE_DATA_MANIFEST.json",
                     "notebook": "plot/Plot.ipynb",
                     "main_figures": 6,
-                    "supplementary_figures": 16,
+                    "extended_data_figures": 4,
+                    "supplementary_figures": 6,
                     "EnergyPlus_runs": 0,
                     "documents": args.documents,
                 },
@@ -44,8 +45,8 @@ def main():
     verify()
     notebook = json.loads((ROOT / "plot/Plot.ipynb").read_text(encoding="utf-8"))
     cells = [cell for cell in notebook["cells"] if cell["cell_type"] == "code"]
-    if len(cells) != 23:
-        raise ValueError("Expected one setup cell and 22 single-figure cells")
+    if len(cells) != 17:
+        raise ValueError("Expected one setup cell and 16 single-figure cells")
     output.mkdir(parents=True, exist_ok=True)
     namespace = {"__name__": "__main__", "PUBLICATION_OUTPUT": output}
     previous = Path.cwd()
@@ -60,15 +61,15 @@ def main():
             sys.executable,
             str(ROOT / "publication/build_tables.py"),
             "--raw-root",
-            str(ROOT / "Result/output/from_raw"),
+            str(ROOT / "Data_for_Figures/output/from_raw"),
             "--analysis-root",
-            str(ROOT / "Result/output/strengthening"),
+            str(ROOT / "Data_for_Figures/output/strengthening"),
             "--publication-root",
             str(output),
             "--resource-scenarios",
             str(
                 ROOT
-                / "Result/output/publication/support/implementation/IMPLEMENTATION_RESOURCE_SCENARIOS.csv"
+                / "Data_for_Figures/output/publication/support/implementation/IMPLEMENTATION_RESOURCE_SCENARIOS.csv"
             ),
         ],
         check=True,
@@ -89,13 +90,13 @@ def main():
         json.dumps(
             {
                 "status": "completed",
-                "executed_code_cells": 23,
+                "executed_code_cells": 17,
                 "main_figures": 6,
-                "supplementary_figures": 16,
-                "tables": 9,
+                "extended_data_figures": 4,
+                "supplementary_figures": 6,
+                "tables": 10,
                 "EnergyPlus_runs": 0,
-                "input_root": "Result",
-                "all_new_simulation_branches_rerun_from_empty": False,
+                "input_root": "Data_for_Figures",
             },
             indent=2,
         )

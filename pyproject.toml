@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "thermal-heterogeneity"
 version = "0.1.0"
 description = "Reproducible analysis of human thermal heterogeneity and building outcomes"
-readme = "README.md"
+readme = {file = "README.txt", content-type = "text/plain"}
 requires-python = ">=3.11,<3.12"
 license = { text = "BSD-3-Clause" }
 dependencies = [

@@ -159,7 +159,7 @@ def main():
              "nominal": ROOT / "results/nominal_information/NOMINAL_QUALIFICATION_COUNTS.csv",
              "nominal_audit": ROOT / "results/nominal_information/AUDIT.json",
              "nominal_inputs": ROOT / "results/nominal_information/INPUT_SHA256.json",
-             "protocol": CODE / "data/metadata/strengthening_protocol/analysis_plan_amendment_31_aligned_grid_sensitivity.yaml"}
+             "protocol": CODE / "data/metadata/strengthening_protocol/aligned_grid.yaml"}
     inputs = {p.relative_to(CODE).as_posix(): digest(p) for p in paths.values()}
     sources = source_hashes()
     audit = json.loads(paths["nominal_audit"].read_text())

@@ -1,0 +1,33 @@
+{
+  "scope": "Paired sensitivity to the grouping of shared demand-estimation errors",
+  "design": {
+    "retain_original_archive_shared_scenarios": true,
+    "additional_shared_group": "source_key in the raw-regenerated identity links",
+    "ashrae_group": "Qualified source_group",
+    "ctcd_group": "Contributor; not an independently identified study",
+    "shared_sd_c": [
+      0.0,
+      0.25,
+      0.5
+    ],
+    "individual_sd_c": [
+      0.0,
+      0.25,
+      0.5
+    ],
+    "paired_draws_per_scenario": 256,
+    "seed_key": 2026103103,
+    "shared_draw_key": "study_source followed by the retained source_key"
+  },
+  "rules": [
+    "Replace the archive-shared term with the group-shared term; do not add them.",
+    "Keep individual draws and each scenario's marginal variance unchanged.",
+    "Reuse each shared-group and individual draw across compositions, climates, operations and reference runs.",
+    "Keep original fixed-tail identities, budgets, tie rules and physical operations.",
+    "Evaluate all54settings in the complete pooled library after the strong search finishes.",
+    "Evaluate frozen within-floor arrangements at all declared budgets.",
+    "Rescore frozen selected response actions; do not choose replacement actions.",
+    "Retain separate archive-quarter and empirical temporal-transport checks.",
+    "Describe all Gaussian scenarios as uncalibrated sensitivities, not measured error probabilities."
+  ]
+}
