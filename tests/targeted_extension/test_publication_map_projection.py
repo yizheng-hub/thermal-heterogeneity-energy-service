@@ -9,7 +9,7 @@ import numpy as np
 
 def projection():
     path = Path(__file__).resolve().parents[2] / "plot/Plot.ipynb"
-    notebook = json.loads(path.read_text())
+    notebook = json.loads(path.read_text(encoding="utf-8"))
     cell = next(c for c in notebook["cells"] if c.get("id") == "main-1")
     tree = ast.parse("".join(cell["source"]))
     function = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main_equal_earth")

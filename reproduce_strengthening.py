@@ -79,6 +79,7 @@ PHASES = {
         ("summarize_information_uncertainty.py",),
         ("verify_nominal_information.py",),
         ("aligned_grid_sensitivity.py",),
+        ("service_threshold_sensitivity.py",),
         ("placement_uncertainty.py",),
         ("placement_uncertainty.py", "--study-shared"),
         ("placement_uncertainty.py", "--single-record"),
@@ -104,6 +105,20 @@ PHASES = {
 }
 
 
+def phase_commands(raw, output):
+    phases = {name: list(commands) for name, commands in PHASES.items()}
+    phases["uncertainty"] = [
+        (script, "--results-root", str(output / "results"),
+         "--matrix-root", str(raw / "matrix"),
+         "--memberships", str(output / "results/base/annual/GLOBAL_FIXED_TAIL_MEMBERSHIPS.csv"),
+         "--trajectory-root", str(raw),
+         "--output-dir", str(output / "results/service_threshold_sensitivity"))
+        if script == "service_threshold_sensitivity.py" else (script, *arguments)
+        for script, *arguments in phases["uncertainty"]
+    ]
+    return phases
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--raw-run-root", type=Path, required=True)
@@ -117,6 +132,7 @@ def main():
     args = parser.parse_args()
     raw = args.raw_run_root.resolve()
     output = (args.output_root or raw / "strengthening").resolve()
+    phases = phase_commands(raw, output)
     if not all(path.is_relative_to(ROOT) for path in [raw, output, args.energyplus.resolve()]):
         raise ValueError(
             "The raw run, strengthening output and simulator must all be inside this self-contained project."
@@ -127,7 +143,7 @@ def main():
                 {
                     "raw_run": str(raw),
                     "output": str(output),
-                    "phases": {k: PHASES[k] for k in args.phases},
+                    "phases": {k: phases[k] for k in args.phases},
                     "conditional_refinement": "Run one uniform additional0.125C level only when the frozen quarter-grid rule triggers; retain completeness and energy-convergence status separately.",
                     "historical_archive_inputs": [],
                 },
@@ -151,7 +167,8 @@ def main():
     )
 
     def run(script, *arguments):
-        log = output / "logs" / ("_".join([Path(script).stem, *arguments]) + ".log")
+        log_arguments = () if script == "service_threshold_sensitivity.py" else arguments
+        log = output / "logs" / ("_".join([Path(script).stem, *log_arguments]) + ".log")
         with log.open("ab") as stream:
             result = subprocess.run(
                 [sys.executable, str(METHODS / script), *arguments],
@@ -185,11 +202,11 @@ def main():
     execution = {}
     independent_failures = []
     for phase in args.phases:
-        execution[phase] = {"execution_status": "running", "commands": PHASES[phase]}
+        execution[phase] = {"execution_status": "running", "commands": phases[phase]}
         status_file = output / "PHASE_EXECUTION_STATUS.json"
         status_file.write_text(json.dumps(execution, indent=2) + "\n", encoding="utf-8")
         print(phase, "running", flush=True)
-        for command in PHASES[phase]:
+        for command in phases[phase]:
             try:
                 run(*command)
             except RuntimeError as error:

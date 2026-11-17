@@ -372,25 +372,24 @@ def main():
     ap.add_argument(
         "--spatial-audit",
         type=Path,
-        default=Path(__file__).resolve().parents[1] / "spatial_method_audit",
+        default=None,
     )
     args = ap.parse_args()
     project = args.project_root.resolve()
-    s6 = project / "results/stage6_revision_20261022"
     args.data_root = args.data_root or project / "release/thermal-heterogeneity/staging/data_v3"
     args.panel_data = args.panel_data or project / "data/figure_panel_data"
     args.output = (
         args.output
         or project / "results/stage7_service_first_revision_20261022/supplementary_figures"
     )
-    args.science_audit = args.science_audit or s6 / "science_audit"
+    support = project / "data/analysis_results/method_comparisons"
+    args.science_audit = args.science_audit or support / "science_audit"
     args.land = (
         args.land
         or project
         / "release/thermal-heterogeneity/src/thermal_heterogeneity/assets/ne_110m_land.geojson"
     )
-    if not args.spatial_audit.exists():
-        args.spatial_audit = s6 / "spatial_method_audit"
+    args.spatial_audit = args.spatial_audit or support / "spatial_audit"
     b = args.data_root
     p = args.panel_data
     out = args.output

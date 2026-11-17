@@ -43,9 +43,9 @@ Figures and tables
     uv run --frozen python reproduce_publication.py --output-root output/publication
 
 This creates six main figures, four Extended Data figures, six supplementary
-figures and ten tables. plot/Plot.ipynb has 16 independent figure cells.
-Each includes its complete
-data loading, style, layout and drawing code. Edit the notebook directly;
+figures and twelve table summaries in output/publication/. plot/Plot.ipynb has
+16 independent figure cells. Each includes its complete data loading, style,
+layout and drawing code. Edit the notebook directly;
 the command-line runner executes these cells and does not regenerate them
 from Python plotting modules.
 Times New Roman regular and bold must be installed locally.
@@ -54,6 +54,15 @@ Scientific experiments
 REPRODUCTION_FROM_RAW.txt gives the input locations, EnergyPlus installation
 and experiment commands. The supplied reference model is ready to use. The scientific
 methods are in src/; fixed specifications are in data/metadata/.
+
+The complete workflow includes the service-limit sensitivity analysis. To
+recalculate it from a completed run in output/new_run:
+
+    uv run --frozen python src/analysis/strengthening/service_threshold_sensitivity.py --results-root output/new_run/strengthening/results --matrix-root output/new_run/matrix --memberships output/new_run/strengthening/results/base/annual/GLOBAL_FIXED_TAIL_MEMBERSHIPS.csv --trajectory-root output/new_run --output-dir output/new_run/strengthening/results/service_threshold_sensitivity
+
+This analysis uses the completed operation library and retained temperature
+trajectories. It writes paired service scores, reference limits, selections
+at each service-limit factor, and their summary without running EnergyPlus.
 Tests
 
     uv sync --frozen --extra notebook --extra test

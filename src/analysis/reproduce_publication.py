@@ -36,6 +36,7 @@ def main() -> None:
     publication = Path(__file__).resolve().parent
     repository = REPOSITORY_ROOT
     data = args.data_root.resolve()
+    support = repository / "data/analysis_results/method_comparisons"
     source_building_data = args.source_building_data.resolve()
     output = args.output_root.resolve()
     if output.exists():
@@ -62,9 +63,9 @@ def main() -> None:
             raise RuntimeError(f"{name} failed. See {logs / (name + '.log')}")
 
     for record in json.loads(
-        (publication / "support" / "MANIFEST.json").read_text(encoding="utf-8")
+        (support / "MANIFEST.json").read_text(encoding="utf-8")
     ):
-        path = publication / record["path"]
+        path = support / record["path"]
         if sha256(path) != record["sha256"]:
             raise ValueError(f"Frozen publication support checksum mismatch: {record['path']}")
     run(
@@ -154,7 +155,7 @@ def main() -> None:
         "04d_candidate_support",
         publication / "experiments" / "candidate_support" / "reproduce_support.py",
         "--input-root",
-        publication / "support" / "candidate_support",
+        support / "candidate_support",
         "--output-root",
         output / "candidate_support",
     )
@@ -170,7 +171,7 @@ def main() -> None:
     )
     checks = []
     for name in ("MAIN_FIG6G_Q5_REGRET.csv", "TABLE_S17_PROTECTED_QUANTILE_TRANSFER.csv"):
-        with (publication / "support" / "decision_value" / name).open(
+        with (support / "decision_value" / name).open(
             encoding="utf-8-sig", newline=""
         ) as handle:
             expected = list(csv.DictReader(handle))
@@ -214,9 +215,9 @@ def main() -> None:
         "--energy-service-input-root",
         args.energy_service_input_root or data.parent / "energy_service",
         "--science-audit",
-        publication / "support" / "science_audit",
+        support / "science_audit",
         "--spatial-audit",
-        publication / "support" / "spatial_audit",
+        support / "spatial_audit",
         "--land",
         repository / "src" / "thermal_heterogeneity" / "assets" / "ne_110m_land.geojson",
     )

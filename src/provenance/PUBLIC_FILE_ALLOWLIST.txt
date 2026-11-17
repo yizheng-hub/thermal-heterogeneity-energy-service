@@ -1,3 +1,4 @@
+# Scientific source files and required configuration.
 .gitattributes
 .gitignore
 .python-version
@@ -198,6 +199,7 @@ src/analysis/strengthening/profile_identity.py
 src/analysis/strengthening/retune_heatpump_controls.py
 src/analysis/strengthening/score_new_controls.py
 src/analysis/strengthening/service_distribution.py
+src/analysis/strengthening/service_threshold_sensitivity.py
 src/analysis/strengthening/single_event_simulation.py
 src/analysis/strengthening/single_record_validation.py
 src/analysis/strengthening/spatial_hvac_mechanism.py
@@ -218,23 +220,6 @@ src/analysis/strengthening/uniform_command_search.py
 src/analysis/strengthening/verify_nominal_information.py
 src/analysis/strengthening/vrp_request_diagnostic.py
 src/analysis/strengthening/zone_ventilation_diagnostic.py
-src/analysis/support/candidate_support/candidate_scores.csv
-src/analysis/support/candidate_support/INPUT_MANIFEST.json
-src/analysis/support/candidate_support/regional_factors.csv
-src/analysis/support/candidate_support/service_anchors.csv
-src/analysis/support/decision_value/INPUT_MANIFEST.json
-src/analysis/support/decision_value/MAIN_FIG6G_Q5_REGRET.csv
-src/analysis/support/decision_value/QA.json
-src/analysis/support/decision_value/TABLE_S17_PROTECTED_QUANTILE_TRANSFER.csv
-src/analysis/support/MANIFEST.json
-src/analysis/support/science_audit/demographic_city_season_age_summary.csv
-src/analysis/support/science_audit/demographic_city_season_gender_summary.csv
-src/analysis/support/science_audit/demographic_coverage.csv
-src/analysis/support/science_audit/false_accept_exceedance_cells.csv
-src/analysis/support/science_audit/variance_recheck.csv
-src/analysis/support/spatial_audit/metrics_summary.csv
-src/analysis/support/spatial_audit/oof_predictions.csv
-src/analysis/support/spatial_audit/paired_cluster_bootstrap_vs_mean.csv
 src/analysis/targeted_extension/analyse_common_baseline_dr.py
 src/analysis/targeted_extension/analyse_own_baseline_dr.py
 src/analysis/targeted_extension/analyse_repaired_controls.py
@@ -328,7 +313,6 @@ src/utilities/audit_ventilation_adaptation.py
 src/utilities/build_analysis_bundle.py
 src/utilities/build_energy_service_bundle.py
 src/utilities/build_paper_data.py
-src/utilities/build_self_contained_project.py
 src/utilities/compare_canonical_runs.py
 src/utilities/compare_energy_service_runs.py
 src/utilities/engineering_qa_supplement.py
@@ -354,8 +338,6 @@ src/utilities/reproduce_figures.py
 src/utilities/reproduce_si.py
 src/utilities/run_population_controls.py
 src/utilities/summarize_raw_observations.py
-src/utilities/technical_relocation_simulation.py
-src/utilities/technical_response_storage.py
 src/utilities/unpack_energy_service_data.py
 src/utilities/unpack_paper_data.py
 src/utilities/unpack_source_building_data.py
@@ -364,7 +346,6 @@ src/utilities/validate_energyplus_manifest.py
 src/utilities/validate_release_data.py
 src/utilities/verify_analysis.py
 src/utilities/verify_data_manifest.py
-src/utilities/verify_project_relocation.py
 tests/conftest.py
 tests/contracts/test_analysis_bundle.py
 tests/contracts/test_energyplus_boundary.py
@@ -482,6 +463,7 @@ tests/test_raw_hourly_sql_retention.py
 tests/test_raw_workflow_package_closure.py
 tests/test_rebuild_profile_assignments.py
 tests/test_reference_figure_integrity.py
+tests/test_service_threshold_sensitivity.py
 tests/test_shared_room_reproduction.py
 tests/test_single_record_validation.py
 tests/test_spatial_hvac_mechanism.py

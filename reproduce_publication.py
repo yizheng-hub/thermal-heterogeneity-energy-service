@@ -7,8 +7,51 @@ import os
 import subprocess
 import sys
 
+from PIL import Image, ImageChops
+
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
+
+
+def crop_png_whitespace(path, padding=10, threshold=5):
+    """Remove only the blank outer border while retaining a small safe margin."""
+    with Image.open(path) as image:
+        rgba = image.convert("RGBA")
+        white = Image.new("RGBA", rgba.size, "white")
+        white.alpha_composite(rgba)
+        difference = ImageChops.difference(white.convert("RGB"), Image.new("RGB", rgba.size, "white"))
+        red, green, blue = difference.split()
+        maximum = ImageChops.lighter(ImageChops.lighter(red, green), blue)
+        mask = maximum.point(lambda value: 255 if value > threshold else 0)
+        content = mask.getbbox()
+        if content is None:
+            return image.size, image.size
+        left, top, right, bottom = content
+        crop = (
+            max(0, left - padding),
+            max(0, top - padding),
+            min(image.width, right + padding),
+            min(image.height, bottom + padding),
+        )
+        old_size = image.size
+        if crop == (0, 0, image.width, image.height):
+            return old_size, old_size
+        cropped = image.crop(crop)
+        save_options = {"dpi": image.info["dpi"]} if "dpi" in image.info else {}
+        cropped.save(path, **save_options)
+        return old_size, cropped.size
+
+
+def crop_publication_pngs(output, selected=None):
+    """Apply the same post-render crop to every requested publication figure."""
+    paths = [
+        *sorted((output / "main").glob("Figure_[0-9][0-9].png")),
+        *sorted((output / "extended").glob("Figure_E[0-9][0-9].png")),
+        *sorted((output / "supplementary").glob("Figure_S[0-9][0-9].png")),
+    ]
+    if selected is not None:
+        paths = [path for path in paths if path.stem in selected]
+    return {path.stem: crop_png_whitespace(path) for path in paths}
 
 
 def execute_notebook(root, output, selected=None):
@@ -67,6 +110,7 @@ def main():
         if not selected <= allowed:
             parser.error("Unknown figure ID")
     execute_notebook(ROOT, output, selected)
+    crop_publication_pngs(output, selected)
     if selected is not None:
         return
     subprocess.run(
@@ -95,7 +139,7 @@ def main():
                 "main_figures": 6,
                 "extended_data_figures": 4,
                 "supplementary_figures": 6,
-                "tables": 10,
+                "tables": 12,
                 "EnergyPlus_runs": 0,
                 "input_root": "data/figure_data",
             },

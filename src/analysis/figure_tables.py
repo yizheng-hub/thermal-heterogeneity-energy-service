@@ -53,6 +53,28 @@ def quarter_reassignment_rows(interaction):
     return rows
 
 
+def service_threshold_rows(selections):
+    """Keep feasibility, disagreement and energy denominators separate."""
+    rows = []
+    def interval(values, digits, scale=1):
+        return "N/A" if values.empty else f"{values.min() / scale:.{digits}f}–{values.max() / scale:.{digits}f}"
+    for factor, group in selections.groupby("factor", sort=True):
+        both = group[group.feasibility.eq("both_feasible")]
+        changed = both[both.choices_differ.eq(True)]
+        zone = group[group.zone_average_run_id.notna()]
+        excess = zone.loc[zone.zone_selected_individual_exceedance_c.gt(1e-9),
+                          "zone_selected_individual_exceedance_c"]
+        rows.append([
+            f"{factor:.2f}",
+            f"{len(both)} / {group.feasibility.eq('zone_average_only').sum()} / {group.feasibility.eq('neither_feasible').sum()}",
+            f"{len(changed)}/{len(both)} ({100 * len(changed) / len(both):.1f})" if len(both) else "N/A",
+            f"{len(excess)}/{len(zone)}", interval(excess, 3),
+            interval(changed.additional_purchased_energy_kwh, 2, 1000),
+            interval(changed.additional_purchased_energy_pct, 2),
+        ])
+    return rows
+
+
 def build(raw, analysis, publication, resource_scenarios=None):
     tables = []
     sources = {}
@@ -198,6 +220,13 @@ def build(raw, analysis, publication, resource_scenarios=None):
         ),
         "Results use the expanded 8,586-entry logical library, with six compositions per climate. Excess is the larger of population and fixed least-served mismatch minus its own reference limit. Excess and extra energy summarize only settings with different choices; extra energy is individual-demand minus mean-selected annual purchased energy. A dash denotes no changed choice. Compositions sample the ASHRAE Global Thermal Comfort Database II and Chinese Thermal Comfort Dataset.",
     )
+    thresholds = read("results/service_threshold_sensitivity/PAIRED_SERVICE_THRESHOLD_SELECTIONS.csv")
+    add(
+        6,
+        "Paired operation selection under common thermal-service limits in the final pooled library",
+        pd.DataFrame(service_threshold_rows(thresholds), columns=['Factor γ', 'Feasible: both / zone only / neither', 'Different choices: n/N (%)', 'Zone choices exceeding limits: n/N', 'Positive excess (°C)', 'Extra annual purchased energy (MWh)', 'Extra energy (%)']),
+        'Both reference limits are multiplied by γ; the fixed 27-profile group remains defined at the 25 °C reference. Feasibility counts sum to 54 at each factor, and no individual-only case occurs. Different-choice fractions use the settings feasible under both representations. Exceedance fractions use all settings with a zone-average choice, including zone-average-only settings; positive ranges exclude zero exceedances. Exceedance is the larger positive excess over the population or fixed-group limit. Energy ranges include only commonly feasible settings with different choices; unchanged choices have zero energy difference. Percentages use the corresponding zone-average choice’s annual purchased energy. N/A denotes no commonly feasible comparison.',
+    )
     interaction = read(
         "results/placement_hvac_interaction/independent_pthp_MATCHED_CROSS_SYSTEM_EFFECTS.csv"
     )
@@ -205,7 +234,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
         row[:3] + [f(value) for value in row[3:]] for row in quarter_reassignment_rows(interaction)
     ]
     add(
-        6,
+        7,
         "Quarter-reassignment effects on common cross-system support",
         pd.DataFrame(
             rows,
@@ -219,6 +248,34 @@ def build(raw, analysis, publication, resource_scenarios=None):
             ],
         ),
         "Variable-air-volume (VAV) equipment is compared with independent packaged terminal heat pumps (zone heat pumps). All entries are medians of within-system paired changes from mixed to within-floor arranged placement under the 25% move allowance. Service gains are mixed minus arranged mismatch; percentage energy changes are arranged minus mixed energy divided by mixed energy. The same 52 Personal center and 53 Personal range comparisons meet the engineering criteria in both systems. Purchased energy sums facility electricity and gas.",
+    )
+    add(
+        8,
+        "Five response actions applied to the selected normal operation",
+        pd.DataFrame(
+[           [           'Uniform 0.5 °C',
+                        'Relax the active setpoint by 0.5 °C in the load-reducing direction.',
+                        'Normal operation.',
+                        'All zones.'],
+            [           'Uniform 1.0 °C',
+                        'Relax the active setpoint by 1.0 °C in the load-reducing direction.',
+                        'Normal operation.',
+                        'All zones.'],
+            [           'Preconditioned uniform 1.0 °C',
+                        'Relax the active setpoint by 1.0 °C in the load-reducing direction.',
+                        'Shift the same active setpoint by 0.5 °C in the opposite direction.',
+                        'All zones.'],
+            [           'Protected 1.0 °C',
+                        'Relax the active setpoint by 1.0 °C in the load-reducing direction.',
+                        'Normal operation.',
+                        'Three protected zones retain normal setpoints.'],
+            [           'Preconditioned protected 1.0 °C',
+                        'Relax the active setpoint by 1.0 °C in the load-reducing direction.',
+                        'Shift the same active setpoint by 0.5 °C in the opposite direction.',
+                        'Three protected zones retain normal setpoints in both phases.']],
+            columns=['Action', 'Two-hour event', 'Preceding two hours', 'Zone scope'],
+        ),
+        'The load-reducing direction raises the cooling setpoint or lowers the heating setpoint, as determined from the reference event. The other thermostat boundary remains unchanged. Normal schedules resume after the event. The same action definitions are used for the common-budget experiment and the controller-specific comparison in Fig. S6.',
     )
     resource = read("results/dr_capability_summary/RESOURCE_SUMMARY_ALL_SETTINGS.csv")
     resource = resource[resource.normal_energy_reference_factor.eq(1)].copy()
@@ -234,10 +291,10 @@ def build(raw, analysis, publication, resource_scenarios=None):
         }
     )
     add(
-        7,
+        9,
         "One-action response under the reference energy budget",
         response,
-        "Building, zone-summary and full-zone menus provide alternative normal-operation command libraries under the same individual-demand population and fixed-group service limits. The annual energy budget equals reference operation. Each power mean uses all 432 opportunities (nine climates × six compositions × eight events), including resolved cases without a positive service-preserving response as zero. One of five actions is selected per event. The positive-net policy maximizes event power subject to positive electricity savings over preparation, event and 48-hour recovery.",
+        "Building, zone-summary and full-zone menus provide alternative normal-operation command libraries under the same individual-demand population and fixed-group service limits. The annual energy budget equals reference operation. Each power mean uses all 432 opportunities (nine climates × six compositions × eight events), including resolved cases without a positive service-qualified response as zero. One of five actions is selected per event. The positive-net policy maximizes event power subject to positive electricity savings over preparation, event and 48-hour recovery.",
     )
     decisions = read(
         "results/information_compression_final/GLOBAL_INFORMATION_COMPRESSION_DECISIONS.csv", raw
@@ -257,7 +314,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
             ]
         )
     add(
-        8,
+        10,
         "Compact demand representations at the reference service requirement",
         pd.DataFrame(
             rows,
@@ -289,7 +346,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
             ]
         )
     add(
-        9,
+        11,
         "Annualized implementation-resource scenarios",
         pd.DataFrame(
             rows,
@@ -304,22 +361,81 @@ def build(raw, analysis, publication, resource_scenarios=None):
         "The two wage assumptions each contain 108 illustrative resource scenarios, giving 216 scenarios in total. The table summarizes annual costs in United States dollars (US$) within each wage assumption rather than observed management-cost distributions. Capital is annualized over five years at 3%; reassignment counts and command scope remain quantities for local valuation. Setup, maintenance, feedback, software and optional interfaces use the declared resource inputs.",
     )
     add(
-        10,
-        "Equipment operation acceptance and diagnostic definitions",
+        12,
+        "Numerical and equipment-operation definitions",
         pd.DataFrame(
-            [
-                ["Annual completion", "Acceptance", "Complete 8,760-hour trajectory for 15 conditioned zones; no reported severe or fatal errors."],
-                ["Zone-feedback warmup", "Acceptance", "EnergyPlus warmup retains a minimum of six and maximum of 25 days, a temperature-convergence tolerance of 0.20 °C and a loads-convergence tolerance of 0.04. Reported warmup-nonconvergence severe errors exclude an operation even if its annual trajectory completes."],
-                ["Zone-feedback expansion", "Acceptance and stopping rule", "Each climate must pass all seven technical-pilot operations (one reference and three controls for each of two compositions) before the remaining twelve operations are run. All seven pilot operations failed in each of Brasília and Singapore, leaving twelve operations per climate unrun (24 total)."],
-                ["Warnings and numerical stability", "Acceptance", "Coil operating-range warnings exclude an operation. HVAC-iteration, wet-bulb or psychrometric-temperature warnings trigger a 100-iteration rerun. Maximum hourly zone-temperature difference must be ≤0.02 °C, relative annual purchased-energy difference ≤0.001, and maximum occupancy difference ≤10⁻¹⁰, with no new warning category. Warning-count changes are recorded."],
-                ["Electricity accounting", "Acceptance", "At every hour, heating, cooling and fan electricity plus metered transformer loss must close to HVAC electricity within 10⁻⁶ kWh."],
-                ["Outdoor-air delivery", "Acceptance and separate diagnostic", "No occupied hour may deliver less than 99% of the area-based outdoor-air request after applying its fractional schedule. The separate VAV analysis checks actual air-loop delivery against the native mechanical-ventilation request. Occupied-loop hours and occupied-building hours are separate denominators."],
-                ["Equipment capacity", "Fixed comparison input", "Autosized equipment and airflow fields are resolved using the common 25 °C design run for each system and climate, then held fixed across strategies. VAV reset alternatives retain original VAV capacities; the heat-pump architecture uses its own sizing run."],
-                ["Setpoint tracking", "Reported diagnostic", "Heating and cooling use the EnergyPlus reporting tolerance of 0.556 °C and EnergyPlus While Occupied durations. Annual zone-hours sum these durations over 15 conditioned zones and 8,760 hourly records. No unmet-hour cutoff is used for engineering exclusion. Service-window and outside-window sums partition this annual total."],
-            ],
-            columns=["Item", "Role", "Executed rule or definition"],
+[           [           'Annual trajectory',
+                        'Common operation check',
+                        'Complete 8,760-hour output for 15 conditioned zones.'],
+            [           'Zone-feedback warmup',
+                        'Numerical setting',
+                        'EnergyPlus warmup uses 6–25 days, a temperature-convergence tolerance of '
+                        '0.20 °C and a loads-convergence tolerance of 0.04.'],
+            [           'Zone-feedback coverage',
+                        'Analysis support',
+                        'The zone-feedback comparison retains 126 strategy operations and seven '
+                        'common-reference operations across seven of the nine weather contexts: '
+                        'Beijing, Delhi, Malmö, Miami, Montreal, Sydney and Tunis. Brasília and '
+                        'Singapore are excluded from this comparison after the technical checks.'],
+            [           'Main VAV numerical settings',
+                        'Nine weather-specific frozen models',
+                        'Six zone timesteps per hour; minimum system timestep 1 min; maximum HVAC '
+                        'iterations 40; minimum and maximum plant iterations 2 and 8.'],
+            [           'Controller-specific response sensitivity',
+                        '43 selected annual response runs; HVAC iterations 40 versus 100',
+                        'Maximum absolute operative-temperature difference over occupied hours and '
+                        'all zones ≤0.01 °C. Relative differences in annual HVAC electricity, '
+                        'space-heating gas, their sum and facility electricity ≤0.001. All 43 '
+                        'retained pairs meet these criteria; the largest temperature difference is '
+                        '0.000362 °C and the largest relative energy difference is 8.52 × 10⁻⁷.'],
+            [           'Spatial-command sensitivity',
+                        'Three selected annual operations; HVAC iterations 40 versus 200',
+                        'Maximum absolute operative-temperature difference over occupied hours and '
+                        'all zones ≤0.01 °C. Relative annual differences in HVAC electricity, '
+                        'space-heating gas, their sum and complete facility purchased energy '
+                        '≤0.001. All three pairs meet these criteria; the largest temperature '
+                        'difference is 0.00136 °C and the largest relative energy difference is '
+                        '7.43 × 10⁻⁷.'],
+            [           'Seasonal-command sensitivity',
+                        '63 selected annual operations; HVAC iterations 40 versus 100',
+                        'Maximum absolute operative-temperature difference over occupied hours and '
+                        'all zones ≤0.01 °C. Relative annual differences and normalized hourly '
+                        'absolute differences in facility electricity, HVAC electricity and '
+                        'space-heating gas ≤0.001; annual facility gas and facility electricity '
+                        'plus space-heating gas are also compared. All 63 pairs meet these '
+                        'criteria; the largest temperature difference is 0.000672 °C and the '
+                        'largest energy comparison is 1.91 × 10⁻⁷.'],
+            [           'Equipment-comparison numerical criterion',
+                        'Identical physical commands and occupancy; comparison at 40 and 100 HVAC '
+                        'iterations for cases with numerical warnings',
+                        'Maximum hourly zone-temperature difference ≤0.02 °C; relative annual '
+                        'difference in facility electricity plus space-heating gas ≤0.001; maximum '
+                        'occupancy difference ≤10⁻¹⁰. The numerical comparison also checks that '
+                        'the higher-iteration run introduces no new warning categories and has no '
+                        'coil operating-range warning.'],
+            [           'Electricity accounting',
+                        'Accounting check',
+                        'At every hour, heating, cooling and fan electricity plus metered '
+                        'transformer loss closes to HVAC electricity within 10⁻⁶ kWh.'],
+            [           'Outdoor-air delivery',
+                        'Ventilation check',
+                        'Delivered outdoor air is compared with the area-based request after '
+                        'applying its fractional schedule. The VAV analysis also compares air-loop '
+                        'delivery with the native mechanical-ventilation request.'],
+            [           'Equipment capacity',
+                        'Fixed comparison input',
+                        'Autosized equipment and airflow fields use the common 25 °C design run '
+                        'for each system and climate and remain fixed across demand strategies. '
+                        'VAV reset uses the original VAV capacities; heat pumps use their own '
+                        'sizing run.'],
+            [           'Setpoint tracking',
+                        'Operating diagnostic',
+                        'Heating and cooling use the EnergyPlus 0.556 °C reporting tolerance and '
+                        'While Occupied durations. Annual zone-hours sum these durations over 15 '
+                        'conditioned zones and 8,760 hourly records.']],
+            columns=['Item', 'Purpose', 'Definition'],
         ),
-        "Heating, ventilation and air-conditioning (HVAC) operation is assessed using the rules above. Variable-air-volume (VAV) candidates use the reference equipment. Relative annual energy tolerance 0.001 equals 0.1%. Alternative systems use the acceptance rules above; reference VAV candidates also undergo prototype-relative warning checks. Numerical acceptance, setpoint-tracking diagnostics and thermal-service selection are separate. Thermal-service selection uses population and fixed-group mismatch. The hourly maximum of zone unmet durations is the largest unmet duration among zones in that hour.",
+        'For the response, spatial and seasonal pairs, zone identities, occupancy schedules and occupant counts are identical. Relative annual differences equal the absolute difference divided by the absolute value at 40 iterations. When the reference value is at most 10⁻¹², the difference is zero only if both values are at most 10⁻¹²; otherwise the comparison is nonzero without a finite relative value. Seasonal normalized hourly differences sum the absolute hourly differences and divide by the sum of absolute reference values. The selected response and seasonal runs have completed trajectories with HVAC-iteration warnings; the spatial subset contains three such operations. The reported counts describe these sensitivity subsets. For the equipment criterion, the energy denominator is max(|E40|, 10⁻⁹ kWh), where E40 is annual facility electricity plus space-heating gas at 40 iterations. Variable-air-volume (VAV) candidates use the reference equipment. Relative annual energy tolerance 0.001 equals 0.1%. Numerical sensitivity, setpoint-tracking diagnostics and thermal-service selection are evaluated separately. Thermal-service selection uses population and fixed-group mismatch. The hourly maximum of zone unmet durations is the largest unmet duration among zones in that hour.',
     )
     destination = publication / "tables"
     destination.mkdir(parents=True, exist_ok=True)

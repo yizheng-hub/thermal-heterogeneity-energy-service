@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "Please cite the accompanying article and this software release."
 type: software
-title: "Human thermal demand shapes building energy use and service-preserving flexibility"
+title: "Accounting for individual thermal demand reveals hidden trade-offs in building energy use and flexibility"
 abstract: "Comparison of thermal service, energy, carbon, demand response and implementation resources under three building controls and declared spatial permissions."
 authors:
   - name: "Thermal Heterogeneity Study contributors"

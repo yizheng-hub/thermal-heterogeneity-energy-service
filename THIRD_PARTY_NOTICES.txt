@@ -1,6 +1,6 @@
 Third-party notices
 
-This file records attribution and release boundaries. It is not a substitute for upstream licence text or terms. Exact versions, hashes and source terms are in data/metadata/metadata/metadata/source_manifest.csv.
+This file records attribution and release boundaries. It is not a substitute for upstream licence text or terms. Exact versions, hashes and source terms are in data/metadata/source_manifest.csv.
 Human thermal datasets
 
 - ASHRAE Global Thermal Comfort Database II, version 2.1.0. Upstream record: https://doi.org/10.6078/D1F671. Source licence: CC0-1.0. The original files retain CC0 terms and are not versioned in this code repository.
@@ -13,7 +13,7 @@ Building simulation and weather
 - EnergyPlus 22.1.0, build ed759b17ee. Upstream release: https://github.com/NatLabRockies/EnergyPlus/releases/tag/v22.1.0. The runtime is not bundled and remains subject to its upstream licence and notices.
 - DOE/PNNL ASHRAE 90.1-2019 medium-office prototype. The exact official archive is identified and hashed in the source manifest. The code repository contains the model-preparation method; separate model inputs retain DOE/PNNL source terms.
 - Miami, Seattle and Port Angeles TMY3 weather files. These files are retrieved from the official DOE/Energy Codes source and hash checked; they are not mirrored here.
-- New Delhi weather file. The retained IND_New.Delhi.421820_ISHRAE.epw is obtained from the EnergyPlus weather archive (https://energyplus-weather.s3.amazonaws.com/asia_wmo_region_2/IND/IND_New.Delhi.421820_ISHRAE/IND_New.Delhi.421820_ISHRAE.zip). Its EPW SHA-256 is 79be52a8c3b4e38a5e26b36415d3825c4f5720b860c67a800f986348fe6b877c; the source ZIP hash is recorded in data/metadata/metadata/source_manifest.csv. The header states ISHRAE copyright 2005. The original weather file retains those upstream terms.
+- New Delhi weather file. The retained IND_New.Delhi.421820_ISHRAE.epw is obtained from the EnergyPlus weather archive (https://energyplus-weather.s3.amazonaws.com/asia_wmo_region_2/IND/IND_New.Delhi.421820_ISHRAE/IND_New.Delhi.421820_ISHRAE.zip). Its EPW SHA-256 is 79be52a8c3b4e38a5e26b36415d3825c4f5720b860c67a800f986348fe6b877c; the source ZIP hash is recorded in data/metadata/source_manifest.csv. The header states ISHRAE copyright 2005. The original weather file retains those upstream terms.
 Policy, carbon and price sources
 
 - National and regional policies, regulations, guidance documents, standards previews and web captures remain under their source-specific terms. The release may contain citations, hashes, paraphrased semantic coding and aggregate estimates, but not the local document corpus.
@@ -26,12 +26,9 @@ Figure basemap
 Times New Roman is required at render time but is not distributed by this repository.
 Upstream numerical demand replay
 
-The optional src/utilities/generate_demand_inputs.py retains the study's numerical
-Fanger/PMV fallback and virtual-persona update rules from its archived
-run_full_archive_virtual_ltpref.py. The archived routine describes the ISO 7730
-numerical heat balance. Earlier study scripts called pythermalcomfort for PMV,
-and the archived fallback was numerically compared with those retained outputs.
-This release does not import or distribute that package.
+The optional src/utilities/generate_demand_inputs.py implements the Fanger
+predicted mean vote (PMV) heat balance described in ISO 7730 and the study's
+virtual-persona update rules. It has no dependency on pythermalcomfort.
 
 The original 19-scene file remains an externally supplied, checksum-locked
 input. Its question text, semantic descriptions and original file are not

@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def notebook_definitions(cell_id):
     """Load a figure's visible definitions without drawing it."""
-    notebook = json.loads((ROOT / "plot/Plot.ipynb").read_text())
+    notebook = json.loads((ROOT / "plot/Plot.ipynb").read_text(encoding="utf-8"))
     cell = next(c for c in notebook["cells"] if c.get("id") == cell_id)
     code = "".join(cell["source"]).split("# Read the data, draw this figure and save it.")[0]
     namespace = {"__name__": __name__}

@@ -58,9 +58,9 @@ def export_supporting_sources(previous, paper, tables, data, repo):
         if source_name.startswith("engineering/"):
             return data / "energy_service" / source_name
         if source_name.startswith("science_audit/"):
-            return repo / "src/analysis/support" / source_name
+            return repo / "data/analysis_results/method_comparisons" / source_name
         if source_name.startswith("spatial_method_audit/"):
-            return repo / "src/analysis/support/spatial_audit" / source_name.split("/", 1)[1]
+            return repo / "data/analysis_results/method_comparisons/spatial_audit" / source_name.split("/", 1)[1]
         if source_name == "natural_earth_110m_land":
             return repo / "src/thermal_heterogeneity/assets/ne_110m_land.geojson"
         if source_name == "MAIN_FIG6G_Q5_REGRET.csv":
@@ -87,6 +87,7 @@ def export_supporting_sources(previous, paper, tables, data, repo):
         if not path.is_file():
             raise FileNotFoundError(f"Missing current figure input: {key}")
         for base, kind in ((tables, "Source Data"), (data, "Computational data package"),
+                           (repo / "data/analysis_results", "Numerical results"),
                            (repo, "Source repository"), (previous, "Generated supporting output")):
             if path.is_relative_to(base):
                 locator = path.relative_to(base).as_posix()
@@ -121,7 +122,7 @@ def export_source_data(previous, paper, science, data, repo, out):
     shutil.copytree(previous / "Supplementary_Data", tables, dirs_exist_ok=True)
     strict = out / "strict_service"
     subprocess.run([sys.executable, str(repo / "src/analysis/experiments/candidate_support/strict_service.py"),
-                    "--input-root", str(repo / "src/analysis/support/candidate_support"),
+                    "--input-root", str(repo / "data/analysis_results/method_comparisons/candidate_support"),
                     "--output-root", str(strict)], check=True, stdout=subprocess.DEVNULL)
     strict_target = tables / "Strict_service"
     strict_target.mkdir(exist_ok=True)

@@ -38,7 +38,9 @@ Run all stages:
 
 The stages reconstruct demand, analyze observations, generate annual candidates,
 and evaluate seasonal commands, spatial arrangements, equipment and response
-operations. Use a new output directory for a new demand reconstruction.
+operations. Paired service-limit sensitivity uses the completed candidate
+library and retained temperature trajectories. Use a new output directory for
+a new demand reconstruction.
 The complete workflow requires at least 250 GiB free space at startup.
 Fixed seeds, partitions, grids, service budgets and numerical criteria are in
 data/metadata/strengthening_protocol/. Third-party inputs retain their original

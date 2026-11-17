@@ -163,6 +163,24 @@ def test_public_figure_generation_does_not_require_private_manuscript(tmp_path):
     assert not (tmp_path / "publication/Main_manuscript.md").exists()
 
 
+def test_publication_png_crop_removes_only_outer_whitespace(tmp_path):
+    from PIL import Image, ImageDraw
+
+    spec = importlib.util.spec_from_file_location("publication_runner", ROOT / "reproduce_publication.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    path = tmp_path / "figure.png"
+    image = Image.new("RGB", (100, 80), "white")
+    ImageDraw.Draw(image).rectangle((30, 20, 69, 59), fill="black")
+    image.save(path)
+    assert module.crop_png_whitespace(path, padding=10) == ((100, 80), (60, 60))
+    with Image.open(path) as cropped:
+        assert cropped.getbbox() == (0, 0, 60, 60)
+        assert cropped.getpixel((10, 10)) == (0, 0, 0)
+        assert cropped.getpixel((49, 49)) == (0, 0, 0)
+    assert module.crop_png_whitespace(path, padding=10) == ((60, 60), (60, 60))
+
+
 
 
 def module_path(name):
