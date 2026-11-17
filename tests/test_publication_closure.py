@@ -45,7 +45,7 @@ def test_result_integrity_rejects_changed_payload_and_escape(tmp_path):
 def test_notebook_figures_are_individually_addressable_and_packaged():
     notebook = json.loads((ROOT / "plot/Plot.ipynb").read_text(encoding="utf-8"))
     cells = [c for c in notebook["cells"] if c["cell_type"] == "code"]
-    assert len(cells) == 16
+    assert len(cells) == 17
     assert all(not c.get("outputs") and c.get("execution_count") is None for c in cells)
     import ast
     for cell in cells:
@@ -154,12 +154,12 @@ def test_public_figure_generation_does_not_require_private_manuscript(tmp_path):
         "assert 'previous_cell' not in globals()\n",
         "previous_cell = True\n",
         f"(PUBLICATION_OUTPUT / 'Figure_{i:02}.txt').write_text('drawn')\n",
-    ]} for i in range(1, 17)]
+    ]} for i in range(1, 18)]
     (tmp_path / "plot/Plot.ipynb").write_text(json.dumps({"cells": cells}))
     output = tmp_path / "output"
     output.mkdir()
     module.execute_notebook(tmp_path, output)
-    assert len(list(output.glob("Figure_*.txt"))) == 16
+    assert len(list(output.glob("Figure_*.txt"))) == 17
     assert not (tmp_path / "publication/Main_manuscript.md").exists()
 
 

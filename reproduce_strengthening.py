@@ -80,6 +80,8 @@ PHASES = {
         ("verify_nominal_information.py",),
         ("aligned_grid_sensitivity.py",),
         ("service_threshold_sensitivity.py",),
+        ("population_command_sensitivity.py",),
+        ("command_domain_sensitivity.py",),
         ("placement_uncertainty.py",),
         ("placement_uncertainty.py", "--study-shared"),
         ("placement_uncertainty.py", "--single-record"),
@@ -116,6 +118,15 @@ def phase_commands(raw, output):
         if script == "service_threshold_sensitivity.py" else (script, *arguments)
         for script, *arguments in phases["uncertainty"]
     ]
+    for index, command in enumerate(phases["uncertainty"]):
+        script = command[0]
+        if script in {"population_command_sensitivity.py", "command_domain_sensitivity.py"}:
+            arguments = ["--results-root", str(output / "results"),
+                         "--matrix-root", str(raw / "matrix"),
+                         "--output-dir", str(output / "results" / Path(script).stem)]
+            if script == "population_command_sensitivity.py":
+                arguments += ["--demand-root", str(raw / "demand")]
+            phases["uncertainty"][index] = (script, *arguments)
     return phases
 
 
@@ -167,7 +178,7 @@ def main():
     )
 
     def run(script, *arguments):
-        log_arguments = () if script == "service_threshold_sensitivity.py" else arguments
+        log_arguments = () if script in {"service_threshold_sensitivity.py", "population_command_sensitivity.py", "command_domain_sensitivity.py"} else arguments
         log = output / "logs" / ("_".join([Path(script).stem, *log_arguments]) + ".log")
         with log.open("ab") as stream:
             result = subprocess.run(

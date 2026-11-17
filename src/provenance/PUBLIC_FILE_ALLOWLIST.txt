@@ -168,6 +168,7 @@ src/analysis/strengthening/archive_sql_outputs.py
 src/analysis/strengthening/baseline_energy_search.py
 src/analysis/strengthening/budget_frontiers.py
 src/analysis/strengthening/candidate_runs.py
+src/analysis/strengthening/command_domain_sensitivity.py
 src/analysis/strengthening/common.py
 src/analysis/strengthening/demand_validation.py
 src/analysis/strengthening/dr_capability.py
@@ -193,6 +194,7 @@ src/analysis/strengthening/placement_hvac_interaction.py
 src/analysis/strengthening/placement_hvac_summary.py
 src/analysis/strengthening/placement_service_frontiers.py
 src/analysis/strengthening/placement_uncertainty.py
+src/analysis/strengthening/population_command_sensitivity.py
 src/analysis/strengthening/postprocess_queue.py
 src/analysis/strengthening/prepare_strengthening_inputs.py
 src/analysis/strengthening/profile_identity.py
@@ -300,6 +302,7 @@ src/thermal_heterogeneity/implementation/protected_quantiles.py
 src/thermal_heterogeneity/io.py
 src/thermal_heterogeneity/level1.py
 src/thermal_heterogeneity/main_figures_1_3.py
+src/thermal_heterogeneity/methods_sensitivity_figure.py
 src/thermal_heterogeneity/release_bundle.py
 src/thermal_heterogeneity/si.py
 src/thermal_heterogeneity/verify.py

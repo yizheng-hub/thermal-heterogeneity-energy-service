@@ -563,3 +563,7 @@
 **/*.egg-info/**
 /tools/EnergyPlus-22.1.0/
 /tools/fonts/
+
+!/src/analysis/strengthening/population_command_sensitivity.py
+!/src/analysis/strengthening/command_domain_sensitivity.py
+!/src/thermal_heterogeneity/methods_sensitivity_figure.py

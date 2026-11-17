@@ -42,12 +42,12 @@ Figures and tables
 
     uv run --frozen python reproduce_publication.py --output-root output/publication
 
-This creates six main figures, four Extended Data figures, six supplementary
+This creates six main figures, four Extended Data figures, seven supplementary
 figures and twelve table summaries in output/publication/. plot/Plot.ipynb has
-16 independent figure cells. Each includes its complete data loading, style,
-layout and drawing code. Edit the notebook directly;
-the command-line runner executes these cells and does not regenerate them
-from Python plotting modules.
+17 independent figure cells containing data loading, style, layout and drawing
+code. The population and command-domain sensitivity plotting function is also
+available in src/thermal_heterogeneity/methods_sensitivity_figure.py. The
+command-line runner executes the notebook cells.
 Times New Roman regular and bold must be installed locally.
 Scientific experiments
 
@@ -63,6 +63,21 @@ recalculate it from a completed run in output/new_run:
 This analysis uses the completed operation library and retained temperature
 trajectories. It writes paired service scores, reference limits, selections
 at each service-limit factor, and their summary without running EnergyPlus.
+
+Population and command-domain sensitivity use the same completed run:
+
+    uv run --frozen python src/analysis/strengthening/population_command_sensitivity.py --demand-root output/new_run/demand --matrix-root output/new_run/matrix --results-root output/new_run/strengthening/results --output-dir output/new_run/strengthening/results/population_command_sensitivity
+    uv run --frozen python src/analysis/strengthening/command_domain_sensitivity.py --matrix-root output/new_run/matrix --results-root output/new_run/strengthening/results --output-dir output/new_run/strengthening/results/command_domain_sensitivity
+
+The population analysis samples 30 additional 267-profile compositions from
+each source and scores all 31 shared commands in each weather context. The
+domain analysis retains final-library operations whose zone command midpoints
+all lie within 21–26 °C. Both analyses use retained temperature trajectories
+and are included in the complete workflow.
+
+To draw Fig. S3 directly from those analysis results:
+
+    uv run --frozen python src/thermal_heterogeneity/methods_sensitivity_figure.py --analysis-root output/new_run/strengthening/results --output-root output/new_run/publication/supplementary
 Tests
 
     uv sync --frozen --extra notebook --extra test
