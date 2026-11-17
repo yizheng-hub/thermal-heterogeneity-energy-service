@@ -15,4 +15,4 @@ https://creativecommons.org/licenses/by/4.0/legalcode
 This licence does not cover third-party datasets, software, standards,
 policies, weather files, building prototypes or other upstream materials.
 Those items retain their original terms and are described in
-THIRD_PARTY_NOTICES.md and data/source_manifest.csv.
+THIRD_PARTY_NOTICES.txt and data/metadata/source_manifest.csv.

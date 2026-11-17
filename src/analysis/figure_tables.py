@@ -223,7 +223,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
     thresholds = read("results/service_threshold_sensitivity/PAIRED_SERVICE_THRESHOLD_SELECTIONS.csv")
     add(
         6,
-        "Paired operation selection under common thermal-service limits in the final pooled library",
+        "Paired operation selection under common thermal-service limits in the pooled library",
         pd.DataFrame(service_threshold_rows(thresholds), columns=['Factor γ', 'Feasible: both / zone only / neither', 'Different choices: n/N (%)', 'Zone choices exceeding limits: n/N', 'Positive excess (°C)', 'Extra annual purchased energy (MWh)', 'Extra energy (%)']),
         'Both reference limits are multiplied by γ; the fixed 27-profile group remains defined at the 25 °C reference. Feasibility counts sum to 54 at each factor, and no individual-only case occurs. Different-choice fractions use the settings feasible under both representations. Exceedance fractions use all settings with a zone-average choice, including zone-average-only settings; positive ranges exclude zero exceedances. Exceedance is the larger positive excess over the population or fixed-group limit. Energy ranges include only commonly feasible settings with different choices; unchanged choices have zero energy difference. Percentages use the corresponding zone-average choice’s annual purchased energy. N/A denotes no commonly feasible comparison.',
     )

@@ -238,7 +238,6 @@ src/analysis/targeted_extension/demand_weight_audit.py
 src/analysis/targeted_extension/engineering_failure_diagnostic.py
 src/analysis/targeted_extension/event_budget_frontier.py
 src/analysis/targeted_extension/multi_event_protocol.py
-src/analysis/targeted_extension/PROTOCOL.json
 src/analysis/targeted_extension/range_assumptions.py
 src/analysis/targeted_extension/repeated_observation_audit.py
 src/analysis/targeted_extension/replay_ctcd_external.py

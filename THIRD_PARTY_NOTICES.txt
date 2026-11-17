@@ -17,7 +17,7 @@ Building simulation and weather
 Policy, carbon and price sources
 
 - National and regional policies, regulations, guidance documents, standards previews and web captures remain under their source-specific terms. The release may contain citations, hashes, paraphrased semantic coding and aggregate estimates, but not the local document corpus.
-- EPA and EIA tables, India CEA version 20 sources and the Delhi Electricity Regulatory Commission tariff source are represented by locked extraction contracts. Full source spreadsheets, PDFs and HTML captures are not mirrored unless an explicit later review permits it.
+- EPA and EIA tables, India CEA version 20 sources and the Delhi Electricity Regulatory Commission tariff source are represented by locked extraction contracts. Full source spreadsheets, PDFs and HTML captures are not mirrored.
 - The DERC value is a historic non-domestic tariff proxy and is not a current customer-specific retail price.
 Figure basemap
 

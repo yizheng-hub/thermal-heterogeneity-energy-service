@@ -56,7 +56,7 @@ def main():
     if before != after:
         raise ValueError("A frozen input changed during the bounded analysis")
     manifest = {
-        "status": "PASS", "protocol_sha256": digest(scripts / "PROTOCOL.json"),
+        "status": "PASS",
         "new_physical_simulations": 0, "frozen_inputs_unchanged": True,
         "frozen_inputs_sha256": before,
         "source_sha256": {p.name: digest(p) for p in sorted(scripts.glob("*.py"))},
