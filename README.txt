@@ -40,7 +40,11 @@ Figures and tables
     uv run --frozen python reproduce_publication.py --output-root output/publication
 
 This creates six main figures, four Extended Data figures, seven supplementary
-figures and twelve table summaries in output/publication/. plot/Plot.ipynb has
+figures and twelve table summaries. Open output/publication/main/ for Figures
+1-6, output/publication/extended/ for Extended Data Figures 1-4, and
+output/publication/supplementary/ for Supplementary Figures 1-7. Each
+figure is available as PNG, editable SVG and PDF. The tables are in
+output/publication/tables/. plot/Plot.ipynb has
 17 independent figure cells containing data loading, style, layout and drawing
 code. The population and command-domain sensitivity plotting function is also
 available in src/thermal_heterogeneity/methods_sensitivity_figure.py. The

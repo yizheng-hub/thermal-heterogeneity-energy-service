@@ -154,7 +154,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
     old = old.rename(columns={"climate": "Climate"})
     add(
         3,
-        "Original-library settings with different selected operations",
+        "Different selected operations within the 810-entry library",
         old[
             [
                 "Climate",
@@ -207,7 +207,7 @@ def build(raw, analysis, publication, resource_scenarios=None):
         )
     add(
         5,
-        "Expanded-library choice differences by climate",
+        "Complete-library choice differences by weather context",
         pd.DataFrame(
             rows,
             columns=[
