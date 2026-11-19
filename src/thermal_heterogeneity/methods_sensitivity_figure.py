@@ -106,7 +106,9 @@ def _draw(data_root, output_root, analysis_root):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--data-root',type=Path,default=ROOT/'data/figure_data/Tables')
+    roots = (ROOT/'data/figure_data/Tables', ROOT/'Source_Data/Tables')
+    packaged = next((folder for folder in roots if (folder / FILES[0]).is_file()), roots[0])
+    parser.add_argument('--data-root',type=Path,default=packaged)
     parser.add_argument('--analysis-root',type=Path,help='Completed analysis results instead of packaged figure tables')
     parser.add_argument('--output-root',type=Path,default=ROOT/'output/publication/supplementary')
     args=parser.parse_args()
