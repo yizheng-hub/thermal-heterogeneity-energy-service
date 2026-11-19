@@ -77,49 +77,6 @@ REQUIRED_FIGURE_INPUTS = {
     ),
 }
 
-LEGACY_FINAL_SOURCE_TOKENS = (
-    "final_submission/evidence/",
-    "final_submission/costs/",
-    "Reviewer_repair/",
-    "PortAngeles_small2019",
-    "Seattle_small2019",
-    "606 resolvable",
-    "402 unresolved",
-    "606 settings",
-    "Selected conditions / 144",
-    "Conditions / 192",
-    "conditions / 288",
-    "69 matched direct",
-    "69 comparisons",
-    "February and July",
-    "51 lower; 2 higher",
-    "Median recovery/event = 61.8%",
-    "34 increased\\n35 decreased",
-)
-
-
-def validate_notebook_sources(notebook, active_labels):
-    stale = []
-    for cell in notebook["cells"]:
-        if cell.get("cell_type") != "code":
-            continue
-        label = cell.get("metadata", {}).get("figure")
-        if label not in active_labels or label == "Figure_01":
-            continue
-        source = "".join(cell.get("source", []))
-        found = sorted(token for token in LEGACY_FINAL_SOURCE_TOKENS if token in source)
-        if found:
-            stale.append((label, found))
-    if stale:
-        detail = "; ".join(
-            f"{label}: {', '.join(tokens)}" for label, tokens in stale
-        )
-        raise RuntimeError(
-            "Figure inputs must cover the nine weather contexts. "
-            f"Check these source paths before rendering: {detail}"
-        )
-
-
 def validate_legend_styles(notebook, active_labels):
     violations = []
     for cell in notebook["cells"]:

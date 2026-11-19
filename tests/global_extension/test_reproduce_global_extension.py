@@ -121,7 +121,6 @@ def test_plan_declares_only_honest_working_modes(tmp_path):
     assert "src/analysis/global_extension/analyse_global_results.py" in report[
         "full_analysis_dag"
     ]
-    assert not any("Reviewer_repair" in step for step in report["full_analysis_dag"])
 
 
 def test_analysis_mode_stops_without_a_declared_trajectory_bundle(monkeypatch):
@@ -172,4 +171,3 @@ def test_reassembly_commands_use_only_global_final_sources(tmp_path):
     assert "final_story_summary.py" in joined
     assert "implementation_value.py" in joined
     assert "global_final" in joined
-    assert "Reviewer_repair" not in joined

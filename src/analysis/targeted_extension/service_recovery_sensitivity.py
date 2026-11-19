@@ -1,4 +1,4 @@
-"""Derive reviewer-requested sensitivities from retained results and trajectories.
+"""Evaluate service thresholds and recovery windows using retained trajectories.
 
 This analysis never changes a controller, building input or EnergyPlus output.
 It tests dependence on the shared common-25 candidate, summarizes July response
@@ -569,7 +569,7 @@ def run(repository_root: Path, output_root: Path) -> dict:
         raise AssertionError("Derived 48-hour recovery differs from the retained result")
     if qa["maximum_abs_48h_reported_net_difference_kwh"] > 1e-8:
         raise AssertionError("Derived 48-hour net saving differs from the retained result")
-    (output / "REVIEWER_SENSITIVITY_QA.json").write_text(
+    (output / "SERVICE_RECOVERY_SENSITIVITY_QA.json").write_text(
         json.dumps(qa, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     return qa
 
@@ -580,7 +580,7 @@ def main():
                         default=Path(__file__).resolve().parents[3])
     parser.add_argument("--output-root", type=Path)
     args = parser.parse_args()
-    output = args.output_root or args.repository_root / "results/Joint_main/reviewer_sensitivity"
+    output = args.output_root or args.repository_root / "results/Joint_main/service_recovery_sensitivity"
     print(json.dumps(run(args.repository_root, output), indent=2))
 
 

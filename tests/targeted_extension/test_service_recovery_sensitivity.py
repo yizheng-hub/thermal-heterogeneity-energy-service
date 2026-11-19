@@ -1,4 +1,4 @@
-"""Reviewer sensitivities must remain derived from frozen results."""
+"""Check service thresholds and recovery accounting on fixed trajectories."""
 import importlib.util
 from pathlib import Path
 
@@ -7,13 +7,13 @@ import pytest
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "src/analysis/targeted_extension/reviewer_sensitivity.py"
-SPEC = importlib.util.spec_from_file_location("reviewer_sensitivity", SOURCE)
+SOURCE = ROOT / "src/analysis/targeted_extension/service_recovery_sensitivity.py"
+SPEC = importlib.util.spec_from_file_location("service_recovery_sensitivity", SOURCE)
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 
 
-def test_frozen_reviewer_sensitivity_counts_and_closure(tmp_path):
+def test_frozen_service_recovery_sensitivity_counts_and_closure(tmp_path):
     if not (ROOT / "results/Joint_main/annual/ANNUAL_ALL_CANDIDATES.csv").is_file():
         pytest.skip("requires retained local simulation results")
     report = MODULE.run(ROOT, tmp_path)

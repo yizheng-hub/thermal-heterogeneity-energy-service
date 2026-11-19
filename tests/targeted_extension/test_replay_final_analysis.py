@@ -9,7 +9,7 @@ def test_final_replay_covers_sources_scopes_and_response_designs(tmp_path: Path)
         tmp_path / "retained",
         tmp_path / "data",
         tmp_path / "models",
-        tmp_path / "output/Reviewer_repair",
+        tmp_path / "output/paired_analyses",
     )
     joined = [" ".join(item) for item in commands]
     assert len(commands) == 18

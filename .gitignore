@@ -320,7 +320,7 @@
 !/src/analysis/targeted_extension/replay_final_analysis.py
 !/src/analysis/targeted_extension/replay_parallel_main.py
 !/src/analysis/targeted_extension/response_recovery.py
-!/src/analysis/targeted_extension/reviewer_sensitivity.py
+!/src/analysis/targeted_extension/service_recovery_sensitivity.py
 !/src/analysis/targeted_extension/run_demand_aware_energyplus.py
 !/src/analysis/targeted_extension/run_extension.py
 !/src/analysis/targeted_extension/run_own_baseline_dr.py
@@ -506,7 +506,7 @@
 !/tests/targeted_extension/test_repeated_observation_audit.py
 !/tests/targeted_extension/test_replay_final_analysis.py
 !/tests/targeted_extension/test_response_recovery.py
-!/tests/targeted_extension/test_reviewer_sensitivity.py
+!/tests/targeted_extension/test_service_recovery_sensitivity.py
 !/tests/targeted_extension/test_seasonal_adaptation.py
 !/tests/targeted_extension/test_service_frontier.py
 !/tests/targeted_extension/test_spatial_effects.py

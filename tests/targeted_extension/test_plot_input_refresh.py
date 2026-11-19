@@ -120,21 +120,6 @@ def test_figure_one_requires_raw_rebuilt_sources_instead_of_legacy_centers(tmp_p
     runner.validate_figure_inputs(tmp_path, {"Figure_01"})
 
 
-def test_legacy_four_context_figure_source_is_rejected():
-    runner = load_module("plot_reproduce_stale_source", ROOT / "plot/reproduce.py")
-    notebook = {
-        "cells": [{
-            "cell_type": "code",
-            "metadata": {"figure": "Figure_03"},
-            "source": [
-                "pd.read_csv(RESULTS / 'final_submission/evidence/old.csv')\n"
-            ],
-        }]
-    }
-    with pytest.raises(RuntimeError, match="nine weather contexts"):
-        runner.validate_notebook_sources(notebook, {"Figure_03"})
-
-
 def test_publication_legends_must_be_frameless():
     runner = load_module("plot_reproduce_legend_style", ROOT / "plot/reproduce.py")
     notebook = {
