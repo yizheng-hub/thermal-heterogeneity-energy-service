@@ -136,6 +136,32 @@ def test_protocol_selects_eight_events_from_reference_manifest(tmp_path: Path):
             assert np.isclose(row.reference_mean_kw, expected)
 
 
+def test_protocol_ranks_using_native_meter_precision(tmp_path, monkeypatch):
+    from analysis.global_extension import multi_event_dr_extension as events
+
+    compact = tmp_path / "reference.npz"
+    _annual_compact(compact)
+    with np.load(compact) as saved:
+        meter = np.nextafter(saved["facility_electric_kwh"], np.inf)
+        clock = compact_timestamps(saved)
+    manifest = pd.DataFrame([{
+        "climate": "Beijing", "latitude": 39.9, "run_id": "reference",
+        "hourly_path": str(compact), "hourly_sha256": sha256(compact),
+    }])
+    def read_meter(path):
+        assert path == tmp_path / "reference/eplusout.sql"
+        return meter
+
+    monkeypatch.setattr(events, "extract_facility_electric_kwh", read_meter)
+    result = select_protocols(manifest, tmp_path)
+    for row in result.itertuples():
+        start = clock.get_loc(row.start_timestamp)
+        assert row.reference_mean_kw == meter[start:start + 2].mean()
+    meter += 1
+    with pytest.raises(ValueError, match="meters disagree"):
+        select_protocols(manifest, tmp_path)
+
+
 def test_protocol_uses_gas_when_classifying_heating_events(tmp_path: Path):
     compact = tmp_path / "gas_heating_reference.npz"
     _annual_compact(compact)

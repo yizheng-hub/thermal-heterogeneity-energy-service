@@ -9,9 +9,7 @@ tests uniform shedding, preconditioning and a zone-protected action, while
 the scoring stage follows electricity and thermal service through the event
 and the following 48 hours.
 
-The module is deliberately independent of the legacy February/July runner.
-It accepts manifests from the global-climate experiment and never changes a
-non-thermostat object in the building model.
+The global-climate run manifests provide the reference trajectories.
 """
 
 from __future__ import annotations
@@ -42,6 +40,7 @@ from generate_model_inputs import objects, physical_hash, signature  # noqa: E40
 from multi_event_protocol import select_multi_event_protocol  # noqa: E402
 
 try:  # package import in tests and installed use
+    from .enrich_facility_energy import extract_facility_electric_kwh
     from .global_matrix import run_energyplus, sha256
     from .run_global_matrix import (
         compare_solver_warning_categories,
@@ -50,6 +49,7 @@ try:  # package import in tests and installed use
         warning_profile,
     )
 except ImportError:  # direct script execution
+    from enrich_facility_energy import extract_facility_electric_kwh
     from global_matrix import run_energyplus, sha256  # type: ignore[no-redef]
     from run_global_matrix import (  # type: ignore[no-redef]
         compare_solver_warning_categories,
@@ -144,7 +144,7 @@ def prepare_reference_manifest(
     return result.sort_values("climate", kind="stable").reset_index(drop=True)
 
 
-def select_protocols(reference_manifest: pd.DataFrame) -> pd.DataFrame:
+def select_protocols(reference_manifest: pd.DataFrame, reference_runs: Path | None = None) -> pd.DataFrame:
     """Select eight events per climate from declared reference trajectories."""
     required = {"climate", "latitude", "hourly_path"}
     missing = required - set(reference_manifest)
@@ -162,6 +162,12 @@ def select_protocols(reference_manifest: pd.DataFrame) -> pd.DataFrame:
             )
         compact = load_compact(path)
         electricity = _array(compact, "facility_electric_kwh").astype(float)
+        if reference_runs is not None:
+            meter = extract_facility_electric_kwh(reference_runs / source["run_id"] / "eplusout.sql")
+            if not np.allclose(electricity, meter, rtol=0, atol=1e-9):
+                raise ValueError(f"Reference electricity meters disagree for {source['climate']}")
+            # Ranking near a seasonal quantile needs the native meter precision.
+            electricity = meter
         cooling = _array(compact, "cooling_electric_kwh").astype(float)
         heating = _array(compact, "heating_electric_kwh").astype(float)
         heating += _array(compact, "gas_hhv_kwh").astype(float)
@@ -1628,6 +1634,7 @@ def main() -> None:
 
     protocol = sub.add_parser("protocol")
     protocol.add_argument("--reference-manifest", type=Path, required=True)
+    protocol.add_argument("--reference-runs", type=Path, help="Reference run folders with native hourly SQL meters")
     protocol.add_argument("--output", type=Path, required=True)
 
     plan = sub.add_parser("plan")
@@ -1662,7 +1669,7 @@ def main() -> None:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         result.to_csv(args.output, index=False)
     elif args.command == "protocol":
-        result = select_protocols(pd.read_csv(args.reference_manifest))
+        result = select_protocols(pd.read_csv(args.reference_manifest), args.reference_runs)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         result.to_csv(args.output, index=False)
     elif args.command == "plan":

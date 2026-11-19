@@ -39,6 +39,10 @@ library and retained temperature trajectories. Use a new output directory for
 a new demand reconstruction.
 The spatial stage also reruns the three operations compared at 40 and 200
 HVAC solver iterations in Supplementary Table 12.
+Demand-response event windows are selected from the reference building's
+hourly Electricity:Facility meter in the EnergyPlus SQL output. Its full
+precision matters when two loads are equally close to the seasonal median
+at the precision of a CSV file.
 The workflow also evaluates additional sampled demand compositions using the
 31 shared commands in each weather context and compares the final operation
 library with its 21–26 °C command subset. These analyses supply Fig. S3.

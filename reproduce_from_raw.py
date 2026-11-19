@@ -185,6 +185,8 @@ def commands(output, runtime, workers):
                 "protocol",
                 "--reference-manifest",
                 response / "REFERENCE_MANIFEST.csv",
+                "--reference-runs",
+                output / "matrix/probe_runs/runs",
                 "--output",
                 response / "EVENT_PROTOCOL.csv",
             ),
