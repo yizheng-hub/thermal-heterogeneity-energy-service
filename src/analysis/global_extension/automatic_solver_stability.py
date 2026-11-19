@@ -157,6 +157,25 @@ def execute_spatial(raw, runtime, workers):
         result = execute_plan(*args, workers=workers, solver_stability_manifest=evidence)
     if not result.completed.all() or not result.relative_engineering_pass.all():
         raise RuntimeError("Fresh spatial execution did not satisfy its engineering checks")
+    audit_spatial_high_iterations(result, runtime, output, workers)
+
+
+def audit_spatial_high_iterations(manifest, runtime, output, workers):
+    """Compare the three spatial operations in Supplementary Table 12 at 40 and 200 iterations."""
+    from audit_annual_solver_stability import audit_annual_solver_stability
+
+    run_ids = [
+        "spatial_91c197145e241b53d4ca0b97",
+        "spatial_a7550c08ec11d1225a54f61b",
+        "spatial_b293e95f71fa4d0910f8d9e1",
+    ]
+    selected = manifest.set_index("run_id").loc[run_ids].reset_index()
+    selected["relative_engineering_pass"] = selected["raw_relative_engineering_pass"]
+    result = audit_annual_solver_stability(
+        selected, runtime, output / "solver_stability_200", workers=workers, higher_iterations=200
+    )
+    if set(result.run_id) != set(run_ids) or not result.solver_stability_pass.all():
+        raise RuntimeError("The 200-iteration spatial comparison was incomplete or outside tolerance")
 
 
 def execute_response(raw, runtime, workers):

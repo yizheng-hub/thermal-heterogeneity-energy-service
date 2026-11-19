@@ -37,6 +37,8 @@ and evaluate seasonal commands, spatial arrangements, equipment and response
 operations. Paired service-limit sensitivity uses the completed candidate
 library and retained temperature trajectories. Use a new output directory for
 a new demand reconstruction.
+The spatial stage also reruns the three operations compared at 40 and 200
+HVAC solver iterations in Supplementary Table 12.
 The workflow also evaluates additional sampled demand compositions using the
 31 shared commands in each weather context and compares the final operation
 library with its 21–26 °C command subset. These analyses supply Fig. S3.
