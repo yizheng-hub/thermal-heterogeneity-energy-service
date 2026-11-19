@@ -7,8 +7,8 @@ Use Python 3.11.15 and the locked environment:
     uv sync --frozen --extra notebook
 Data
 
-Clone the code repository, then download the data from the associated Figshare
-dataset. Repository access is needed while the code is private.
+Clone the public code repository. The two data archives described below are
+scheduled for release on figshare upon publication.
 
     git clone https://github.com/yizheng-hub/thermal-heterogeneity-energy-service.git
     cd thermal-heterogeneity-energy-service

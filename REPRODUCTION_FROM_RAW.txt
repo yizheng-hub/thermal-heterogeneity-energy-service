@@ -5,12 +5,10 @@ Use Python 3.11.15 with the locked environment:
     uv sync --frozen --extra notebook
 Inputs
 
-Extract Simulation_Inputs.zip from the matching data deposit at the repository
-root. It supplies the exact observation files, weather and building models used
-by this workflow. Retain the data/ directory structure.
-
-Download Simulation_Inputs.zip from the associated Figshare dataset. Place it
-beside pyproject.toml and extract it at the code repository root. In PowerShell:
+Simulation_Inputs.zip contains the observation files, weather and building
+models used by this workflow. See the Data section of README.txt for archive
+availability. Place the archive beside pyproject.toml and extract it at the
+repository root, preserving the data/ directory structure. In PowerShell:
 
     Expand-Archive -LiteralPath .\Simulation_Inputs.zip -DestinationPath . -Force
 
