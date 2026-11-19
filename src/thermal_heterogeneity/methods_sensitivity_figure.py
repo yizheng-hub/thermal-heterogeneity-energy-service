@@ -25,6 +25,12 @@ COLORS = ['#6F9EBC','#AF94AD','#C8A36A','#7FA995','#C78470','#718C92','#A99F62',
 
 
 def render(data_root, output_root, analysis_root=None):
+    with matplotlib.rc_context():
+        matplotlib.rcdefaults()
+        return _draw(data_root, output_root, analysis_root)
+
+
+def _draw(data_root, output_root, analysis_root):
     data_root, output_root = Path(data_root), Path(output_root)
     paths = ([Path(analysis_root) / name for name in RESULT_FILES] if analysis_root
              else [data_root / name for name in FILES])

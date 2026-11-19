@@ -12,7 +12,7 @@ Building simulation and weather
 
 - EnergyPlus 22.1.0, build ed759b17ee. Upstream release: https://github.com/NatLabRockies/EnergyPlus/releases/tag/v22.1.0. The runtime is not bundled and remains subject to its upstream licence and notices.
 - DOE/PNNL ASHRAE 90.1-2019 medium-office prototype. The exact official archive is identified and hashed in the source manifest. The code repository contains the model-preparation method; separate model inputs retain DOE/PNNL source terms.
-- Miami, Seattle and Port Angeles TMY3 weather files. These files are retrieved from the official DOE/Energy Codes source and hash checked; they are not mirrored here.
+- Miami TMY3 is retrieved from the EnergyPlus weather archive. The per-city source manifest identifies the EPW provider and SHA-256. Seattle and Port Angeles TMY3 sources are recorded separately in the source manifest.
 - New Delhi weather file. The retained IND_New.Delhi.421820_ISHRAE.epw is obtained from the EnergyPlus weather archive (https://energyplus-weather.s3.amazonaws.com/asia_wmo_region_2/IND/IND_New.Delhi.421820_ISHRAE/IND_New.Delhi.421820_ISHRAE.zip). Its EPW SHA-256 is 79be52a8c3b4e38a5e26b36415d3825c4f5720b860c67a800f986348fe6b877c; the source ZIP hash is recorded in data/metadata/source_manifest.csv. The header states ISHRAE copyright 2005. The original weather file retains those upstream terms.
 Policy, carbon and price sources
 

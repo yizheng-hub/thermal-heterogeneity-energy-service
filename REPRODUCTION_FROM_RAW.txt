@@ -5,21 +5,19 @@ Use Python 3.11.15 with the locked environment:
     uv sync --frozen --extra notebook
 Inputs
 
-Simulation_Inputs.zip contains the observation files, weather and building
-models used by this workflow. See the Data section of README.txt for archive
-availability. Place the archive beside pyproject.toml and extract it at the
-repository root, preserving the data/ directory structure. In PowerShell:
+Extract Simulation_Inputs.zip at the root of this checkout. To retrieve
+provider-hosted files, prepare the reference IDF and check all input hashes:
 
-    Expand-Archive -LiteralPath .\Simulation_Inputs.zip -DestinationPath . -Force
+    uv run --frozen python restore_simulation_inputs.py
 
-The source locations and versions are recorded in data/metadata/source_manifest.csv,
-data/metadata/ctcd_bundle_source.json and
-data/metadata/global_fixed_reference_weather_sources.csv. Required files are
-listed in src/utilities/audit_reproduction_inputs.py. The archive already places
-the observations in data/upstream/, the nine EPW files in
-data/upstream/global_climate_matrix/weather/, and the prepared reference in
-data/upstream/frozen_buildings/Miami/baseline.idf. Use these supplied files;
-no additional model download or reference preparation is needed.
+For previously downloaded data, use --source-dir DIRECTORY. Store raw weather
+files and CTCD CSVs there under the destination basenames listed in
+data/SIMULATION_INPUT_SOURCES.csv. Store the DOE 90.1-2019 medium-office ZIP
+as ASHRAE901_OfficeMedium_STD2019.zip. This also provides a manual download
+route if the DOE server declines the automatic request. The source manifest
+lists the archive members used for each model. The reference IDF is generated
+from the Miami member by src/utilities/prepare_reference_model.py.
+Use the environment installed inside this project for EnergyPlus simulation.
 
 Install the complete EnergyPlus 22.1.0 Windows distribution, build ed759b17ee,
 at tools/EnergyPlus-22.1.0/. Scientific inputs and retained outputs remain

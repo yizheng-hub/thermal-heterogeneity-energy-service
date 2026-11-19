@@ -131,7 +131,7 @@ def test_legacy_four_context_figure_source_is_rejected():
             ],
         }]
     }
-    with pytest.raises(RuntimeError, match="superseded four-context analysis"):
+    with pytest.raises(RuntimeError, match="nine weather contexts"):
         runner.validate_notebook_sources(notebook, {"Figure_03"})
 
 
@@ -195,7 +195,7 @@ def test_notebook_executes_all_or_selected_independent_cells(tmp_path, selection
     for number in (3, 4):
         (captions / f"Figure_{number:02d}.txt").write_text("old", encoding="utf-8")
     cells = []
-    for number in range(1, 17):
+    for number in range(1, 18):
         cells.append({"cell_type": "code", "metadata": {"figure": f"Figure_{number:02d}"},
                       "source": ["from pathlib import Path\n",
                                  "assert 'previous_figure' not in globals()\n",

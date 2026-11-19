@@ -13,8 +13,8 @@ scheduled for release on figshare upon publication.
     git clone https://github.com/yizheng-hub/thermal-heterogeneity-energy-service.git
     cd thermal-heterogeneity-energy-service
 
-- Simulation_Inputs.zip: original observations, weather and building models
-  under data/, for new simulations.
+- Simulation_Inputs.zip: observations, numerical inputs and a per-file source
+  manifest for new simulations.
 - Numerical_Results.zip: figure inputs and complete numerical results under
   data/figure_data/ and data/analysis_results/. data/RESULTS_INDEX.csv
   identifies the additional result datasets.
@@ -27,17 +27,14 @@ extract them into the repository root, merging the supplied data/ directory:
     Expand-Archive -LiteralPath .\Simulation_Inputs.zip -DestinationPath . -Force
     Expand-Archive -LiteralPath .\Numerical_Results.zip -DestinationPath . -Force
 
-Do not place the ZIPs inside data/ or create an extra enclosing directory.
-After extraction, these paths should exist:
+For simulations, restore the provider-hosted inputs and prepare the reference:
+    uv run --frozen python restore_simulation_inputs.py
 
-    data/upstream/frozen_buildings/Miami/baseline.idf
-    data/figure_data/index.json
-    data/RESULTS_INDEX.csv
+The script verifies all 28 scientific inputs. The simulation archive includes
+direct download locations and the exact DOE archive and model members.
+REPRODUCTION_FROM_RAW.txt describes how to supply local copies.
 
-Numerical_Results.zip alone is sufficient to redraw the figures and tables;
-this does not require EnergyPlus. Simulation_Inputs.zip supplies the original
-inputs for new simulations; the numerical results are not required to start
-that workflow. Download both to run simulations and compare their results.
+Numerical_Results.zip alone supports the figure and table workflow.
 Figures and tables
 
     uv run --frozen python reproduce_publication.py --output-root output/publication
@@ -52,7 +49,7 @@ Times New Roman regular and bold must be installed locally.
 Scientific experiments
 
 REPRODUCTION_FROM_RAW.txt gives the input locations, EnergyPlus installation
-and experiment commands. The supplied reference model is ready to use. The scientific
+and experiment commands. The restoration step prepares the reference model. The scientific
 methods are in src/; fixed specifications are in data/metadata/.
 
 The complete workflow includes the service-limit sensitivity analysis. To

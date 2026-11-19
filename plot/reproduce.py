@@ -115,8 +115,8 @@ def validate_notebook_sources(notebook, active_labels):
             f"{label}: {', '.join(tokens)}" for label, tokens in stale
         )
         raise RuntimeError(
-            "Figure cells still reference the superseded four-context analysis. "
-            f"Replace those sources with audited global outputs before rendering: {detail}"
+            "Figure inputs must cover the nine weather contexts. "
+            f"Check these source paths before rendering: {detail}"
         )
 
 

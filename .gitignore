@@ -92,8 +92,6 @@
 !/data/metadata/energy_service_bundle_manifest.csv
 !/data/metadata/energy_service_bundle_source.json
 !/data/metadata/energy_service_model_contract.json
-!/data/metadata/engineering_qa_bundle_manifest.csv
-!/data/metadata/engineering_qa_bundle_source.json
 !/data/metadata/experimental_parameter_provenance.json
 !/data/metadata/FIELD_CODEBOOK.csv
 !/data/metadata/global_electricity_carbon_factors_ember_2025.csv
@@ -391,7 +389,6 @@
 !/src/utilities/build_paper_data.py
 !/src/utilities/compare_canonical_runs.py
 !/src/utilities/compare_energy_service_runs.py
-!/src/utilities/engineering_qa_supplement.py
 !/src/utilities/export_controller_inputs.py
 !/src/utilities/export_model_inputs.py
 !/src/utilities/fetch_data.py
@@ -425,7 +422,6 @@
 !/tests/conftest.py
 !/tests/contracts/test_analysis_bundle.py
 !/tests/contracts/test_energyplus_boundary.py
-!/tests/contracts/test_engineering_qa_supplement.py
 !/tests/contracts/test_figure_render_core.py
 !/tests/contracts/test_figures_4_6.py
 !/tests/contracts/test_main_figures_1_3.py
@@ -567,3 +563,4 @@
 !/src/analysis/strengthening/population_command_sensitivity.py
 !/src/analysis/strengthening/command_domain_sensitivity.py
 !/src/thermal_heterogeneity/methods_sensitivity_figure.py
+!/restore_simulation_inputs.py
