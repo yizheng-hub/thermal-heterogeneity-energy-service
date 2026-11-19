@@ -53,30 +53,40 @@ def export(publication):
     # Publication notebooks already read the minimized, verified data/figure_data files.
     # Keep their original provenance when refreshing the publication data bundle.
     retained = {}
+    index = destination / "index.json"
+    indexed = {row["file"]: row["sha256"] for row in verify()["files"]} if index.is_file() else {}
+    receipts = []
     for folder, pattern, count in [
         ("main", "Figure_*.json", 6),
         ("extended", "Figure_E*.json", 4),
-        ("supplementary", "Figure_S*.json", 6),
+        ("supplementary", "Figure_S*.json", 7),
     ]:
-        receipts = sorted((publication / folder).glob(pattern))
-        if len(receipts) != count:
+        section = sorted((publication / folder).glob(pattern))
+        if len(section) != count:
             raise ValueError(f"Expected {count} complete {folder} figures")
-        for receipt in receipts:
-            for name, digest in json.loads(receipt.read_text(encoding="utf-8"))["input_sha256"].items():
-                if name.startswith("data/figure_data/"):
-                    if not retained:
-                        retained = {row["result"]: row for row in verify()["files"]}
-                    if name not in retained or retained[name]["sha256"] != digest:
-                        raise ValueError(f"Unregistered data/figure_data input: {name}")
-                    record = retained[name]
-                    name, digest = record["source"], record["source_sha256"]
-                elif "data/figure_data/" + name in retained:
-                    record = retained["data/figure_data/" + name]
-                    if digest == record["sha256"]:
-                        digest = record["source_sha256"]
-                if name in expected and expected[name] != digest:
-                    raise ValueError(f"Conflicting source versions: {name}")
-                expected[name] = digest
+        receipts.extend(section)
+    if index.is_file():
+        for receipt in [*receipts, publication / "tables/TABLES.json"]:
+            for path, digest in json.loads(receipt.read_text(encoding="utf-8"))["input_sha256"].items():
+                if indexed.get(path.replace("\\", "/")) != digest:
+                    raise ValueError(f"Source differs from {receipt.name}: {path}")
+        return
+    for receipt in receipts:
+        for name, digest in json.loads(receipt.read_text(encoding="utf-8"))["input_sha256"].items():
+            if name.startswith("data/figure_data/"):
+                if not retained:
+                    retained = {row["result"]: row for row in verify()["files"]}
+                if name not in retained or retained[name]["sha256"] != digest:
+                    raise ValueError(f"Unregistered data/figure_data input: {name}")
+                record = retained[name]
+                name, digest = record["source"], record["source_sha256"]
+            elif "data/figure_data/" + name in retained:
+                record = retained["data/figure_data/" + name]
+                if digest == record["sha256"]:
+                    digest = record["source_sha256"]
+            if name in expected and expected[name] != digest:
+                raise ValueError(f"Conflicting source versions: {name}")
+            expected[name] = digest
     tables = json.loads((publication / "tables/TABLES.json").read_text(encoding="utf-8"))
     for name, digest in tables["input_sha256"].items():
         if name.startswith("data/figure_data/"):

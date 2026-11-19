@@ -84,7 +84,7 @@ def test_export_reuses_contained_inputs_and_transformed_geometry(tmp_path):
     manifest = tmp_path / "data/figure_data/FIGURE_DATA_MANIFEST.json"
     manifest.write_text(json.dumps({"files": records}))
     publication = tmp_path / "publication_output"
-    for folder, prefix, count in [("main", "Figure_", 6), ("extended", "Figure_E", 4), ("supplementary", "Figure_S", 6)]:
+    for folder, prefix, count in [("main", "Figure_", 6), ("extended", "Figure_E", 4), ("supplementary", "Figure_S", 7)]:
         (publication / folder).mkdir(parents=True)
         for n in range(1, count + 1):
             row = records[0 if folder == "main" else 1]
