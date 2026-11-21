@@ -113,10 +113,17 @@ class IntegrityTests(unittest.TestCase):
                 )
             )
             self.assertEqual(meta["canvas_overflow_text"], [])
-            self.assertEqual(len(meta["heading_alignment"]), 4)
-            self.assertTrue(all(row["single_text_artist"] for row in meta["heading_alignment"]))
+            headings = meta["heading_alignment"]
+            letters = "abcde" if i == 2 else "abcd"
+            self.assertEqual(len(headings), len(letters))
+            self.assertTrue(all(row["single_text_artist"] for row in headings))
             self.assertTrue(all(row["text"].startswith(f"({letter}) ")
-                                for letter, row in zip("abcd", meta["heading_alignment"])))
+                                for letter, row in zip(letters, headings)))
+            if i == 2:
+                self.assertEqual(headings[4]["text"], "(e) Time outside individual reference ranges")
+                for top, bottom in [(0, 2), (0, 4), (1, 3)]:
+                    self.assertAlmostEqual(headings[top]["left_fraction"], headings[bottom]["left_fraction"])
+                self.assertEqual(meta["text_collisions"], [])
 
 
 if __name__ == "__main__":

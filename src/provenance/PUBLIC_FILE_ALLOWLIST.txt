@@ -175,6 +175,7 @@ src/analysis/strengthening/prepare_strengthening_inputs.py
 src/analysis/strengthening/profile_identity.py
 src/analysis/strengthening/retune_heatpump_controls.py
 src/analysis/strengthening/score_new_controls.py
+src/analysis/strengthening/selected_interval_coverage.py
 src/analysis/strengthening/service_distribution.py
 src/analysis/strengthening/service_threshold_sensitivity.py
 src/analysis/strengthening/single_event_simulation.py

@@ -18,6 +18,7 @@ CODE = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(CODE / "src/analysis/global_extension"))
 from analyse_global_results import fixed_tail_from_anchor, load_hourly, normalise_profiles
 from paired_uncertainty import choose
+from selected_interval_coverage import FILENAME, export_interval_coverage
 from service_distribution import ServiceDistribution
 
 FACTORS = (0.50, 0.75, 0.90, 1.00, 1.05, 1.10)
@@ -219,6 +220,7 @@ def run(args):
     selections = evaluate_thresholds(scores, limits)
     summary = summarise(selections)
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    export_interval_coverage(selections, library, args.output_dir / FILENAME)
     for filename, frame in [("PAIRED_OPERATION_SERVICE_SCORES.csv", scores),
                             ("REFERENCE_SERVICE_LIMITS.csv", limits),
                             ("PAIRED_SERVICE_THRESHOLD_SELECTIONS.csv", selections),

@@ -35,6 +35,9 @@ direct download locations and the exact DOE archive and model members.
 REPRODUCTION_FROM_RAW.txt describes how to supply local copies.
 
 Numerical_Results.zip alone supports the figure and table workflow.
+For Fig. 2e, the plotting cell uses the paired interval-coverage table or
+calculates it directly from the deposited service-threshold selections and
+annual operation library.
 
 Results layout
 
