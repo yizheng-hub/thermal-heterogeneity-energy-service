@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src/utilities"))
-from observation_figure_sources import map_points, policy_positions
+from observation_figure_sources import ctcd_seasonal_setpoints, map_points, policy_positions
 
 
 def test_map_pools_shared_locations_without_losing_active_records():
@@ -35,3 +35,24 @@ def test_india_policy_uses_activity_and_season_rules_with_its_own_denominator():
     result = policy_positions(data, declarations).set_index("position")
     assert result.records.eq(3).all()
     assert result.proportion.to_dict() == {"below": 1/3, "within": 1/3, "above": 1/3}
+
+
+def test_china_setpoints_compare_seasons_separately_and_keep_observations_at_the_limit():
+    policies = pd.DataFrame({"policy_id": ["CHN_GB2007_SUMMER", "CHN_GB2007_WINTER"],
+        "target_c": [26, 20], "version_date": ["2007-06-01"] * 2})
+    data = pd.DataFrame({"season": ["Summer Season"] * 5 + ["Winter Season"] * 2 + ["Transition Season"],
+        "date": ["2007-06-01", "2007-06-02", "2006-06-01", "2008-06-01", "2008-06-01",
+                 "2008-01-01", "2008-01-02", "2008-04-01"],
+        "active_conditioning": [True, True, True, False, True, True, True, True],
+        "building_function": ["Office"] * 4 + ["Laboratory"] + ["Office"] * 3,
+        "city_normalized": ["beijing"] * 8,
+        "operation": ["Convection cooling"] * 5 + ["Convection heating"] * 3,
+        "reference_g050_c": [25., 26., 17., 18., 19., 21., 20., 14.]})
+    for g in ("033", "067"):
+        data[f"reference_g{g}_c"] = data.reference_g050_c
+    bins, summary = ctcd_seasonal_setpoints(data, policies)
+    assert bins.groupby("season").records.sum().to_dict() == {"Summer": 2, "Winter": 2}
+    assert summary.records_at_limit.tolist() == [1, 1]
+    assert summary.records_on_threshold_side.tolist() == [1, 1]
+    assert summary.fraction_on_threshold_side.tolist() == [.5, .5]
+    assert summary.threshold_side.tolist() == ["below", "above"]

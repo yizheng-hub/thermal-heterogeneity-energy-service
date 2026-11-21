@@ -15,6 +15,8 @@ baseline/results/observation_figures/COUNTRY_DEMAND_SUMMARY.csv,Tables/COUNTRY_D
 baseline/results/observation_figures/DEMAND_COMPOSITION_PROFILES.csv,Tables/DEMAND_COMPOSITION_PROFILES.csv,"context,composition_id,centre_c,range_width_c"
 baseline/results/observation_figures/LEAVE_ONE_SOURCE_VARIANCE.csv,Tables/LEAVE_ONE_SOURCE_VARIANCE.csv,
 baseline/results/observation_figures/POLICY_RANGE_POSITIONS.csv,Tables/POLICY_RANGE_POSITIONS.csv,
+baseline/results/observation_figures/CTCD_SEASONAL_SETPOINT_BINS.csv,Tables/CTCD_SEASONAL_SETPOINT_BINS.csv,
+baseline/results/observation_figures/CTCD_SEASONAL_SETPOINT_SUMMARY.csv,Tables/CTCD_SEASONAL_SETPOINT_SUMMARY.csv,
 baseline/results/observations/ASHRAE_NESTED_VARIANCE.csv,Tables/ASHRAE_NESTED_VARIANCE.csv,
 baseline/results/observations/CITY_OBSERVATION_SUMMARY.csv,Tables/CITY_OBSERVATION_SUMMARY.csv,
 baseline/results/response_mean_decomposition/RESPONSE_MEAN_DECOMPOSITION.csv,Tables/RESPONSE_MEAN_DECOMPOSITION.csv,

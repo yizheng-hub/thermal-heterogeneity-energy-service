@@ -43,6 +43,12 @@ results/figure_data/ contains the indexed plotting inputs: Tables/ for numerical
 values, Maps/ for geometry and locations, and Hourly/ for the illustrated
 event trajectories. Each cell of plot/Plot.ipynb reads the files listed in
 results/figure_data/index.json and writes one figure under plot/.
+
+Figure S1e,f uses half-degree counts of estimated neutral temperatures in CTCD
+office records collected from 1 June 2007 onward. Each season has its own
+setpoint limit in data/metadata/policy_reference_documents.csv. Counts and
+seasonal summaries are indexed as CTCD_SEASONAL_SETPOINT_BINS.csv and
+CTCD_SEASONAL_SETPOINT_SUMMARY.csv.
 In a checkout that also contains results/simulation_run/, that index can point
 to identical tables and hourly trajectories at their original simulation paths.
 results/RESULTS_INDEX.csv also points to shared tables used in more than one analysis.

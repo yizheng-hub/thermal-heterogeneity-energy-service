@@ -71,6 +71,48 @@ def policy_positions(ashrae, declarations):
     return pd.DataFrame(rows)
 
 
+def ctcd_seasonal_setpoints(china, declarations):
+    """Compare occupied-office estimates with each season's published setting limit."""
+    policies = declarations.set_index("policy_id")
+    offices = china.loc[china.active_conditioning & china.building_function.eq("Office")]
+    dates = pd.to_datetime(offices.date, format="mixed", errors="raise")
+    bins, summaries = [], []
+    for season, mode, side in [("Summer", "cooling", "below"), ("Winter", "heating", "above")]:
+        policy = policies.loc["CHN_GB2007_" + season.upper()]
+        limit = float(policy.target_c)
+        records = offices.loc[offices.season.eq(season + " Season") & dates.ge(policy.version_date)]
+        center = records.reference_g050_c
+        if center.empty or center.isna().any():
+            raise ValueError(f"Missing CTCD center estimates for {season}")
+        direction = -1 if side == "below" else 1
+        beyond = direction * (center - limit) > 1e-8
+        city_bounds = center.groupby(records.city_normalized).agg(["min", "max"])
+        same_mode = records.operation.eq("Convection " + mode)
+        summary = {
+            "season": season, "policy_id": policy.name, "setpoint_limit_c": limit,
+            "threshold_side": side, "records": len(records), "cities": len(city_bounds),
+            "cities_spanning_limit": int((city_bounds["min"].lt(limit) & city_bounds["max"].gt(limit)).sum()),
+            "records_on_threshold_side": int(beyond.sum()),
+            "records_at_limit": int((abs(center - limit) <= 1e-8).sum()),
+            "p10_c": center.quantile(.1), "median_c": center.median(), "p90_c": center.quantile(.9),
+            "fraction_on_threshold_side": beyond.mean(),
+            "city_equal_weight_fraction": beyond.groupby(records.city_normalized).mean().mean(),
+            "convection_only_records": int(same_mode.sum()),
+            "convection_only_fraction": beyond[same_mode].mean(),
+        }
+        for coefficient in ("033", "067"):
+            offset = records[f"reference_g{coefficient}_c"] - limit
+            summary[f"fraction_g{coefficient}"] = (direction * offset > 1e-8).mean()
+        summaries.append(summary)
+        # Half-degree bins are left-closed. Include the largest observed center.
+        left = np.floor(center.min() * 2) / 2
+        right = np.floor(center.max() * 2) / 2 + .5
+        counts, edges = np.histogram(center, bins=np.arange(left, right + .25, .5))
+        bins.extend({"season": season, "bin_lower_c": low, "bin_upper_c": high, "records": int(count)}
+                    for low, high, count in zip(edges[:-1], edges[1:], counts))
+    return pd.DataFrame(bins), pd.DataFrame(summaries)
+
+
 def leave_one_source(ashrae):
     rows = []
     levels = ("country", "city", "building_id", "unit_group")
@@ -97,7 +139,9 @@ def run(demand, output):
         ROOT / "data/metadata/policy_reference_documents.csv"]
     ashrae, china = [pd.read_csv(p, low_memory=False) for p in paths[:2]]
     points, records = map_points(ashrae, china, pd.read_csv(paths[4]), pd.read_csv(paths[5]))
-    policies = policy_positions(ashrae, pd.read_csv(paths[6]))
+    declarations = pd.read_csv(paths[6])
+    policies = policy_positions(ashrae, declarations)
+    seasonal_bins, seasonal_summary = ctcd_seasonal_setpoints(china, declarations)
     profiles = pd.concat([pd.read_csv(p) for p in paths[2:4]], ignore_index=True)
     profiles["range_width_c"] = profiles.upper_c - profiles.lower_c
     counts = profiles.groupby("composition_id").size()
@@ -111,6 +155,8 @@ def run(demand, output):
     output.mkdir(parents=True, exist_ok=True)
     for name, table in {"CITY_MAP_POINTS": points, "COUNTRY_DEMAND_SUMMARY": country,
         "DEMAND_COMPOSITION_PROFILES": profiles, "POLICY_RANGE_POSITIONS": policies,
+        "CTCD_SEASONAL_SETPOINT_BINS": seasonal_bins,
+        "CTCD_SEASONAL_SETPOINT_SUMMARY": seasonal_summary,
         "LEAVE_ONE_SOURCE_VARIANCE": leave_one_source(ashrae)}.items():
         table.to_csv(output / (name + ".csv"), index=False)
     audit = {"status": "completed", "observation_records": len(records),
@@ -120,7 +166,7 @@ def run(demand, output):
         "inputs": {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths},
         "derived_legacy_tables_read": [],
         "map_counting": "Records from both archives are pooled at shared country-city locations.",
-        "policy_counting": "Declared document-specific matching rules; bilateral ranges only."}
+        "policy_counting": "Country range positions use two-sided references. Chinese offices are compared separately with the seasonal setpoint limits."}
     (output / "OBSERVATION_FIGURE_SOURCE_AUDIT.json").write_text(json.dumps(audit, indent=2) + "\n")
     print(json.dumps({k: v for k, v in audit.items() if k != "inputs"}), flush=True)
 
