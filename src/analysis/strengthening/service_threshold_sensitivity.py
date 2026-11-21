@@ -246,9 +246,9 @@ def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--results-root", type=Path, default=CODE / "output/from_raw/strengthening/results")
-    parser.add_argument("--matrix-root", type=Path, default=CODE / "output/from_raw/matrix")
-    parser.add_argument("--memberships", type=Path, default=CODE / "output/from_raw/strengthening/results/base/annual/GLOBAL_FIXED_TAIL_MEMBERSHIPS.csv")
-    parser.add_argument("--trajectory-root", type=Path, default=CODE / "output/from_raw")
-    parser.add_argument("--output-dir", type=Path, default=CODE / "output/from_raw/strengthening/results/service_threshold_sensitivity")
+    parser.add_argument("--results-root", type=Path, default=CODE / "results/new_run/strengthening/results")
+    parser.add_argument("--matrix-root", type=Path, default=CODE / "results/new_run/matrix")
+    parser.add_argument("--memberships", type=Path, default=CODE / "results/new_run/strengthening/results/base/annual/GLOBAL_FIXED_TAIL_MEMBERSHIPS.csv")
+    parser.add_argument("--trajectory-root", type=Path, default=CODE / "results/new_run")
+    parser.add_argument("--output-dir", type=Path, default=CODE / "results/new_run/strengthening/results/service_threshold_sensitivity")
     run(parser.parse_args())

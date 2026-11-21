@@ -58,84 +58,15 @@ def test_source_map_index_follows_added_panels_without_rehashing_science(tmp_pat
     assert rows[1]["sha256"] == "locked"
 
 
-def _write_final_story_bundle(root: Path) -> Path:
-    story = root / "results/global_extension/final_story"
-    story.mkdir(parents=True)
-    outputs = {
-        "FINAL_STORY_SUMMARY.json": json.dumps(
-            {"design": {"climates": 9, "candidates": 810}}
-        ),
-        "FINAL_INFORMATION_DIAGNOSTIC.csv": "climate,value\nBeijing,1\n",
-        "FINAL_DIRECT_COMPARISONS.csv": "climate,value\nBeijing,1\n",
-    }
-    for name, content in outputs.items():
-        (story / name).write_text(content, encoding="utf-8")
-    hashes = {
-        name: hashlib.sha256((story / name).read_bytes()).hexdigest()
-        for name in outputs
-    }
-    (story / "FINAL_STORY_HASHES.json").write_text(
-        json.dumps({"status": "PASS", "outputs": hashes}), encoding="utf-8"
-    )
-    return story
-
-
-def test_figure_two_requires_hashed_global_story_sources(tmp_path):
-    runner = load_module("plot_reproduce_required_inputs", ROOT / "plot/reproduce.py")
-    with pytest.raises(FileNotFoundError, match="FINAL_STORY_SUMMARY.json"):
-        runner.validate_figure_inputs(tmp_path, {"Figure_02"})
-    story = _write_final_story_bundle(tmp_path)
-    for relative in runner.REQUIRED_FIGURE_INPUTS["Figure_02"]:
-        path = tmp_path / relative
-        if not path.exists():
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text("value\n1\n", encoding="utf-8")
-    runner.validate_figure_inputs(tmp_path, {"Figure_02"})
-    (story / "FINAL_INFORMATION_DIAGNOSTIC.csv").write_text(
-        "climate,value\nBeijing,2\n", encoding="utf-8"
-    )
-    with pytest.raises(ValueError, match="changed after assembly"):
-        runner.validate_figure_inputs(tmp_path, {"Figure_02"})
-
-
-def test_figure_one_requires_raw_rebuilt_sources_instead_of_legacy_centers(tmp_path):
-    runner = load_module("plot_reproduce_figure_one_inputs", ROOT / "plot/reproduce.py")
-    for relative in runner.REQUIRED_FIGURE_INPUTS["Figure_01"]:
-        path = tmp_path / relative
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text("value\n1\n", encoding="utf-8")
-    with pytest.raises(FileNotFoundError, match="CITY_MAP_POINTS"):
-        runner.validate_figure_inputs(tmp_path, {"Figure_01"})
-    for relative in (
-        "observation_figures/CITY_MAP_POINTS.csv",
-        "observation_figures/DEMAND_COMPOSITION_PROFILES.csv",
-        "observation_figures/LEAVE_ONE_SOURCE_VARIANCE.csv",
-        "observation_figures/POLICY_RANGE_POSITIONS.csv",
-        "observations/ASHRAE_NESTED_VARIANCE.csv",
-        "shared_room/SHARED_ROOM_SUMMARY.csv",
-    ):
-        path = tmp_path / "output/from_raw/results" / relative
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text("value\n1\n", encoding="utf-8")
-    runner.validate_figure_inputs(tmp_path, {"Figure_01"})
-
-
-def test_publication_legends_must_be_frameless():
-    runner = load_module("plot_reproduce_legend_style", ROOT / "plot/reproduce.py")
-    notebook = {
-        "cells": [{
-            "cell_type": "code",
-            "metadata": {"figure": "Figure_02"},
-            "source": ["axis.legend(loc='upper right')\n"],
-        }]
-    }
-    with pytest.raises(ValueError, match="frameon=False"):
-        runner.validate_legend_styles(notebook, {"Figure_02"})
-    notebook["cells"][0]["source"] = [
-        "axis.legend(loc='upper right', frameon=False, "
-        "facecolor='none', edgecolor='none')\n"
-    ]
-    runner.validate_legend_styles(notebook, {"Figure_02"})
+@pytest.mark.parametrize("args", [[], ["--raw-run-root", "results/simulation_run"]])
+def test_publication_paths_match_for_both_input_routes(monkeypatch, capsys, args, tmp_path):
+    runner = load_module("publication_paths", ROOT / "reproduce_publication.py")
+    monkeypatch.setattr(sys, "argv", ["reproduce_publication.py", "--plan", *args])
+    runner.main()
+    assert Path(json.loads(capsys.readouterr().out)["output"]) == ROOT / "plot"
+    monkeypatch.setattr(sys, "argv", [*sys.argv, "--output-root", str(tmp_path)])
+    runner.main()
+    assert Path(json.loads(capsys.readouterr().out)["output"]) == tmp_path
 
 
 def test_figure_four_building_to_zone_counts_match_final_spatial_evidence():

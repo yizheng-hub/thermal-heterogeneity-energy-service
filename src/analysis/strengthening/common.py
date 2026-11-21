@@ -5,7 +5,7 @@ import os
 import sys
 
 CODE = Path(__file__).resolve().parents[3]
-RAW_RUN = Path(os.environ.get("HEM_RAW_RUN", str(CODE / "output/from_raw"))).resolve()
+RAW_RUN = Path(os.environ.get("HEM_RAW_RUN", str(CODE / "results/new_run"))).resolve()
 ROOT = Path(os.environ.get("HEM_STRENGTHENING_OUTPUT", str(RAW_RUN / "strengthening"))).resolve()
 PROJECT = CODE.parent
 SNAPSHOT = CODE

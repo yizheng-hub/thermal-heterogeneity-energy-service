@@ -458,17 +458,17 @@ def build(raw, analysis, publication, resource_scenarios=None, from_index=False)
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--raw-root", type=Path, default=ROOT / "output/from_raw")
-    p.add_argument("--analysis-root", type=Path, default=ROOT / "output/strengthening")
-    p.add_argument("--publication-root", type=Path, default=ROOT / "output/publication")
+    p.add_argument("--raw-root", type=Path, default=ROOT / "results/new_run")
+    p.add_argument("--analysis-root", type=Path, default=ROOT / "results/new_run/strengthening")
+    p.add_argument("--publication-root", type=Path, default=ROOT / "plot")
     p.add_argument("--resource-scenarios", type=Path)
     p.add_argument("--from-index", action="store_true", help="Read the datasets named by the plotting index")
     args = p.parse_args()
     if not all(
         x.resolve().is_relative_to(ROOT)
-        for x in [args.raw_root, args.analysis_root, args.publication_root]
+        for x in [args.raw_root, args.analysis_root]
     ):
-        raise ValueError("Publication inputs and outputs must stay inside the project")
+        raise ValueError("Simulation inputs must stay inside the project")
     if args.resource_scenarios is not None and not args.resource_scenarios.resolve().is_relative_to(
         ROOT
     ):

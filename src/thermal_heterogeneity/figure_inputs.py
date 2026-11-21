@@ -255,7 +255,7 @@ def resolve(request):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--publication-root", type=Path, default=ROOT / "output/publication")
+    parser.add_argument("--publication-root", type=Path, default=ROOT / "plot")
     parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
     if args.verify:

@@ -84,9 +84,9 @@ def run(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--results-root',type=Path,default=CODE/'output/from_raw/strengthening/results')
-    parser.add_argument('--matrix-root',type=Path,default=CODE/'output/from_raw/matrix')
-    parser.add_argument('--output-dir',type=Path,default=CODE/'output/from_raw/strengthening/results/command_domain_sensitivity')
+    parser.add_argument('--results-root',type=Path,default=CODE/'results/new_run/strengthening/results')
+    parser.add_argument('--matrix-root',type=Path,default=CODE/'results/new_run/matrix')
+    parser.add_argument('--output-dir',type=Path,default=CODE/'results/new_run/strengthening/results/command_domain_sensitivity')
     run(parser.parse_args())
 
 

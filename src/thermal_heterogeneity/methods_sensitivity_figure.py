@@ -3,6 +3,7 @@ from pathlib import Path
 import argparse
 import json
 import hashlib
+import sys
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -110,9 +111,13 @@ def main():
     packaged = next((folder for folder in roots if (folder / FILES[0]).is_file()), roots[0])
     parser.add_argument('--data-root',type=Path,default=packaged)
     parser.add_argument('--analysis-root',type=Path,help='Completed analysis results instead of packaged figure tables')
-    parser.add_argument('--output-root',type=Path,default=ROOT/'output/publication/supplementary')
+    parser.add_argument('--output-root',type=Path,default=ROOT/'plot/supplementary')
     args=parser.parse_args()
-    print(render(args.data_root,args.output_root,args.analysis_root))
+    sys.path.insert(0, str(ROOT))
+    from reproduce_publication import crop_png_whitespace
+    path = render(args.data_root,args.output_root,args.analysis_root)
+    crop_png_whitespace(path)
+    print(path)
 
 
 if __name__=='__main__':

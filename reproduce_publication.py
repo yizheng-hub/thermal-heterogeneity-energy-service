@@ -44,18 +44,6 @@ def crop_png_whitespace(path, padding=10, threshold=5):
         return old_size, cropped.size
 
 
-def crop_publication_pngs(output, selected=None):
-    """Apply the same post-render crop to every requested publication figure."""
-    paths = [
-        *sorted((output / "main").glob("Figure_[0-9][0-9].png")),
-        *sorted((output / "extended").glob("Figure_E[0-9][0-9].png")),
-        *sorted((output / "supplementary").glob("Figure_S[0-9][0-9].png")),
-    ]
-    if selected is not None:
-        paths = [path for path in paths if path.stem in selected]
-    return {path.stem: crop_png_whitespace(path) for path in paths}
-
-
 def execute_notebook(root, output, selected=None):
     """Execute each complete figure cell with its own Python namespace."""
     notebook = json.loads((root / "plot/Plot.ipynb").read_text(encoding="utf-8"))
@@ -83,14 +71,29 @@ def main():
     parser.add_argument("--figure", nargs="+", help="Selected figure IDs: 1–6, E1–E4 or S1–S7")
     args = parser.parse_args()
     raw = args.raw_run_root.resolve() if args.raw_run_root else None
-    output = (args.output_root or ((raw or ROOT / "output") / "publication")).resolve()
-    if not output.is_relative_to(ROOT):
-        raise ValueError("Publication output must remain inside the project")
+    output = (args.output_root or ROOT / "plot").resolve()
+    selected = None
+    if args.figure:
+        labels = {
+            f"{prefix}{number}": f"Figure_{prefix}{number:02}"
+            for prefix, count in [("", 6), ("E", 4), ("S", 7)]
+            for number in range(1, count + 1)
+        }
+        selected = set()
+        for value in args.figure:
+            label = value.upper()
+            prefix = label[0] if label and label[0].isalpha() else ""
+            number = label[len(prefix):]
+            key = prefix + number.lstrip("0")
+            if key not in labels:
+                parser.error(f"Unknown figure ID: {value}")
+            selected.add(labels[key])
     if args.plan:
         print(
             json.dumps(
                 {
                     "input": str(raw) if raw else "results/figure_data/FIGURE_DATA_MANIFEST.json",
+                    "output": str(output),
                     "notebook": "plot/Plot.ipynb",
                     "main_figures": 6,
                     "extended_data_figures": 4,
@@ -106,8 +109,7 @@ def main():
         sys.path.insert(0, str(ROOT / "src"))
         from src.thermal_heterogeneity.raw_plot_inputs import prepare
 
-        output.parent.mkdir(parents=True, exist_ok=True)
-        with TemporaryDirectory(dir=output.parent) as tmp:
+        with TemporaryDirectory() as tmp:
             project = Path(tmp)
             for name in ["plot/Plot.ipynb", "src/analysis/figure_tables.py",
                          "src/thermal_heterogeneity/figure_inputs.py", "reproduce_publication.py"]:
@@ -116,25 +118,16 @@ def main():
             if (ROOT / "tools/fonts").is_dir():
                 shutil.copytree(ROOT / "tools/fonts", project / "tools/fonts")
             prepare(raw, project)
-            command = [sys.executable, "reproduce_publication.py", "--output-root", "rendered"]
+            command = [sys.executable, "reproduce_publication.py", "--output-root", str(output)]
             if args.figure:
                 command.extend(["--figure", *args.figure])
             subprocess.run(command, cwd=project, check=True)
-            shutil.copytree(project / "rendered", output, dirs_exist_ok=True)
         return
     from src.thermal_heterogeneity.figure_inputs import verify
 
     verify()
     output.mkdir(parents=True, exist_ok=True)
-    selected = None
-    if args.figure:
-        selected = {f"Figure_{value[0].upper()}{int(value[1:]):02}" if value[0].isalpha()
-                    else f"Figure_{int(value):02}" for value in args.figure}
-        allowed = {f"Figure_{i:02}" for i in range(1, 7)} | {f"Figure_E{i:02}" for i in range(1, 5)} | {f"Figure_S{i:02}" for i in range(1, 8)}
-        if not selected <= allowed:
-            parser.error("Unknown figure ID")
     execute_notebook(ROOT, output, selected)
-    crop_publication_pngs(output, selected)
     if selected is not None:
         return
     subprocess.run(
@@ -146,22 +139,6 @@ def main():
             str(output),
         ],
         check=True,
-    )
-    (output / "NOTEBOOK_EXECUTION.json").write_text(
-        json.dumps(
-            {
-                "status": "completed",
-                "executed_code_cells": 17,
-                "main_figures": 6,
-                "extended_data_figures": 4,
-                "supplementary_figures": 7,
-                "tables": 12,
-                "EnergyPlus_runs": 0,
-                "input_root": "results/figure_data",
-            },
-            indent=2,
-        )
-        + "\n"
     )
 
 

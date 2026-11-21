@@ -194,11 +194,11 @@ def run(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--demand-root", type=Path, default=CODE / "output/from_raw/demand")
-    parser.add_argument("--matrix-root", type=Path, default=CODE / "output/from_raw/matrix")
-    parser.add_argument("--results-root", type=Path, default=CODE / "output/from_raw/strengthening/results")
+    parser.add_argument("--demand-root", type=Path, default=CODE / "results/new_run/demand")
+    parser.add_argument("--matrix-root", type=Path, default=CODE / "results/new_run/matrix")
+    parser.add_argument("--results-root", type=Path, default=CODE / "results/new_run/strengthening/results")
     parser.add_argument("--memberships", type=Path)
-    parser.add_argument("--output-dir", type=Path, default=CODE / "output/from_raw/strengthening/results/population_command_sensitivity")
+    parser.add_argument("--output-dir", type=Path, default=CODE / "results/new_run/strengthening/results/population_command_sensitivity")
     run(parser.parse_args())
 
 

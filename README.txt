@@ -42,21 +42,22 @@ results/analysis_results/ contains the supporting numerical analyses.
 results/figure_data/ contains the indexed plotting inputs: Tables/ for numerical
 values, Maps/ for geometry and locations, and Hourly/ for the illustrated
 event trajectories. Each cell of plot/Plot.ipynb reads the files listed in
-results/figure_data/index.json and writes one figure under output/publication/.
+results/figure_data/index.json and writes one figure under plot/.
 In a checkout that also contains results/simulation_run/, that index can point
 to identical tables and hourly trajectories at their original simulation paths.
 results/RESULTS_INDEX.csv also points to shared tables used in more than one analysis.
 
 Figures and tables
 
-    uv run --frozen python reproduce_publication.py --output-root output/publication
+    uv run --frozen python reproduce_publication.py
 
 This creates six main figures, four Extended Data figures, seven supplementary
-figures and twelve table summaries. Open output/publication/main/ for Figures
-1-6, output/publication/extended/ for Extended Data Figures 1-4, and
-output/publication/supplementary/ for Supplementary Figures 1-7. Each
-figure is available as PNG, editable SVG and PDF. The tables are in
-output/publication/tables/. plot/Plot.ipynb has
+figures and twelve table summaries. Open plot/main/ for Figures
+1-6, plot/extended/ for Extended Data Figures 1-4, and
+plot/supplementary/ for Supplementary Figures 1-7. Each
+figure is available as PNG, editable SVG and PDF. Main-figure panel CSVs sit beside their figures. Each figure JSON lists the
+input files and their SHA-256 checksums. The tables are in
+plot/tables/. plot/Plot.ipynb has
 17 independent figure cells containing data loading, style, layout and drawing
 code. The population and command-domain sensitivity plotting function is also
 available in src/thermal_heterogeneity/methods_sensitivity_figure.py. The
@@ -68,7 +69,8 @@ figures and tables directly from those results:
 
     uv run --frozen python reproduce_publication.py --raw-run-root results/new_run
 
-The resulting figures and tables are in results/new_run/publication/.
+Both input routes write into the same plot/ folders. Use --figure 5 E2 S3 to
+redraw selected figures or --output-root DIRECTORY for another destination.
 
 Scientific experiments
 
@@ -98,7 +100,7 @@ and are included in the complete workflow.
 
 To draw Fig. S3 directly from those analysis results:
 
-    uv run --frozen python src/thermal_heterogeneity/methods_sensitivity_figure.py --analysis-root results/new_run/strengthening/results --output-root results/new_run/publication/supplementary
+    uv run --frozen python src/thermal_heterogeneity/methods_sensitivity_figure.py --analysis-root results/new_run/strengthening/results
 Tests
 
     uv sync --frozen --extra notebook --extra test

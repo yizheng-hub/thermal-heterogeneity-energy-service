@@ -59,7 +59,6 @@ DATA_AND_SOFTWARE_LICENSES.txt
 LICENSE
 LICENSE-DOCS-DATA
 plot/Plot.ipynb
-plot/reproduce.py
 pyproject.toml
 README.txt
 reproduce_from_raw.py

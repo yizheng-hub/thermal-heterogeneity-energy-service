@@ -9,6 +9,12 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src/analysis/strengthening"))
 
 
+@pytest.fixture(autouse=True)
+def isolate_run_status(tmp_path, monkeypatch):
+    import common
+    monkeypatch.setattr(common, "ROOT", tmp_path)
+
+
 def test_selected_action_rescoring_accepts_valid_dr_schema_without_annual_gas_total(tmp_path, monkeypatch):
     import dr_selected_uncertainty as module
     folder = tmp_path / "results/dr_capability"

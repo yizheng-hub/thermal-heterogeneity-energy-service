@@ -195,7 +195,7 @@ def test_published_signed_excess_matches_source_score_minus_limit():
         pytest.skip("Download and extract Study_Data.zip first")
     source = pd.read_csv(module_path("DECISION_EFFECT_SIZES.csv"))
     source = source.loc[source.selection_disagreement.eq(True)].reset_index(drop=True)
-    tables = json.loads((ROOT / "output/publication/tables/TABLES.json").read_text(encoding="utf-8"))["tables"]
+    tables = json.loads((ROOT / "plot/tables/TABLES.json").read_text(encoding="utf-8"))["tables"]
     table = next(t for t in tables if t["number"] == 3)
     actual = pd.DataFrame(table["rows"], columns=table["columns"])
     assert len(actual) == len(source) == 10

@@ -83,7 +83,7 @@ class IntegrityTests(unittest.TestCase):
 
     def test_native_floor_counts(self):
         namespace = notebook_definitions("main-3")
-        study = namespace["main_Study"](ROOT / "results/figure_data", ROOT / "output/publication/main", True)
+        study = namespace["main_Study"](ROOT / "results/figure_data", ROOT / "plot/main", True)
         panels, bounds, meta = namespace["main_native_floor_panels"](study)
         self.assertEqual([len(x["points"]) for x in panels], [89] * 6)
         self.assertEqual(bounds, (17.0, 32.0))
@@ -91,24 +91,24 @@ class IntegrityTests(unittest.TestCase):
 
     def test_native_curve_provenance(self):
         meta = json.loads(
-            (ROOT / "output/publication/main/Figure_06.json").read_text(encoding="utf-8")
+            (ROOT / "plot/main/Figure_06.json").read_text(encoding="utf-8")
         )
         self.assertEqual(meta["panel_ab"]["mode"], "native_hourly_NPZ")
         curves = pd.read_csv(
-            ROOT / "output/publication/main/plot_data/Figure_06_example_curves.csv"
+            ROOT / "plot/main/Figure_06_example_curves.csv"
         )
         self.assertTrue(curves["source_mode"].eq("native_hourly_NPZ").all())
         self.assertEqual(len(curves), 106)
 
     def test_final_render_checks(self):
         for i in range(1, 7):
-            p = ROOT / "output/publication/main" / "checks" / f"Figure_{i:02}.json"
+            p = ROOT / "plot/main" / f"Figure_{i:02}.json"
             if not p.exists():
-                self.skipTest("Run render_figures.py first for output-level checks")
-            report = json.loads(p.read_text(encoding="utf-8"))
+                self.skipTest("Run reproduce_publication.py first for output-level checks")
+            report = json.loads(p.read_text(encoding="utf-8"))["checks"]
             self.assertTrue(all(v["passed"] for v in report.values()))
             meta = json.loads(
-                (ROOT / "output/publication/main" / f"Figure_{i:02}.json").read_text(
+                (ROOT / "plot/main" / f"Figure_{i:02}.json").read_text(
                     encoding="utf-8"
                 )
             )

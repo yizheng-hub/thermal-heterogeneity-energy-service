@@ -57,7 +57,7 @@ def inventory(root, runtime, destination, *, include_validation):
         p for p in (root / "src").rglob("*") if p.suffix in {".py", ".json", ".yaml", ".geojson"}
     ]
     source += list((root / "data/metadata/strengthening_protocol").glob("*.yaml"))
-    source += [root / "plot/Plot.ipynb", root / "plot/reproduce.py"]
+    source.append(root / "plot/Plot.ipynb")
     report = {
         "status": "completed",
         "raw_inputs": {p.relative_to(root).as_posix(): sha(p) for p in sorted(inputs)},

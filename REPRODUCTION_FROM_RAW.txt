@@ -36,7 +36,7 @@ Draw the figures and supplementary tables directly from that completed run:
 
     uv run --frozen python reproduce_publication.py --raw-run-root results/new_run
 
-The figures and tables are written under results/new_run/publication/. Supply
+The figures and tables are written under plot/main/, plot/extended/, plot/supplementary/ and plot/tables/. Supply
 the current run directory to --raw-run-root. The plotting program reads its
 simulation and analysis outputs and the map assets supplied with the code.
 Use a separate directory for each new simulation workflow so that cached
