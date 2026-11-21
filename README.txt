@@ -7,8 +7,8 @@ Use Python 3.11.15 and the locked environment:
     uv sync --frozen --extra notebook
 Data
 
-Clone the public code repository. The two data archives described below are
-scheduled for release on figshare upon publication.
+Clone the public code repository. The two data archives are available on figshare at
+https://doi.org/10.6084/m9.figshare.35081842
 
     git clone https://github.com/yizheng-hub/thermal-heterogeneity-energy-service.git
     cd thermal-heterogeneity-energy-service
