@@ -94,12 +94,13 @@ def main():
     parser.add_argument("--command-file", type=Path,
                         help="Defaults to the input package's controller/CONTROL_COMMANDS.json")
     parser.add_argument("--output-root", type=Path, required=True)
+    parser.add_argument("--metadata-root", type=Path, help="Directory containing the supplied CTCD archive manifest and checksum record")
     args = parser.parse_args()
     root, main_input, output = (p.resolve() for p in (
         args.input_root, args.main_input_root, args.output_root))
     bundle_qa = {"mode": "raw_execution_output", "frozen_package_verified": False}
     if (root / "MANIFEST.csv").is_file():
-        metadata = Path(__file__).resolve().parents[3] / "data/metadata"
+        metadata = args.metadata_root or Path(__file__).resolve().parents[3] / "data/metadata"
         expected = metadata / "ctcd_parallel_bundle_manifest.csv"
         source = json.loads((metadata / "ctcd_parallel_bundle_source.json").read_text(encoding="utf-8"))
         if digest(root / "MANIFEST.csv") != digest(expected) or digest(expected) != source["manifest_sha256"]:

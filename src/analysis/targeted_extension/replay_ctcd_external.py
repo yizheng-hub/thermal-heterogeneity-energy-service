@@ -139,9 +139,10 @@ def main():
     parser.add_argument("--raw-root", type=Path, help="Optional official three-class CTCD files for complete normalization replay")
     parser.add_argument("--ashrae-root", type=Path, default=Path("data/upstream/ashrae_db_ii"))
     parser.add_argument("--numeric-scenes", type=Path, default=Path("data/metadata/numeric_scene_spec_v1.json"))
+    parser.add_argument("--metadata-root", type=Path, help="Directory containing the supplied CTCD archive manifest and checksum record")
     args = parser.parse_args()
     root, original, output = args.input_root.resolve(), args.main_input_root.resolve(), args.output_root.resolve()
-    metadata = Path(__file__).resolve().parents[3] / "data/metadata"
+    metadata = args.metadata_root or Path(__file__).resolve().parents[3] / "data/metadata"
     expected_manifest = metadata / "ctcd_bundle_manifest.csv"
     source = json.loads((metadata / "ctcd_bundle_source.json").read_text(encoding="utf-8"))
     if (digest(root / "MANIFEST.csv") != digest(expected_manifest)

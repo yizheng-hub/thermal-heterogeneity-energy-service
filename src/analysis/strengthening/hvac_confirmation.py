@@ -75,6 +75,8 @@ def prepare_model(climate, system):
 def operation_label(command):
     if command is None:
         return "fixed_reference_v3"
+    if command.get("scenario_tag", "").startswith("placement_"):
+        return command["scenario_tag"]
     label = f"composition_{command['composition_id']}_{command['control']}_v3"
     if command.get("scenario_tag"):
         label += "_" + command["scenario_tag"]

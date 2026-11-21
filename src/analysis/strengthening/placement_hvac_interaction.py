@@ -19,6 +19,7 @@ def execute_phase(plan, models, phase):
     system = next(iter(models.values()))["system"]
     cache_path = OUT / (system + "_PHYSICAL_CACHE.json")
     results = json.loads(cache_path.read_text()) if cache_path.exists() else {}
+    results = {key: value for key, value in results.items() if "exception" not in value}
     for row in plan.to_dict("records"):
         targets = json.loads(row["targets_c"])
         model = models[row["climate"]]
@@ -42,10 +43,7 @@ def execute_phase(plan, models, phase):
         futures = {pool.submit(hc.operate, *job): key for key, job in unique.items()}
         for future in cf.as_completed(futures):
             key = futures[future]
-            try:
-                results[key] = future.result()
-            except Exception as error:
-                results[key] = {"validation_pass": False, "exception": repr(error)}
+            results[key] = future.result()
             write_json(OUT / (phase + "_PHYSICAL_PROGRESS.json"), results)
             write_json(cache_path, results)
             print(phase, len(results), len(unique), results[key].get("validation_pass"), flush=True)

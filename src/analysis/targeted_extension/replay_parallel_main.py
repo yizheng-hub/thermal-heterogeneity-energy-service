@@ -15,7 +15,7 @@ import subprocess
 import sys
 
 
-def workflow(repository, primary, bundle, output):
+def workflow(repository, primary, bundle, output, metadata_root=None):
     analysis = repository / "src/analysis"
     extension = analysis / "targeted_extension"
     energy = analysis / "energy_service"
@@ -26,7 +26,8 @@ def workflow(repository, primary, bundle, output):
     events = extension / "ctcd_parallel_events.py"
     steps = [
         ("annual", extension / "replay_ctcd_parallel.py", [
-            "--input-root", bundle, "--main-input-root", main, "--output-root", parallel]),
+            "--input-root", bundle, "--main-input-root", main, "--output-root", parallel,
+            *(["--metadata-root", metadata_root] if metadata_root else [])]),
         ("common_layout", energy / "common_layout_anchor.py", [
             "--annual-root", parallel / "annual", "--output-root", parallel / "common_layout",
             "--expected-layouts", "2"]),
@@ -95,11 +96,12 @@ def main():
     parser.add_argument("--input-root", type=Path)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--plan", action="store_true")
+    parser.add_argument("--metadata-root", type=Path, help="Directory containing the supplied CTCD archive manifest and checksum record")
     args = parser.parse_args()
     repository, primary, output = (p.resolve() for p in (
         args.repository_root, args.primary_replay_root, args.output_root))
     bundle = args.input_root.resolve() if args.input_root else repository / "data/inputs/ctcd_parallel"
-    steps = workflow(repository, primary, bundle, output)
+    steps = workflow(repository, primary, bundle, output, args.metadata_root)
     if args.plan:
         print(json.dumps({"steps": [name for name, _, _ in steps], "fixed_compositions": 6,
             "common_layouts": 2, "joint_portfolio_offices": 144, "physical_simulations_run": 0,

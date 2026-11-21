@@ -573,8 +573,10 @@ def run_energyplus(
 ) -> dict:
     """Run one annual case, extract its compact trajectory and write QA."""
     from thermal_heterogeneity.energyplus_launcher import ROOT as project_root
-    if not all(path.resolve().is_relative_to(project_root) for path in (run_folder, compact_output)):
-        raise ValueError("Retained simulation outputs must remain inside this project")
+    for path in (run_folder, compact_output):
+        resolved = path.resolve()
+        if not resolved.is_relative_to(project_root):
+            raise ValueError(f"Retained simulation outputs must stay within the project. Output {resolved} falls outside {project_root}")
     if run_folder.exists() and any(run_folder.iterdir()):
         raise FileExistsError(f"Run folder is not empty: {run_folder}")
     run_folder.mkdir(parents=True, exist_ok=True)

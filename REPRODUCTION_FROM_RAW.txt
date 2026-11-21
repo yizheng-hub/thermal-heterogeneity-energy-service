@@ -32,6 +32,14 @@ Run all stages:
 
     uv run --frozen python reproduce_from_raw.py --output-root output/new_run --workers 6
 
+Draw the figures and supplementary tables directly from that completed run:
+
+    uv run --frozen python reproduce_publication.py --raw-run-root output/new_run
+
+The figures and tables are written under output/new_run/publication/. This
+command reads the new simulation and analysis outputs and the map assets
+supplied with the code.
+
 The stages reconstruct demand, analyze observations, generate annual candidates,
 and evaluate seasonal commands, spatial arrangements, equipment and response
 operations. Paired service-limit sensitivity uses the completed candidate
@@ -46,6 +54,16 @@ at the precision of a CSV file.
 The workflow also evaluates additional sampled demand compositions using the
 31 shared commands in each weather context and compares the final operation
 library with its 21–26 °C command subset. These analyses supply Fig. S3.
+At the reference limits, each of the two selected command vectors is shifted
+by 0.0625 degrees Celsius in either direction, keeping all zone midpoints
+within 20 to 27 degrees Celsius. Both assessments use the enlarged menu.
+Each additional composition is also assessed using all three original
+same-source menus of building, floor and zone commands. The response analysis
+compares two calendars with equally representative loads. Both calendars use
+the same annual normal operations and action options. For each date, both
+demand representations use the thresholds from the matching reference hours.
+A Beijing equipment comparison changes rated cooling airflow for the top-floor core terminal.
+Both airflow cases use the same 12 mixed-placement baselines and 36 rearranged operations.
 The complete workflow requires at least 250 GiB free space at startup.
 Fixed seeds, partitions, grids, service budgets and numerical criteria are in
 data/metadata/strengthening_protocol/. Third-party inputs retain their original

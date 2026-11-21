@@ -144,7 +144,8 @@ def prepare_reference_manifest(
     return result.sort_values("climate", kind="stable").reset_index(drop=True)
 
 
-def select_protocols(reference_manifest: pd.DataFrame, reference_runs: Path | None = None) -> pd.DataFrame:
+def select_protocols(reference_manifest: pd.DataFrame, reference_runs: Path | None = None,
+                     *, equivalent_dates: bool = False) -> pd.DataFrame:
     """Select eight events per climate from declared reference trajectories."""
     required = {"climate", "latitude", "hourly_path"}
     missing = required - set(reference_manifest)
@@ -179,6 +180,7 @@ def select_protocols(reference_manifest: pd.DataFrame, reference_runs: Path | No
             compact_timestamps(compact), electricity, occupied,
             latitude=float(source["latitude"]), cooling_kw=cooling, heating_kw=heating,
             schedule_start_minute=schedule_start_minute,
+            equivalent_dates=equivalent_dates,
         )
         protocol["selection_load_scope"] = "facility electricity"
         protocol.insert(0, "climate", str(source["climate"]))

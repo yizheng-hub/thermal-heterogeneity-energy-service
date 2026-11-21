@@ -94,6 +94,7 @@ def select_multi_event_protocol(
     high_quantile: float = 0.9,
     precondition_hours: int = 2,
     schedule_start_minute: Sequence[int] | np.ndarray | None = None,
+    equivalent_dates: bool = False,
 ) -> pd.DataFrame:
     """Choose typical and high-load events in each meteorological season.
 
@@ -177,6 +178,24 @@ def select_multi_event_protocol(
                 recovery_hours=int(recovery_hours),
             )
             selected.append(choice)
+    if equivalent_dates:
+        # Exchange a representative date only when another date is equally
+        # close to its load quantile at the precision of the hourly meter.
+        # Reserve the other original windows and each substitution already made.
+        reserved = {row["start_timestamp"] for row in selected}
+        for original in sorted(selected, key=lambda row: row["start_timestamp"]):
+            start = original["start_timestamp"]
+            target = original["target_reference_mean_kw"]
+            distance = abs(original["reference_mean_kw"] - target)
+            group = candidates.loc[candidates.season_block.eq(original["season_block"])]
+            tied = group.loc[(group.reference_mean_kw.sub(target).abs().sub(distance).abs() <= 1e-9)
+                             & group.start_timestamp.dt.date.ne(start.date())]
+            for _, alternate in tied.sort_values("start_timestamp").iterrows():
+                time = alternate.start_timestamp
+                if all(abs(time - other) >= separation for other in reserved if other != start):
+                    original.update(alternate.to_dict())
+                    reserved.add(time)
+                    break
     result = pd.DataFrame(selected).sort_values("start_timestamp", kind="stable").reset_index(drop=True)
     result["month"] = result.start_timestamp.dt.month
     result["day"] = result.start_timestamp.dt.day

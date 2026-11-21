@@ -1,5 +1,4 @@
 import csv
-import json
 from pathlib import Path
 
 import yaml
@@ -15,17 +14,13 @@ def test_locked_registry_has_exactly_48_panels():
     assert SCHEMATICS == {"Fig3a", "Fig3c", "Fig4a", "Fig5a", "Fig6a", "Fig6h"}
 
 
-def test_analysis_bundle_contains_panel_materialization_support():
+def test_publication_layout_identifies_each_figure_input():
     root = Path(__file__).resolve().parents[2]
-    with (root / "data/metadata" / "analysis_bundle_manifest.csv").open(
-        encoding="utf-8", newline=""
-    ) as handle:
-        rows = list(csv.DictReader(handle))
-    release = json.loads(
-        (root / "data/metadata" / "analysis_bundle_release.json").read_text(encoding="utf-8")
-    )
-    assert len(rows) == release["file_count"] == 46
-    assert any(
-        row["logical_path"] == "panel_support/panel_materialization_support.json"
-        for row in rows
-    )
+    layout = root / "src/thermal_heterogeneity/assets/plot_input_layout.csv"
+    with layout.open(encoding="utf-8", newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    keys = [row["input_key"] for row in rows]
+    assert len(keys) == len(set(keys))
+    assert {row["file"].split("/")[0] for row in rows} == {"Hourly", "Maps", "Tables"}
+    assert "baseline/matrix/models/Miami.geometry.json" in keys
+    assert {"baseline/demand/ASHRAE_RECORDS.csv", "baseline/demand/CTCD_RECORDS.csv"} <= set(keys)

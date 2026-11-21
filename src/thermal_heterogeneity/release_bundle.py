@@ -163,11 +163,10 @@ def build_bundle(
         "bundle_size_bytes": output_path.stat().st_size,
         "file_count": len(files),
         "payload_size_bytes": sum(item["size_bytes"] for item in files),
-        "analysis_manifest": "analysis_bundle_manifest.csv",
+        "analysis_manifest": manifest_path.name,
         "analysis_manifest_sha256": sha256_file(manifest_path),
         "source_date_epoch": source_date_epoch,
         "locator": f"env:{LOCATOR_ENV}",
-        "publication_locator": "ZENODO_DOI_PENDING",
         "files": files,
     }
     release_record_path.write_text(

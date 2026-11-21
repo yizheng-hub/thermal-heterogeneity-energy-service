@@ -48,6 +48,19 @@ def test_protocol_selects_two_nonoverlapping_events_per_season():
     assert {record["duration_hours"] for record in records} == {2}
 
 
+def test_equivalent_calendar_changes_dates_and_preserves_load_and_separation():
+    hours = pd.date_range("2001-01-01", periods=8760, freq="h")
+    load = np.full(len(hours), 50.0)
+    occupied = (hours.hour >= 8) & (hours.hour < 18)
+    original = select_multi_event_protocol(hours, load, occupied, latitude=40)
+    other = select_multi_event_protocol(hours, load, occupied, latitude=40, equivalent_dates=True)
+    pairs = original.merge(other, on=["season_block", "load_level"], validate="one_to_one")
+    assert len(pairs) == 8
+    assert pairs.start_timestamp_x.dt.date.ne(pairs.start_timestamp_y.dt.date).all()
+    assert pairs.reference_mean_kw_x.eq(pairs.reference_mean_kw_y).all()
+    assert other.start_timestamp.sort_values().diff().dropna().min() >= pd.Timedelta(hours=52)
+
+
 def test_event_candidate_requires_complete_recovery_window():
     time = pd.date_range("2021-12-28", periods=96, freq="h")
     load = np.ones(len(time))

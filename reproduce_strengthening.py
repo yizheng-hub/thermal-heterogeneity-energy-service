@@ -63,6 +63,7 @@ PHASES = {
         ("retune_heatpump_controls.py",),
         ("placement_hvac_interaction.py",),
         ("placement_hvac_summary.py",),
+        ("heatpump_airflow.py",),
         ("spatial_hvac_mechanism.py",),
         ("zone_ventilation_diagnostic.py",),
         ("vrp_request_diagnostic.py",),
@@ -81,6 +82,8 @@ PHASES = {
         ("aligned_grid_sensitivity.py",),
         ("service_threshold_sensitivity.py",),
         ("population_command_sensitivity.py",),
+        ("roster_transfer.py",),
+        ("local_command_sensitivity.py",),
         ("command_domain_sensitivity.py",),
         ("placement_uncertainty.py",),
         ("placement_uncertainty.py", "--study-shared"),
@@ -103,6 +106,7 @@ PHASES = {
         ("dr_terminal_recovery.py",),
         ("dr_information_review.py",),
         ("dr_information_uncertainty.py",),
+        ("event_date_sensitivity.py",),
     ],
 }
 

@@ -208,8 +208,7 @@ def test_scenario_classifications_cannot_be_mistaken_for_external_standards() ->
     assert "external_standard" not in allowed
     for name, parameter in metadata["parameters"].items():
         assert parameter["classification"] in allowed, name
-        assert parameter["permitted_interpretation"].strip(), name
-        assert parameter["prohibited_overstatement"].strip(), name
+        assert parameter["interpretation"].strip(), name
 
     study_defined = {
         "annual_probe_target_domain",

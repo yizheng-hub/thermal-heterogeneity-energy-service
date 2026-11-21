@@ -4,8 +4,10 @@ from pathlib import Path
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
+from tempfile import TemporaryDirectory
 
 from PIL import Image, ImageChops
 
@@ -75,18 +77,20 @@ def execute_notebook(root, output, selected=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output-root", type=Path, default=ROOT / "output/publication")
+    parser.add_argument("--output-root", type=Path)
+    parser.add_argument("--raw-run-root", type=Path, help="Draw directly from completed EnergyPlus and analysis results")
     parser.add_argument("--plan", action="store_true")
     parser.add_argument("--figure", nargs="+", help="Selected figure IDs: 1–6, E1–E4 or S1–S7")
     args = parser.parse_args()
-    output = args.output_root.resolve()
+    raw = args.raw_run_root.resolve() if args.raw_run_root else None
+    output = (args.output_root or ((raw or ROOT / "output") / "publication")).resolve()
     if not output.is_relative_to(ROOT):
         raise ValueError("Publication output must remain inside the project")
     if args.plan:
         print(
             json.dumps(
                 {
-                    "input": "data/figure_data/FIGURE_DATA_MANIFEST.json",
+                    "input": str(raw) if raw else "data/figure_data/FIGURE_DATA_MANIFEST.json",
                     "notebook": "plot/Plot.ipynb",
                     "main_figures": 6,
                     "extended_data_figures": 4,
@@ -97,6 +101,26 @@ def main():
                 indent=2,
             )
         )
+        return
+    if raw is not None:
+        sys.path.insert(0, str(ROOT / "src"))
+        from src.thermal_heterogeneity.raw_plot_inputs import prepare
+
+        output.parent.mkdir(parents=True, exist_ok=True)
+        with TemporaryDirectory(dir=output.parent) as tmp:
+            project = Path(tmp)
+            for name in ["plot/Plot.ipynb", "src/analysis/figure_tables.py",
+                         "src/thermal_heterogeneity/figure_inputs.py", "reproduce_publication.py"]:
+                (project / name).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / name, project / name)
+            if (ROOT / "tools/fonts").is_dir():
+                shutil.copytree(ROOT / "tools/fonts", project / "tools/fonts")
+            prepare(raw, project)
+            command = [sys.executable, "reproduce_publication.py", "--output-root", "rendered"]
+            if args.figure:
+                command.extend(["--figure", *args.figure])
+            subprocess.run(command, cwd=project, check=True)
+            shutil.copytree(project / "rendered", output, dirs_exist_ok=True)
         return
     from src.thermal_heterogeneity.figure_inputs import verify
 

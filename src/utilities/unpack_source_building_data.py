@@ -25,10 +25,12 @@ def main() -> None:
     source.add_argument("--root", type=Path, help="Verify an already extracted input directory.")
     parser.add_argument("--dest", type=Path)
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--metadata-root", type=Path, help="Directory containing the supplied archive manifest and its checksum record")
     args = parser.parse_args()
     repository = Path(__file__).resolve().parents[2]
-    record = json.loads((repository / "data/metadata/source_building_bundle_source.json").read_text())
-    manifest = repository / "data/metadata/source_building_bundle_manifest.csv"
+    metadata = args.metadata_root or repository / "data/metadata"
+    record = json.loads((metadata / "source_building_bundle_source.json").read_text())
+    manifest = metadata / "source_building_bundle_manifest.csv"
     if sha256(manifest) != record["manifest_sha256"]:
         raise ValueError("Robustness input manifest checksum mismatch")
     if args.bundle and sha256(args.bundle) != record["sha256"]:

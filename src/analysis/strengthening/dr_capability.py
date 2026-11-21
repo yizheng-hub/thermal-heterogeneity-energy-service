@@ -31,7 +31,7 @@ NORMAL_LIBRARIES = {
 
 @contextmanager
 def response_command_lock():
-    """Keep CLI commands for one response output folder from overlapping."""
+    """Serialize commands that share the same physical response trajectories."""
     import ctypes
     from ctypes import wintypes
     api = ctypes.WinDLL("kernel32", use_last_error=True)
@@ -41,7 +41,7 @@ def response_command_lock():
     api.WaitForSingleObject.restype = wintypes.DWORD
     api.ReleaseMutex.argtypes = [wintypes.HANDLE]
     api.CloseHandle.argtypes = [wintypes.HANDLE]
-    name = "Local\\HEM_DR_" + hashlib.sha256(str(OUT.resolve()).casefold().encode()).hexdigest()[:24]
+    name = "Local\\HEM_DR_" + hashlib.sha256(str(SIM.resolve()).casefold().encode()).hexdigest()[:24]
     handle = api.CreateMutexW(None, False, name)
     if not handle:
         raise ctypes.WinError(ctypes.get_last_error())
@@ -75,7 +75,7 @@ def baseline_library(group, control):
     return group[selected].sort_values("run_id").drop_duplicates("physical_plan_id")
 
 
-def plan():
+def plan(protocol_path=None):
     coverage = json.loads((ROOT / "results/budget_frontiers/BUDGET_FRONTIER_AUDIT.json").read_text())
     if coverage["status"] != "completed":
         raise ValueError("Complete the declared strong-baseline search and quality review before freezing response baselines")
@@ -109,7 +109,7 @@ def plan():
     anchors = pd.read_csv(ROOT / "results/base/annual/GLOBAL_25C_SERVICE_ANCHORS.csv")
     probes = pd.read_csv(MATRIX / "probe_runs/PROBE_RUN_MANIFEST.csv")
     probes = probes[probes.target_c.eq(25)].set_index("climate")
-    protocol_path = RAW_RUN / "response/EVENT_PROTOCOL.csv"
+    protocol_path = protocol_path or RAW_RUN / "response/EVENT_PROTOCOL.csv"
     protocol = pd.read_csv(protocol_path)
     profiles = pd.read_csv(MATRIX / "GLOBAL_PROFILES.csv")
     status = []
@@ -539,13 +539,13 @@ def action_execute(stage):
     }
     write_json(OUT / ("ACTION_" + stage.upper() + "_AUDIT.json"), report)
     record_status(
-        "dr_capability_" + stage,
+        OUT.name + "_" + stage,
         "completed" if report["all_complete_and_engineering_pass"] else "partial",
         report,
     )
 
 
-def score():
+def score(protocol_path=None):
     planned = pd.read_csv(OUT / "SINGLE_EVENT_ACTION_PLAN.csv")
     completed = pd.read_csv(OUT / "ACTION_FULL_COMPLETED.csv").set_index("run_id")
     normal = pd.read_csv(OUT / "NORMAL_OPERATION_REPLAY_COMPLETED.csv").set_index("normal_id")
@@ -622,7 +622,7 @@ def score():
     frame = pd.DataFrame(rows)
     frame.to_csv(OUT / "ISOLATED_EVENT_ACTION_SCORES.csv", index=False)
     budget = pd.read_csv(OUT / "NORMAL_OPERATION_BUDGET_STATUS.csv")
-    protocol_path = RAW_RUN / "response/EVENT_PROTOCOL.csv"
+    protocol_path = protocol_path or RAW_RUN / "response/EVENT_PROTOCOL.csv"
     if digest(protocol_path) != json.loads((OUT / "PLAN_AUDIT.json").read_text())["event_protocol_sha256"]:
         raise ValueError("The frozen event protocol changed after normal-operation selection")
     protocol = pd.read_csv(protocol_path)
@@ -736,19 +736,25 @@ def score():
         "interpretation": "Isolated-event,perfect-foresight finite-library bound under common annual model-service and normal-energy budgets; not a market-certified or jointly dispatched annual capacity.",
     }
     write_json(OUT / "CAPABILITY_AUDIT.json", report)
-    record_status("common_budget_dr_capability", report["status"], report)
+    record_status("common_budget_" + OUT.name, report["status"], report)
 
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("stage", choices=["plan", "baseline", "pilot", "full", "score"])
+    p.add_argument("--equivalent-dates", action="store_true",
+                   help="Use equally representative event dates with the same normal operations")
     a = p.parse_args()
+    calendar = None
+    if a.equivalent_dates:
+        OUT = ROOT / "results/equivalent_date_capability"
+        calendar = ROOT / "results/event_date_sensitivity/ALTERNATE_EVENT_PROTOCOL.csv"
     with response_command_lock():
         if a.stage == "plan":
-            plan()
+            plan(calendar)
         elif a.stage == "baseline":
             baseline_execute()
         elif a.stage in ["pilot", "full"]:
             action_execute(a.stage)
         else:
-            score()
+            score(calendar)

@@ -355,15 +355,15 @@ def review(out, data, context, scorer, inputs, sources, primary_assets=None):
         "scope": "Nominal fixed-normal fixed-action-menu information review; no mean-selected uncertainty or placement response experiment"})
 
 
-def main():
-    out = ROOT / "results/dr_information_review"
-    base = ROOT / "results/dr_capability"
+def main(base=None, out=None, protocol_path=None):
+    out = out or ROOT / "results/dr_information_review"
+    base = base or ROOT / "results/dr_capability"
     paths = {name: base / filename for name, filename in [
         ("capability", "CAPABILITY_AUDIT.json"), ("plan_audit", "PLAN_AUDIT.json"),
         ("plan", "SINGLE_EVENT_ACTION_PLAN.csv"), ("completed", "ACTION_FULL_COMPLETED.csv"),
         ("normals", "NORMAL_OPERATION_REPLAY_COMPLETED.csv"), ("budgets", "NORMAL_OPERATION_BUDGET_STATUS.csv"),
         ("scores", "ISOLATED_EVENT_ACTION_SCORES.csv"), ("choices", "ONE_ACTION_PER_EVENT_BUDGET_CHOICES.csv")]}
-    paths.update(protocol=RAW_RUN / "response/EVENT_PROTOCOL.csv", profiles=MATRIX / "GLOBAL_PROFILES.csv",
+    paths.update(protocol=protocol_path or RAW_RUN / "response/EVENT_PROTOCOL.csv", profiles=MATRIX / "GLOBAL_PROFILES.csv",
         probes=MATRIX / "probe_runs/PROBE_RUN_MANIFEST.csv",
         tails=ROOT / "results/base/annual/GLOBAL_FIXED_TAIL_MEMBERSHIPS.csv",
         amendment=CODE / "data/metadata/strengthening_protocol/response_information.yaml")

@@ -50,6 +50,14 @@ code. The population and command-domain sensitivity plotting function is also
 available in src/thermal_heterogeneity/methods_sensitivity_figure.py. The
 command-line runner executes the notebook cells.
 Times New Roman regular and bold must be installed locally.
+
+After running the simulations and analyses in output/new_run, draw the same
+figures and tables directly from those results:
+
+    uv run --frozen python reproduce_publication.py --raw-run-root output/new_run
+
+The resulting figures and tables are in output/new_run/publication/.
+
 Scientific experiments
 
 REPRODUCTION_FROM_RAW.txt gives the input locations, EnergyPlus installation

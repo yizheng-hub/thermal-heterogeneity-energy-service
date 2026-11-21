@@ -16,6 +16,18 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def floor_geometry(source):
+    floors = {}
+    for block in re.sub(r"!.*", "", source.read_text()).split(";"):
+        obj = [value.strip() for value in block.split(",")]
+        if len(obj) > 12 and obj[0].lower() == "buildingsurface:detailed" and obj[2].lower() == "floor":
+            coordinates = list(map(float, obj[12:]))
+            floors[obj[4]] = [coordinates[i:i + 3] for i in range(0, len(coordinates), 3)]
+    if not floors:
+        raise ValueError("No floor geometry in the illustrated model")
+    return {"floors": floors}
+
+
 def minimize_human_inputs(name, frame):
     """Keep only the anonymous quantities used by publication plots."""
     if name in {"ASHRAE_RECORDS.csv.gz", "CTCD_RECORDS.csv.gz"}:
@@ -155,21 +167,8 @@ def export(publication):
             transformation = "illustrated floor-geometry link only; no executable model"
         if source.suffix.lower() == ".idf":
             # Export factual floor vertices for the diagram, not the third-party model.
-            floors = {}
-            text = re.sub(r"!.*", "", source.read_text())
-            for block in text.split(";"):
-                obj = [value.strip() for value in block.split(",")]
-                if (
-                    len(obj) > 12
-                    and obj[0].lower() == "buildingsurface:detailed"
-                    and obj[2].lower() == "floor"
-                ):
-                    coordinates = list(map(float, obj[12:]))
-                    floors[obj[4]] = [coordinates[i : i + 3] for i in range(0, len(coordinates), 3)]
-            if not floors:
-                raise ValueError("No floor geometry in the illustrated model")
             target = target.with_suffix(".geometry.json")
-            target.write_text(json.dumps({"floors": floors}, indent=2))
+            target.write_text(json.dumps(floor_geometry(source), indent=2))
             transformation = "factual floor vertices only; executable third-party model excluded"
         if source.name.endswith((".csv", ".csv.gz")):
             frame = pd.read_csv(target, low_memory=False)
