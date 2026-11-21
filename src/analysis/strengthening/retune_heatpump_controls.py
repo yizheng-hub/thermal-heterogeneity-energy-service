@@ -7,7 +7,7 @@ from hvac_runs import parse_idf, annual_input, ZONES
 import numpy as np
 import pandas as pd
 
-OUT = ROOT / "results/hvac_retuned"
+OUT = ROOT / "results/heatpump_control_response"
 
 
 def command_key(c):
@@ -230,12 +230,12 @@ if __name__ == "__main__":
     )
     assert len(commands) == 18 * len(available)
     unavailable = [{"climate": m["climate"], "composition_id": int(composition),
-        "control": control, "status": "unavailable_incomplete_or_failed_probe_grid"}
+        "control": control, "status": "reference_grid_does_not_meet_coverage_criteria"}
         for m in models if m["climate"] not in available
         for composition in profiles.composition_id.unique()
         for control in ("uniform_average", "personal_center", "personal_range")]
     pd.DataFrame(unavailable, columns=["climate", "composition_id", "control", "status"]).to_csv(
-        OUT / "UNAVAILABLE_RETUNED_SETTINGS.csv", index=False)
+        OUT / "HEATPUMP_CONTROL_GRID_COVERAGE.csv", index=False)
     write_json(OUT / "OWN_SYSTEM_CONTROL_COMMANDS.json", commands)
     write_json(OUT / "OWN_SYSTEM_TARGET_DIAGNOSTICS.json", diagnostic)
     extra = [

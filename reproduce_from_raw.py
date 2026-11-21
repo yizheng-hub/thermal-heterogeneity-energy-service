@@ -289,7 +289,7 @@ def main():
         "stages": {stage: jobs[stage] for stage in args.stages},
         "scope": "Raw observations and retained physical inputs through new annual, spatial and DR trajectories and scores",
         "runtime": str(runtime),
-        "historical_archive_inputs": [],
+
         "storage_preflight": {
             "minimum_free_gib": 250 if "strengthening" in args.stages else 125 if "matrix" in args.stages else 25,
             "scope": "Conservative startup working-space allowance for full hourly SQL, trajectories and later archives; not a total-storage or runtime guarantee. Monitor free space during each stage.",

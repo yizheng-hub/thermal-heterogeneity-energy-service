@@ -212,7 +212,7 @@ def main() -> None:
         "effect_size_audit": original.sha256(Path(__file__)),
     }
     args.output.mkdir(parents=True, exist_ok=True)
-    outputs = {"DECISION_EFFECT_SIZES.csv": detail, "DECISION_REPLAY_AUDIT.csv": replay}
+    outputs = {"DECISION_EFFECT_SIZES.csv": detail, "OPERATION_SELECTION_BY_SERVICE_LIMIT.csv": replay}
     for name, frame in outputs.items():
         frame.to_csv(args.output / name, index=False, float_format="%.17g")
     summary["output_sha256"] = {name: original.sha256(args.output / name) for name in outputs}

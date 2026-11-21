@@ -1,7 +1,7 @@
 """Regenerate the locked controller commands from anonymous inputs and probes.
 
 This step chooses thermostat commands. It does not simulate building physics.
-All input locations are relative to --input-root; no historical checkout is used.
+All input locations are relative to --input-root.
 """
 
 from __future__ import annotations
@@ -116,7 +116,7 @@ def main():
     path.write_text(json.dumps(designs, indent=2) + "\n", encoding="utf-8")
     qa = {"logical_commands": len(designs), "native_commands": sum(
         row["permission"] == "native_zone" for row in designs),
-        "physical_simulations_run": 0, "historical_checkout_required": False,
+        "physical_simulations_run": 0,
         "command_sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
     (args.output_root / "CONTROL_REGENERATION.json").write_text(
         json.dumps(qa, indent=2) + "\n", encoding="utf-8")

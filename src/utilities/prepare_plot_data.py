@@ -244,8 +244,8 @@ def prepare(root, replay):
         root / "data/inputs/legacy_analysis": destination / "legacy_analysis",
         replay / "supporting_evidence/panel_data": destination / "panel_data",
         replay / "supporting_evidence/decision_value": destination / "decision_value",
-        root / "data/analysis_results/method_comparisons/science_audit": destination / "support/science_audit",
-        root / "data/analysis_results/method_comparisons/spatial_audit": destination / "support/spatial_audit",
+        root / "data/analysis_results/method_comparisons/thermal_demand": destination / "support/thermal_demand",
+        root / "data/analysis_results/method_comparisons/spatial_placement": destination / "support/spatial_placement",
     }
     for source, target in copies.items():
         shutil.copytree(source, target, dirs_exist_ok=True,

@@ -53,7 +53,7 @@ def main():
         ("heatpump_transferred", "hvac_confirmation", "independent_pthp"),
         ("vav_weather_reset", "vav_outdoor_reset", "vav_coordinated_outdoor_reset"),
         ("vav_zone_feedback_reset", "vav_feedback_reset_independent", "vav_coordinated_standard"),
-        ("heatpump_own_response", "hvac_retuned", "independent_pthp"),
+        ("heatpump_own_response", "heatpump_control_response", "independent_pthp"),
     ]
     for condition, folder, system in specifications:
         path = ROOT / "results" / folder / "SYSTEM_OPERATION_SCORES.csv"

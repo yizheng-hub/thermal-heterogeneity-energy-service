@@ -81,11 +81,7 @@ src/analysis/energy_service/room_interval_feasibility.py
 src/analysis/energy_service/run_costs.py
 src/analysis/energy_service/run_portfolio.py
 src/analysis/energy_service/thermal_service.py
-src/analysis/energy_service_paper/scripts/assemble_publication_assets.py
-src/analysis/energy_service_paper/scripts/finalize_temporal_assets.py
 src/analysis/energy_service_paper/scripts/render_control_service_figures.py
-src/analysis/energy_service_paper/scripts/render_response_implementation_figures.py
-src/analysis/energy_service_paper/scripts/render_response_traces.py
 src/analysis/experiments/candidate_support/reproduce_support.py
 src/analysis/experiments/candidate_support/strict_service.py
 src/analysis/experiments/decision_value/audit_assignment_provenance.py
@@ -136,12 +132,7 @@ src/analysis/global_extension/summarise_multi_event_dr.py
 src/analysis/global_extension/summarize_reproduced_spatial.py
 src/analysis/global_extension/tail_fraction_sensitivity.py
 src/analysis/global_extension/target_domain_sensitivity.py
-src/analysis/PANEL_UNIT_CORRECTIONS.json
-src/analysis/scripts/geometry_audit.py
-src/analysis/scripts/render_revised_main_figures.py
-src/analysis/scripts/render_supplementary.py
 src/analysis/seasonal/derive_seasonal_comparison.py
-src/analysis/seasonal/extend_main_figure_three.py
 src/analysis/seasonal/seasonal_adaptation.py
 src/analysis/strengthening/__init__.py
 src/analysis/strengthening/aligned_grid_sensitivity.py
@@ -272,7 +263,6 @@ src/thermal_heterogeneity/figure_inputs.py
 src/thermal_heterogeneity/raw_plot_inputs.py
 src/thermal_heterogeneity/assets/plot_input_layout.csv
 src/thermal_heterogeneity/figures.py
-src/thermal_heterogeneity/figures_4_6.py
 src/thermal_heterogeneity/human/__init__.py
 src/thermal_heterogeneity/human/hierarchy.py
 src/thermal_heterogeneity/human/policy.py
@@ -285,7 +275,6 @@ src/thermal_heterogeneity/implementation/phase_map.py
 src/thermal_heterogeneity/implementation/protected_quantiles.py
 src/thermal_heterogeneity/io.py
 src/thermal_heterogeneity/level1.py
-src/thermal_heterogeneity/main_figures_1_3.py
 src/thermal_heterogeneity/methods_sensitivity_figure.py
 src/thermal_heterogeneity/release_bundle.py
 src/thermal_heterogeneity/si.py
@@ -310,9 +299,6 @@ src/utilities/prepare_plot_data.py
 src/utilities/prepare_reference_model.py
 src/utilities/rebuild_profile_assignments.py
 src/utilities/recover_completed_annual_conversion.py
-src/utilities/render_figure_smoke.py
-src/utilities/render_main_figures_1_3.py
-src/utilities/render_main_figures_4_6.py
 src/utilities/replay_diagnostic_sql.py
 src/utilities/reproduce_analysis.py
 src/utilities/reproduce_figures.py
@@ -329,8 +315,6 @@ tests/conftest.py
 tests/contracts/test_analysis_bundle.py
 tests/contracts/test_energyplus_boundary.py
 tests/contracts/test_figure_render_core.py
-tests/contracts/test_figures_4_6.py
-tests/contracts/test_main_figures_1_3.py
 tests/contracts/test_ordering.py
 tests/contracts/test_panel_registry.py
 tests/contracts/test_paper_input_inventory.py

@@ -153,7 +153,7 @@ def main():
     report = {"status": "PASS", "annual_logical_inputs": len(annual), "event_logical_inputs": len(events),
               "unique_physical_inputs": len(unique), "all_normalized_inputs_match": True,
               "all_noncontrol_physical_fingerprints_unchanged": True,
-              "historical_source_module_required": False, "physical_simulations_run": 0,
+              "physical_simulations_run": 0,
               "runtime_identity": {c: cfg["runtime_sha256"] for c, cfg in models.items()},
               "redistribution_rights_asserted": False}
     (args.output_root / "MODEL_GENERATION_QA.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

@@ -137,7 +137,7 @@ def main():
             "status": "completed",
             "raw_run": str(RAW_RUN),
             "raw_assignments_sha256": digest(DEMAND_REBUILD / "PROFILE_REBUILD_AUDIT.json"),
-            "historical_archive_inputs": [],
+
         },
     )
 

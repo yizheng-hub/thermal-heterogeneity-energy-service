@@ -30,7 +30,7 @@ def main():
     for name in [
         "hvac_confirmation",
         "vav_outdoor_reset",
-        "hvac_retuned",
+        "heatpump_control_response",
         "placement_hvac_interaction",
     ]:
         for file in (ROOT / "results" / name).glob("*.json"):

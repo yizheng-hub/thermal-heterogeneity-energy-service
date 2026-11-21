@@ -160,7 +160,7 @@ def main():
                     "output": str(output),
                     "phases": {k: phases[k] for k in args.phases},
                     "conditional_refinement": "Run one uniform additional0.125C level only when the frozen quarter-grid rule triggers; retain completeness and energy-convergence status separately.",
-                    "historical_archive_inputs": [],
+
                 },
                 indent=2,
             )

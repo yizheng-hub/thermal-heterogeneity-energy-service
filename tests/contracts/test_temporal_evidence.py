@@ -1,6 +1,5 @@
 from pathlib import Path
 import importlib.util
-import json
 from types import SimpleNamespace
 
 import numpy as np
@@ -15,45 +14,6 @@ def module(relative, name):
     loaded = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(loaded)
     return loaded
-
-
-def test_temporal_assets_preserve_existing_evidence_and_only_renumber_figures(tmp_path):
-    finalizer = module("src/analysis/energy_service_paper/scripts/finalize_temporal_assets.py", "temporal_assets")
-    paper, seasonal, typical = [tmp_path / name for name in ["paper", "seasonal", "typical"]]
-
-    def bundle(stem, marker):
-        stem.parent.mkdir(parents=True, exist_ok=True)
-        for suffix in finalizer.SUFFIXES:
-            Path(str(stem) + suffix).write_bytes(marker.encode())
-        Path(str(stem) + "_caption.txt").write_text("Figure | Data; Supplementary Fig. S10; Supplementary Section S10.3.")
-
-    order = []
-    for number in range(1, 22):
-        bundle(paper / f"supplementary_figures/Figure_S{number:02d}", str(number))
-        order.append({"display_number": number, "source_figure_number": number})
-    (paper / "SUPPLEMENTARY_FIGURE_ORDER.json").write_text(json.dumps(order))
-    for number in range(1, 7):
-        directory = paper / f"captions_alt/figure_{number:02d}"
-        directory.mkdir(parents=True)
-        for name in ["caption.txt", "alt_text.txt"]:
-            (directory / name).write_text("Supplementary Fig. S10; Supplementary Table S10; Supplementary Section S10.")
-    (paper / "figures/figure_03").mkdir(parents=True)
-    for stem in ["Supplementary_monthly_direct", "Supplementary_monthly_common_service", "Figure_03_extended"]:
-        bundle(seasonal / stem, stem)
-    bundle(typical / "TYPICAL_DAY_DR", "typical")
-    finalizer.finalize(paper, seasonal, typical)
-    result = json.loads((paper / "SUPPLEMENTARY_FIGURE_ORDER.json").read_text())
-    assert [item["display_number"] for item in result] == list(range(1, 25))
-    for old, new in finalizer.OLD_TO_NEW.items():
-        assert (paper / f"supplementary_figures/Figure_S{new:02d}.pdf").read_text() == str(old)
-    caption = (paper / "captions_alt/figure_01/caption.txt").read_text()
-    assert "Fig. S10" in caption and "Table S5" in caption and "Section S5" in caption
-    reading_order = json.loads((paper / 'SUPPLEMENTARY_READING_ORDER.json').read_text())
-    assert reading_order['main_first_cited_figures'] == list(range(1, 17))
-    assert reading_order['figures_cited_only_inside_supplement'] == list(range(17, 25))
-    assert sorted(reading_order['table_aliases_old_to_new'].values()) == list(range(1, 20))
-    assert (paper / "figures/figure_03/figure_03.pdf").read_text() == "Figure_03_extended"
-    assert len(list((paper / "supplementary_figures").glob("*_word.png"))) == 24
 
 
 def test_monthly_service_rollup_uses_occupied_weights_and_fixed_tail():
