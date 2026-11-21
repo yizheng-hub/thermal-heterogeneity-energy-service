@@ -185,7 +185,7 @@ if __name__ == "__main__":
     confirmed = [r for r in cases if r.get("system") == "independent_pthp"]
     assert len(confirmed) == 171 and all(
         r.get("validation_pass") for r in confirmed
-    ), "Full fixed-command architecture confirmation must pass before own-system retuning."
+    ), "All 171 fixed-command heat-pump operations must meet the equipment criteria."
     references = {
         r["climate"]: r
         for r in cases
@@ -209,7 +209,7 @@ if __name__ == "__main__":
     tested = run_commands(pilot_models, commands, "PILOT_RETUNED_CONTROLS")
     assert all(
         r.get("validation_pass") for r in tested
-    ), "Retuned command technical pilot failed; confirmation not launched."
+    ), "The calibration commands must meet the heat-pump equipment criteria."
     probes += probe_models(
         [m for m in models if m["climate"] not in pilot["climates"]],
         targets,

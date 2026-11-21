@@ -22,12 +22,12 @@ def loader():
 def test_result_integrity_rejects_changed_payload_and_escape(tmp_path):
     module = loader()
     module.ROOT = tmp_path
-    result = tmp_path / "data/figure_data"
+    result = tmp_path / "results/figure_data"
     result.mkdir(parents=True)
     payload = result / "scores.csv"
     payload.write_text("energy\n1\n")
     row = {
-        "result": "data/figure_data/scores.csv",
+        "result": "results/figure_data/scores.csv",
         "sha256": hashlib.sha256(payload.read_bytes()).hexdigest(),
     }
     manifest = result / "FIGURE_DATA_MANIFEST.json"
@@ -36,7 +36,7 @@ def test_result_integrity_rejects_changed_payload_and_escape(tmp_path):
     payload.write_text("energy\n2\n")
     with pytest.raises(ValueError, match="changed or missing"):
         module.verify()
-    row.update(result="data/figure_data/../outside.csv", sha256="unused")
+    row.update(result="results/figure_data/../outside.csv", sha256="unused")
     manifest.write_text(json.dumps({"files": [row]}))
     with pytest.raises(ValueError, match="changed or missing"):
         module.verify()
@@ -65,8 +65,8 @@ def test_export_reuses_contained_inputs_and_transformed_geometry(tmp_path):
     module.ROOT = tmp_path
     records = []
     for source, result, payload in [
-        ("output/Miami.idf", "data/figure_data/output/Miami.geometry.json", b'{"floors":{}}'),
-        ("output/scores.csv", "data/figure_data/output/scores.csv", b"score\n1\n"),
+        ("output/Miami.idf", "results/figure_data/output/Miami.geometry.json", b'{"floors":{}}'),
+        ("output/scores.csv", "results/figure_data/output/scores.csv", b"score\n1\n"),
     ]:
         path = tmp_path / result
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -81,7 +81,7 @@ def test_export_reuses_contained_inputs_and_transformed_geometry(tmp_path):
                 "transformation": "retained",
             }
         )
-    manifest = tmp_path / "data/figure_data/FIGURE_DATA_MANIFEST.json"
+    manifest = tmp_path / "results/figure_data/FIGURE_DATA_MANIFEST.json"
     manifest.write_text(json.dumps({"files": records}))
     publication = tmp_path / "publication_output"
     for folder, prefix, count in [("main", "Figure_", 6), ("extended", "Figure_E", 4), ("supplementary", "Figure_S", 7)]:
@@ -98,7 +98,7 @@ def test_export_reuses_contained_inputs_and_transformed_geometry(tmp_path):
     )
     module.export(publication)
     assert module.verify()["files"] == records
-    assert not (tmp_path / "data/figure_data/data/figure_data").exists()
+    assert not (tmp_path / "results/figure_data/results/figure_data").exists()
     assert not (tmp_path / "output/Miami.idf").exists()
 
 
@@ -191,7 +191,7 @@ def module_path(name):
 def test_published_signed_excess_matches_source_score_minus_limit():
     import pandas as pd
 
-    if not (ROOT / "data/figure_data").is_dir():
+    if not (ROOT / "results/figure_data").is_dir():
         pytest.skip("Download and extract Study_Data.zip first")
     source = pd.read_csv(module_path("DECISION_EFFECT_SIZES.csv"))
     source = source.loc[source.selection_disagreement.eq(True)].reset_index(drop=True)

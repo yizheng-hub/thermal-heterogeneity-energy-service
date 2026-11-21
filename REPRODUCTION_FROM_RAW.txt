@@ -26,26 +26,28 @@ Run
 
 Inspect the workflow without running simulations:
 
-    uv run --frozen python reproduce_from_raw.py --output-root output/new_run --plan
+    uv run --frozen python reproduce_from_raw.py --output-root results/new_run --plan
 
 Run all stages:
 
-    uv run --frozen python reproduce_from_raw.py --output-root output/new_run --workers 6
+    uv run --frozen python reproduce_from_raw.py --output-root results/new_run --workers 6
 
 Draw the figures and supplementary tables directly from that completed run:
 
-    uv run --frozen python reproduce_publication.py --raw-run-root output/new_run
+    uv run --frozen python reproduce_publication.py --raw-run-root results/new_run
 
-The figures and tables are written under output/new_run/publication/. This
-command reads the new simulation and analysis outputs and the map assets
-supplied with the code.
+The figures and tables are written under results/new_run/publication/. Supply
+the current run directory to --raw-run-root. The plotting program reads its
+simulation and analysis outputs and the map assets supplied with the code.
+Use a separate directory for each new simulation workflow so that cached
+model and trajectory paths belong to the same run.
 
 The stages reconstruct demand, analyze observations, generate annual candidates,
 and evaluate seasonal commands, spatial arrangements, equipment and response
 operations. Paired service-limit sensitivity uses the completed candidate
 library and retained temperature trajectories. Use a new output directory for
 a new demand reconstruction.
-The spatial stage also reruns the three operations compared at 40 and 200
+The spatial stage compares three operations at 40 and 200
 HVAC solver iterations in Supplementary Table 12.
 Demand-response event windows are selected from the reference building's
 hourly Electricity:Facility meter in the EnergyPlus SQL output. Its full

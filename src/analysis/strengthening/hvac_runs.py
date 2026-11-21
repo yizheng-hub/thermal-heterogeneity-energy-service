@@ -428,7 +428,6 @@ def pilot(workers=1):
         write_json(ROOT / "results/HVAC_PILOT_PROGRESS.json", records)
         print("HVAC_FIXED_REFERENCE", row["system"], row["climate"], qa, flush=True)
         # Temperature commands are held fixed for this hardware-mechanism contrast.
-        # Retuned system-specific controllers are a separate unperformed problem.
         selected = [
             c
             for c in commands

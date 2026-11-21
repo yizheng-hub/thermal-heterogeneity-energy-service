@@ -1,4 +1,4 @@
-"""Export the exact retained figure/table inputs into the portable data/figure_data folder."""
+"""Export the exact retained figure/table inputs into the portable results/figure_data folder."""
 
 from pathlib import Path
 import argparse
@@ -59,10 +59,10 @@ def minimize_human_inputs(name, frame):
 
 
 def export(publication):
-    destination = ROOT / "data/figure_data"
-    destination.mkdir(exist_ok=True)
+    destination = ROOT / "results/figure_data"
+    destination.mkdir(parents=True, exist_ok=True)
     expected = {}
-    # Publication notebooks already read the minimized, verified data/figure_data files.
+    # Publication notebooks already read the minimized, verified results/figure_data files.
     # Keep their original provenance when refreshing the publication data bundle.
     retained = {}
     index = destination / "index.json"
@@ -85,15 +85,15 @@ def export(publication):
         return
     for receipt in receipts:
         for name, digest in json.loads(receipt.read_text(encoding="utf-8"))["input_sha256"].items():
-            if name.startswith("data/figure_data/"):
+            if name.startswith("results/figure_data/"):
                 if not retained:
                     retained = {row["result"]: row for row in verify()["files"]}
                 if name not in retained or retained[name]["sha256"] != digest:
-                    raise ValueError(f"Unregistered data/figure_data input: {name}")
+                    raise ValueError(f"Unregistered results/figure_data input: {name}")
                 record = retained[name]
                 name, digest = record["source"], record["source_sha256"]
-            elif "data/figure_data/" + name in retained:
-                record = retained["data/figure_data/" + name]
+            elif "results/figure_data/" + name in retained:
+                record = retained["results/figure_data/" + name]
                 if digest == record["sha256"]:
                     digest = record["source_sha256"]
             if name in expected and expected[name] != digest:
@@ -101,13 +101,13 @@ def export(publication):
             expected[name] = digest
     tables = json.loads((publication / "tables/TABLES.json").read_text(encoding="utf-8"))
     for name, digest in tables["input_sha256"].items():
-        if name.startswith("data/figure_data/"):
+        if name.startswith("results/figure_data/"):
             if name not in retained or retained[name]["sha256"] != digest:
-                raise ValueError(f"Unregistered data/figure_data table input: {name}")
+                raise ValueError(f"Unregistered results/figure_data table input: {name}")
             record = retained[name]
             name, digest = record["source"], record["source_sha256"]
-        elif "data/figure_data/" + name in retained and digest == retained["data/figure_data/" + name]["sha256"]:
-            digest = retained["data/figure_data/" + name]["source_sha256"]
+        elif "results/figure_data/" + name in retained and digest == retained["results/figure_data/" + name]["sha256"]:
+            digest = retained["results/figure_data/" + name]["source_sha256"]
         if name in expected and expected[name] != digest:
             raise ValueError(f"Figure/table source mismatch: {name}")
         expected[name] = digest
@@ -147,7 +147,7 @@ def export(publication):
             if frame.empty:
                 raise ValueError("Missing illustrated response trajectories")
             frame["hourly_path"] = frame.hourly_path.map(
-                lambda value: "data/figure_data/" + Path(value).relative_to(ROOT).as_posix()
+                lambda value: "results/figure_data/" + Path(value).relative_to(ROOT).as_posix()
             )
             frame.to_csv(target, index=False)
             transformation = "illustrated trajectory rows; project-relative hourly paths"
@@ -159,7 +159,7 @@ def export(publication):
                 raise ValueError("Illustrated physical geometry was not recorded")
             model = {
                 "Miami": {
-                    "floor_geometry": "data/figure_data/"
+                    "floor_geometry": "results/figure_data/"
                     + str(Path(relative).with_suffix(".geometry.json")).replace("\\", "/")
                 }
             }
@@ -215,31 +215,34 @@ def export(publication):
 
 
 def verify():
-    for folder in [ROOT / "data/figure_data", ROOT / "Source_Data"]:
+    for folder in [ROOT / "results/figure_data", ROOT / "Source_Data", ROOT / "data/figure_data"]:
         index = folder / "index.json"
         if index.is_file():
             records = json.loads(index.read_text(encoding="utf-8"))
             for row in records:
                 path = (ROOT / row["file"]).resolve()
-                if not path.is_relative_to(folder.resolve()) or not path.is_file() or sha(path) != row["sha256"]:
+                within_inputs = path.is_relative_to(folder.resolve())
+                if folder == ROOT / "results/figure_data":
+                    within_inputs |= path.is_relative_to((ROOT / "results/simulation_run").resolve())
+                if not within_inputs or not path.is_file() or sha(path) != row["sha256"]:
                     raise ValueError("Source data changed or missing: " + row["file"])
             return {"files": records}
-    manifest = json.loads((ROOT / "data/figure_data/FIGURE_DATA_MANIFEST.json").read_text())
+    manifest = json.loads((ROOT / "results/figure_data/FIGURE_DATA_MANIFEST.json").read_text())
     for row in manifest["files"]:
         path = (ROOT / row["result"]).resolve()
         if (
-            not path.is_relative_to(ROOT / "data/figure_data")
+            not path.is_relative_to(ROOT / "results/figure_data")
             or not path.is_file()
             or sha(path) != row["sha256"]
         ):
-            raise ValueError(f"data/figure_data input changed or missing: {row['result']}")
+            raise ValueError(f"results/figure_data input changed or missing: {row['result']}")
     return manifest
 
 
 def resolve(request):
     """Locate a numerical input in a figure-data index."""
     def key(value):
-        value = str(value).replace("\\", "/").split("data/figure_data/")[-1]
+        value = str(value).replace("\\", "/").split("results/figure_data/")[-1]
         value = value.replace("output/from_raw/", "baseline/").replace("output/strengthening/", "analysis/")
         return re.sub(r"run_[^/]+/", "", value)
     records = verify()["files"]

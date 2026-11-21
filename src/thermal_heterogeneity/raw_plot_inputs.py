@@ -20,7 +20,7 @@ def prepare(raw, project):
     index = []
     for row in files:
         key = row["input_key"]
-        relative = Path("data/figure_data") / row["file"]
+        relative = Path("results/figure_data") / row["file"]
         target = project / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         if key.startswith("output/publication/support/"):
@@ -42,9 +42,9 @@ def prepare(raw, project):
                 target.write_text(json.dumps(floor_geometry(source), indent=2), encoding="utf-8")
             elif source.name == "MODEL_MANIFEST.json":
                 model = json.loads(source.read_text())["Miami"]
-                if sha(Path(model["prepared_idf"])) != model["prepared_idf_sha256"]:
+                if sha(source.with_name("Miami.idf")) != model["prepared_idf_sha256"]:
                     raise ValueError("The illustrated building model does not match the declared geometry")
-                geometry = {"Miami": {"floor_geometry": "data/figure_data/Maps/Miami.geometry.json"}}
+                geometry = {"Miami": {"floor_geometry": "results/figure_data/Maps/Miami.geometry.json"}}
                 target.write_text(json.dumps(geometry), encoding="utf-8")
             elif row["columns"]:
                 frame = pd.read_csv(source, low_memory=False)
@@ -54,7 +54,7 @@ def prepare(raw, project):
                     frame = frame.loc[basenames.isin(hourly)].copy()
                     if frame.empty:
                         raise ValueError(f"Missing illustrated event trajectory in {source.name}")
-                    frame["hourly_path"] = "data/figure_data/Hourly/" + basenames.loc[frame.index]
+                    frame["hourly_path"] = "results/figure_data/Hourly/" + basenames.loc[frame.index]
                 if "event_json" in frame and source.name == "SINGLE_EVENT_ACTION_PLAN.csv":
                     def window_metadata(value):
                         window = json.loads(value)
@@ -65,4 +65,4 @@ def prepare(raw, project):
             else:
                 shutil.copyfile(source, target)
         index.append({"key": key, "file": relative.as_posix(), "sha256": sha(target)})
-    (project / "data/figure_data/index.json").write_text(json.dumps(index, indent=2), encoding="utf-8")
+    (project / "results/figure_data/index.json").write_text(json.dumps(index, indent=2), encoding="utf-8")

@@ -1,4 +1,4 @@
-"""Regenerate each Plot.ipynb figure from data/figure_data without running simulations."""
+"""Regenerate each Plot.ipynb figure from results/figure_data without running simulations."""
 
 from pathlib import Path
 import argparse
@@ -90,7 +90,7 @@ def main():
         print(
             json.dumps(
                 {
-                    "input": str(raw) if raw else "data/figure_data/FIGURE_DATA_MANIFEST.json",
+                    "input": str(raw) if raw else "results/figure_data/FIGURE_DATA_MANIFEST.json",
                     "notebook": "plot/Plot.ipynb",
                     "main_figures": 6,
                     "extended_data_figures": 4,
@@ -141,17 +141,9 @@ def main():
         [
             sys.executable,
             str(ROOT / "src/analysis/figure_tables.py"),
-            "--raw-root",
-            str(ROOT / "data/figure_data/output/from_raw"),
-            "--analysis-root",
-            str(ROOT / "data/figure_data/output/strengthening"),
+            "--from-index",
             "--publication-root",
             str(output),
-            "--resource-scenarios",
-            str(
-                ROOT
-                / "data/figure_data/output/publication/support/implementation/IMPLEMENTATION_RESOURCE_SCENARIOS.csv"
-            ),
         ],
         check=True,
     )
@@ -165,7 +157,7 @@ def main():
                 "supplementary_figures": 7,
                 "tables": 12,
                 "EnergyPlus_runs": 0,
-                "input_root": "data/figure_data",
+                "input_root": "results/figure_data",
             },
             indent=2,
         )

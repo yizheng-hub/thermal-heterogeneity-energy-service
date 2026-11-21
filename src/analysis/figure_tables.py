@@ -75,13 +75,17 @@ def service_threshold_rows(selections):
     return rows
 
 
-def build(raw, analysis, publication, resource_scenarios=None):
+def build(raw, analysis, publication, resource_scenarios=None, from_index=False):
     tables = []
     sources = {}
 
     def read(relative, base=analysis):
         path = (base / relative).resolve()
-        if not path.is_file() and any((ROOT / f / "index.json").is_file() for f in ["data/figure_data", "Source_Data"]):
+        if from_index:
+            from src.thermal_heterogeneity.figure_inputs import resolve
+            prefix = {raw: "baseline", analysis: "analysis", publication: "output/publication"}[base]
+            path = resolve(f"{prefix}/{relative}")
+        elif not path.is_file() and any((ROOT / f / "index.json").is_file() for f in ["results/figure_data", "Source_Data", "data/figure_data"]):
             from src.thermal_heterogeneity.figure_inputs import resolve
             path = resolve(path)
         sources[path.relative_to(ROOT).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
@@ -458,6 +462,7 @@ if __name__ == "__main__":
     p.add_argument("--analysis-root", type=Path, default=ROOT / "output/strengthening")
     p.add_argument("--publication-root", type=Path, default=ROOT / "output/publication")
     p.add_argument("--resource-scenarios", type=Path)
+    p.add_argument("--from-index", action="store_true", help="Read the datasets named by the plotting index")
     args = p.parse_args()
     if not all(
         x.resolve().is_relative_to(ROOT)
@@ -468,4 +473,4 @@ if __name__ == "__main__":
         ROOT
     ):
         raise ValueError("Resource inputs must stay inside the project")
-    build(args.raw_root, args.analysis_root, args.publication_root, args.resource_scenarios)
+    build(args.raw_root, args.analysis_root, args.publication_root, args.resource_scenarios, args.from_index)

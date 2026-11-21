@@ -16,13 +16,13 @@ scheduled for release on figshare upon publication.
 - Simulation_Inputs.zip: observations, numerical inputs and a per-file source
   manifest for new simulations.
 - Numerical_Results.zip: figure inputs and complete numerical results under
-  data/figure_data/ and data/analysis_results/. data/RESULTS_INDEX.csv
+  results/figure_data/ and results/analysis_results/. results/RESULTS_INDEX.csv
   identifies the additional result datasets.
 
 Plotting code is in plot/Plot.ipynb in this repository.
 
 Place the ZIP files beside this README and pyproject.toml. In PowerShell,
-extract them into the repository root, merging the supplied data/ directory:
+extract them beside this README:
 
     Expand-Archive -LiteralPath .\Simulation_Inputs.zip -DestinationPath . -Force
     Expand-Archive -LiteralPath .\Numerical_Results.zip -DestinationPath . -Force
@@ -35,6 +35,18 @@ direct download locations and the exact DOE archive and model members.
 REPRODUCTION_FROM_RAW.txt describes how to supply local copies.
 
 Numerical_Results.zip alone supports the figure and table workflow.
+
+Results layout
+
+results/analysis_results/ contains the supporting numerical analyses.
+results/figure_data/ contains the indexed plotting inputs: Tables/ for numerical
+values, Maps/ for geometry and locations, and Hourly/ for the illustrated
+event trajectories. Each cell of plot/Plot.ipynb reads the files listed in
+results/figure_data/index.json and writes one figure under output/publication/.
+In a checkout that also contains results/simulation_run/, that index can point
+to identical tables and hourly trajectories at their original simulation paths.
+results/RESULTS_INDEX.csv also points to shared tables used in more than one analysis.
+
 Figures and tables
 
     uv run --frozen python reproduce_publication.py --output-root output/publication
@@ -51,12 +63,12 @@ available in src/thermal_heterogeneity/methods_sensitivity_figure.py. The
 command-line runner executes the notebook cells.
 Times New Roman regular and bold must be installed locally.
 
-After running the simulations and analyses in output/new_run, draw the same
+After running the simulations and analyses in results/new_run, draw the same
 figures and tables directly from those results:
 
-    uv run --frozen python reproduce_publication.py --raw-run-root output/new_run
+    uv run --frozen python reproduce_publication.py --raw-run-root results/new_run
 
-The resulting figures and tables are in output/new_run/publication/.
+The resulting figures and tables are in results/new_run/publication/.
 
 Scientific experiments
 
@@ -65,9 +77,9 @@ and experiment commands. The restoration step prepares the reference model. The 
 methods are in src/; fixed specifications are in data/metadata/.
 
 The complete workflow includes the service-limit sensitivity analysis. To
-recalculate it from a completed run in output/new_run:
+recalculate it from a completed run in results/new_run:
 
-    uv run --frozen python src/analysis/strengthening/service_threshold_sensitivity.py --results-root output/new_run/strengthening/results --matrix-root output/new_run/matrix --memberships output/new_run/strengthening/results/base/annual/GLOBAL_FIXED_TAIL_MEMBERSHIPS.csv --trajectory-root output/new_run --output-dir output/new_run/strengthening/results/service_threshold_sensitivity
+    uv run --frozen python src/analysis/strengthening/service_threshold_sensitivity.py --results-root results/new_run/strengthening/results --matrix-root results/new_run/matrix --memberships results/new_run/strengthening/results/base/annual/GLOBAL_FIXED_TAIL_MEMBERSHIPS.csv --trajectory-root results/new_run --output-dir results/new_run/strengthening/results/service_threshold_sensitivity
 
 This analysis uses the completed operation library and retained temperature
 trajectories. It writes paired service scores, reference limits, selections
@@ -75,8 +87,8 @@ at each service-limit factor, and their summary without running EnergyPlus.
 
 Population and command-domain sensitivity use the same completed run:
 
-    uv run --frozen python src/analysis/strengthening/population_command_sensitivity.py --demand-root output/new_run/demand --matrix-root output/new_run/matrix --results-root output/new_run/strengthening/results --output-dir output/new_run/strengthening/results/population_command_sensitivity
-    uv run --frozen python src/analysis/strengthening/command_domain_sensitivity.py --matrix-root output/new_run/matrix --results-root output/new_run/strengthening/results --output-dir output/new_run/strengthening/results/command_domain_sensitivity
+    uv run --frozen python src/analysis/strengthening/population_command_sensitivity.py --demand-root results/new_run/demand --matrix-root results/new_run/matrix --results-root results/new_run/strengthening/results --output-dir results/new_run/strengthening/results/population_command_sensitivity
+    uv run --frozen python src/analysis/strengthening/command_domain_sensitivity.py --matrix-root results/new_run/matrix --results-root results/new_run/strengthening/results --output-dir results/new_run/strengthening/results/command_domain_sensitivity
 
 The population analysis samples 30 additional 267-profile compositions from
 each source and scores all 31 shared commands in each weather context. The
@@ -86,7 +98,7 @@ and are included in the complete workflow.
 
 To draw Fig. S3 directly from those analysis results:
 
-    uv run --frozen python src/thermal_heterogeneity/methods_sensitivity_figure.py --analysis-root output/new_run/strengthening/results --output-root output/new_run/publication/supplementary
+    uv run --frozen python src/thermal_heterogeneity/methods_sensitivity_figure.py --analysis-root results/new_run/strengthening/results --output-root results/new_run/publication/supplementary
 Tests
 
     uv sync --frozen --extra notebook --extra test
